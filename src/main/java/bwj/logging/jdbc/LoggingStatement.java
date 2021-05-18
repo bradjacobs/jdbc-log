@@ -1,0 +1,466 @@
+package bwj.logging.jdbc;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Statement;
+import java.text.NumberFormat;
+import java.util.TreeMap;
+import java.util.logging.Logger;
+//import org.apache.log4j.Logger;
+
+public class LoggingStatement implements Statement
+{
+    public static final TagUpdater.Renderer defaultRenderer = new TagUpdater.DefaultRenderer() {
+        public void render(Object object, StringBuilder sb) {
+            if (object instanceof Class) {
+                sb.append('\'').append(((Class)object).getName()).append('\'');
+            } else if (object instanceof String || object instanceof java.util.Date) {
+                sb.append('\'').append(object).append('\'');
+            } else if (object instanceof Boolean) {
+                sb.append(((Boolean)object).booleanValue() ? 1 : 0);
+            } else {
+                super.render(object, sb);
+            }
+        }
+    };
+
+
+    private void setAndLogCurrent(String sql) {
+        this.current.setSQL(sql);
+        logCurrent();
+    }
+
+    protected void logCurrent() {
+        log(this.current.toString());
+    }
+
+    protected void clearTopParameters() {
+        this.current.clearParameters();
+    }
+
+    protected void setCurrentParameter(int index, Object value) {
+        this.current.setParameter(index, value);
+    }
+
+
+
+
+
+    protected static final NumberFormat numberFormat = NumberFormat.getNumberInstance();
+
+    private class BatchItem {
+        private TagUpdater.Renderer renderer;
+
+        private String sql = "";
+
+        private TreeMap<Integer, Object> parameters = null;
+
+        public BatchItem(TagUpdater.Renderer renderer) {
+            this.renderer = renderer;
+        }
+
+        public BatchItem(BatchItem that) {
+            this(that, that.sql);
+        }
+
+        public BatchItem(BatchItem that, String sql) {
+            this.sql = sql;
+            if (that.parameters != null) {
+                this.parameters = new TreeMap<Integer, Object>();
+                this.parameters.putAll(that.parameters);
+            }
+            if (that.renderer != null)
+                this.renderer = that.renderer;
+        }
+
+        public void setSQL(String sql) {
+            this.sql = sql;
+        }
+
+        public void setParameter(int index, Object parameter) {
+            if (this.parameters == null) {
+                if (parameter == null)
+                    return;
+                this.parameters = new TreeMap<Integer, Object>();
+            }
+            this.parameters.put(Integer.valueOf(index), parameter);
+        }
+
+        public void clearParameters() {
+            if (this.parameters != null)
+                this.parameters.clear();
+        }
+
+        public String toString() {
+            if (this.parameters == null || this.parameters.size() == 0)
+                return this.sql;
+            return TagUpdater.replace(this.sql, "?", this.parameters.values().iterator(), this.renderer);
+        }
+    }
+
+
+    // TODO
+    //private static final Logger logger = Logger.getLogger(LoggingStatement.class);
+    private static final Logger logger = null;
+
+    private Statement statement;
+    private BatchItem current;
+    private final LoggingListener loggingListener;
+
+    public LoggingStatement(Statement statement, LoggingListener loggingListener) {
+        this.statement = statement;
+        this.loggingListener = loggingListener;
+        this.current = new BatchItem(defaultRenderer);
+    }
+
+    public LoggingStatement(Statement statement, String sql, LoggingListener loggingListener) {
+        this.statement = statement;
+        this.loggingListener = loggingListener;
+        this.current = new BatchItem(defaultRenderer);
+        this.current.setSQL(sql);
+    }
+
+    public LoggingStatement(Statement statement, String sql, LoggingListener loggingListener, TagUpdater.Renderer renderer) {
+        this.statement = statement;
+        this.loggingListener = loggingListener;
+        this.current = new BatchItem(renderer);
+        this.current.setSQL(sql);
+    }
+
+    private void log(String sql) {
+
+        System.out.println("****  " + sql);
+        if (this.loggingListener != null)
+            this.loggingListener.log(sql);
+//        if (logger.isDebugEnabled())
+//            logger.debug(sql);
+    }
+
+
+
+    @Override
+    public ResultSet executeQuery(String sql) throws SQLException
+    {
+        return statement.executeQuery(sql);
+    }
+
+    @Override
+    public int executeUpdate(String sql) throws SQLException
+    {
+        setAndLogCurrent(sql);
+        return statement.executeUpdate(sql);
+    }
+
+    @Override
+    public void close() throws SQLException
+    {
+        statement.close();
+    }
+
+    @Override
+    public int getMaxFieldSize() throws SQLException
+    {
+        return statement.getMaxFieldSize();
+    }
+
+    @Override
+    public void setMaxFieldSize(int max) throws SQLException
+    {
+        statement.setMaxFieldSize(max);
+    }
+
+    @Override
+    public int getMaxRows() throws SQLException
+    {
+        return statement.getMaxRows();
+    }
+
+    @Override
+    public void setMaxRows(int max) throws SQLException
+    {
+        statement.setMaxRows(max);
+    }
+
+    @Override
+    public void setEscapeProcessing(boolean enable) throws SQLException
+    {
+        statement.setEscapeProcessing(enable);
+    }
+
+    @Override
+    public int getQueryTimeout() throws SQLException
+    {
+        return statement.getQueryTimeout();
+    }
+
+    @Override
+    public void setQueryTimeout(int seconds) throws SQLException
+    {
+        statement.setQueryTimeout(seconds);
+    }
+
+    @Override
+    public void cancel() throws SQLException
+    {
+        statement.cancel();
+    }
+
+    @Override
+    public SQLWarning getWarnings() throws SQLException
+    {
+        return statement.getWarnings();
+    }
+
+    @Override
+    public void clearWarnings() throws SQLException
+    {
+        statement.clearWarnings();
+    }
+
+    @Override
+    public void setCursorName(String name) throws SQLException
+    {
+        statement.setCursorName(name);
+    }
+
+    @Override
+    public boolean execute(String sql) throws SQLException
+    {
+        setAndLogCurrent(sql);
+        return statement.execute(sql);
+    }
+
+    @Override
+    public ResultSet getResultSet() throws SQLException
+    {
+        return statement.getResultSet();
+    }
+
+    @Override
+    public int getUpdateCount() throws SQLException
+    {
+        return statement.getUpdateCount();
+    }
+
+    @Override
+    public boolean getMoreResults() throws SQLException
+    {
+        return statement.getMoreResults();
+    }
+
+    @Override
+    public void setFetchDirection(int direction) throws SQLException
+    {
+        statement.setFetchDirection(direction);
+    }
+
+    @Override
+    public int getFetchDirection() throws SQLException
+    {
+        return statement.getFetchDirection();
+    }
+
+    @Override
+    public void setFetchSize(int rows) throws SQLException
+    {
+        statement.setFetchSize(rows);
+    }
+
+    @Override
+    public int getFetchSize() throws SQLException
+    {
+        return statement.getFetchSize();
+    }
+
+    @Override
+    public int getResultSetConcurrency() throws SQLException
+    {
+        return statement.getResultSetConcurrency();
+    }
+
+    @Override
+    public int getResultSetType() throws SQLException
+    {
+        return statement.getResultSetType();
+    }
+
+    @Override
+    public void addBatch(String sql) throws SQLException
+    {
+        statement.addBatch(sql);
+    }
+
+    @Override
+    public void clearBatch() throws SQLException
+    {
+        statement.clearBatch();
+    }
+
+    @Override
+    public int[] executeBatch() throws SQLException
+    {
+        return statement.executeBatch();
+    }
+
+    @Override
+    public Connection getConnection() throws SQLException
+    {
+        return statement.getConnection();
+    }
+
+    @Override
+    public boolean getMoreResults(int current) throws SQLException
+    {
+        return statement.getMoreResults(current);
+    }
+
+    @Override
+    public ResultSet getGeneratedKeys() throws SQLException
+    {
+        return statement.getGeneratedKeys();
+    }
+
+    @Override
+    public int executeUpdate(String sql, int autoGeneratedKeys) throws SQLException
+    {
+        setAndLogCurrent(sql);
+        return statement.executeUpdate(sql, autoGeneratedKeys);
+    }
+
+    @Override
+    public int executeUpdate(String sql, int[] columnIndexes) throws SQLException
+    {
+        setAndLogCurrent(sql);
+        return statement.executeUpdate(sql, columnIndexes);
+    }
+
+    @Override
+    public int executeUpdate(String sql, String[] columnNames) throws SQLException
+    {
+        setAndLogCurrent(sql);
+        return statement.executeUpdate(sql, columnNames);
+    }
+
+    @Override
+    public boolean execute(String sql, int autoGeneratedKeys) throws SQLException
+    {
+        setAndLogCurrent(sql);
+        return statement.execute(sql, autoGeneratedKeys);
+    }
+
+    @Override
+    public boolean execute(String sql, int[] columnIndexes) throws SQLException
+    {
+        setAndLogCurrent(sql);
+        return statement.execute(sql, columnIndexes);
+    }
+
+    @Override
+    public boolean execute(String sql, String[] columnNames) throws SQLException
+    {
+        setAndLogCurrent(sql);
+        return statement.execute(sql, columnNames);
+    }
+
+    @Override
+    public int getResultSetHoldability() throws SQLException
+    {
+        return statement.getResultSetHoldability();
+    }
+
+    @Override
+    public boolean isClosed() throws SQLException
+    {
+        return statement.isClosed();
+    }
+
+    @Override
+    public void setPoolable(boolean poolable) throws SQLException
+    {
+        statement.setPoolable(poolable);
+    }
+
+    @Override
+    public boolean isPoolable() throws SQLException
+    {
+        return statement.isPoolable();
+    }
+
+    @Override
+    public void closeOnCompletion() throws SQLException
+    {
+        statement.closeOnCompletion();
+    }
+
+    @Override
+    public boolean isCloseOnCompletion() throws SQLException
+    {
+        return statement.isCloseOnCompletion();
+    }
+
+    @Override
+    public long getLargeUpdateCount() throws SQLException
+    {
+        return statement.getLargeUpdateCount();
+    }
+
+    @Override
+    public void setLargeMaxRows(long max) throws SQLException
+    {
+        statement.setLargeMaxRows(max);
+    }
+
+    @Override
+    public long getLargeMaxRows() throws SQLException
+    {
+        return statement.getLargeMaxRows();
+    }
+
+    @Override
+    public long[] executeLargeBatch() throws SQLException
+    {
+        return statement.executeLargeBatch();
+    }
+
+    @Override
+    public long executeLargeUpdate(String sql) throws SQLException
+    {
+        setAndLogCurrent(sql);
+        return statement.executeLargeUpdate(sql);
+    }
+
+    @Override
+    public long executeLargeUpdate(String sql, int autoGeneratedKeys) throws SQLException
+    {
+        setAndLogCurrent(sql);
+        return statement.executeLargeUpdate(sql, autoGeneratedKeys);
+    }
+
+    @Override
+    public long executeLargeUpdate(String sql, int[] columnIndexes) throws SQLException
+    {
+        setAndLogCurrent(sql);
+        return statement.executeLargeUpdate(sql, columnIndexes);
+    }
+
+    @Override
+    public long executeLargeUpdate(String sql, String[] columnNames) throws SQLException
+    {
+        setAndLogCurrent(sql);
+        return statement.executeLargeUpdate(sql, columnNames);
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> iface) throws SQLException
+    {
+        return statement.unwrap(iface);
+    }
+
+    @Override
+    public boolean isWrapperFor(Class<?> iface) throws SQLException
+    {
+        return statement.isWrapperFor(iface);
+    }
+}
