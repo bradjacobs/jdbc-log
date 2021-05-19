@@ -1,7 +1,6 @@
 package bwj.logging.jdbc;
 
 import java.io.Reader;
-import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,61 +14,48 @@ import java.util.logging.Logger;
 
 public class LoggingStatement implements Statement
 {
-//    public static final Renderer defaultRenderer = new TagUpdater.DefaultRenderer() {
-//        public void render(Object object, StringBuilder sb) {
-//            if (object instanceof Class) {
-//                sb.append('\'').append(((Class)object).getName()).append('\'');
-//            } else if (object instanceof String || object instanceof java.util.Date) {
-//                sb.append('\'').append(object).append('\'');
-//            } else if (object instanceof Boolean) {
-//                sb.append((Boolean) object ? 1 : 0);
-//            } else {
-//                super.render(object, sb);
-//            }
-//        }
-//    };
-
-    private List<BatchItem> batchItems = new LinkedList<BatchItem>();
-
-    protected void appendBatchItem(BatchItem batchItem) {
-        this.batchItems.add(batchItem);
-    }
-    private void logAndClearBatch() {
-
-        System.out.println("******* LKGGING BATCH *******");
-
-        log(this.batchItems.toString());
-        this.batchItems = new LinkedList<BatchItem>();
-    }
 
 
-    private void setAndLogCurrent(String sql) {
-        this.current.setSQL(sql);
+    protected void setAndLogCurrent(String sql) {
+        sqlTracker.setSql(sql);
         logCurrent();
+    }
+    protected void logAndClearBatch() {
+        logCurrentBatch();
+        sqlTracker.clearBatch();
+    }
+    protected void addLogBatch() {
+        sqlTracker.addBatch();
+    }
+    protected void addLogBatch(String sql) {
+        sqlTracker.addBatch(sql);
+    }
+    protected void clearLogBatch() {
+        sqlTracker.clearBatch();
     }
 
     protected void logCurrent() {
-        log(this.current.toString());
+        log( sqlTracker.generateSql() );
+    }
+    protected void logCurrentBatch() {
+        String batchSql = sqlTracker.generateBatchSql();
+        if (batchSql != null && batchSql.length() != 0) {
+            log( batchSql );
+        }
     }
 
-    protected void clearTopParameters() {
-        this.current.clearParameters();
+
+    protected void log(String sql) {
+
+        System.out.println("****  " + sql);
+        if (this.loggingListener != null)
+            this.loggingListener.log(sql);
+//        if (logger.isDebugEnabled())
+//            logger.debug(sql);
     }
 
-    protected void setCurrentParameter(int index, Object value) {
-        this.current.setParameter(index, value);
-    }
 
-    /**
-     * Extracing a value from a Reader for logging modifies (i.e. emptys) the Reader.
-     * Thus this method returns a 'new reader' that is to be used in place of the original.
-     * @param index index
-     * @param value reader
-     * @return refreshed reader
-     */
-    protected Reader setReaderParameter(int index, Reader value) {
-        return this.current.setReaderParameter(index, value);
-    }
+
 
 
     protected static final NumberFormat numberFormat = NumberFormat.getNumberInstance();
@@ -80,14 +66,14 @@ public class LoggingStatement implements Statement
     private static final Logger logger = null;
 
     private Statement statement;
-    protected BatchItem current;
+    protected SqlStatementTracker sqlTracker;
     private final LoggingListener loggingListener;
 
     public LoggingStatement(Statement statement, LoggingListener loggingListener) {
         this.statement = statement;
         this.loggingListener = loggingListener;
-//        this.current = new BatchItem(defaultRenderer);
-        this.current = new BatchItem();
+//        this.sqlTracker = new BatchItem(defaultRenderer);
+        this.sqlTracker = new SqlStatementTracker();
     }
 
     public LoggingStatement(Statement statement, String sql, LoggingListener loggingListener) {
@@ -95,32 +81,24 @@ public class LoggingStatement implements Statement
 
 
         this.loggingListener = loggingListener;
-//        this.current = new BatchItem(defaultRenderer);
-        this.current = new BatchItem();
-        this.current.setSQL(sql);
+//        this.sqlTracker = new BatchItem(defaultRenderer);
+        this.sqlTracker = new SqlStatementTracker();
+        this.sqlTracker.setSql(sql);
     }
 
     public LoggingStatement(Statement statement, String sql, LoggingListener loggingListener, Renderer renderer) {
         this.statement = statement;
         this.loggingListener = loggingListener;
-        this.current = new BatchItem();
-        this.current.setSQL(sql);
+        this.sqlTracker = new SqlStatementTracker();
+        this.sqlTracker.setSql(sql);
     }
 
-    private void log(String sql) {
-
-        System.out.println("****  " + sql);
-        if (this.loggingListener != null)
-            this.loggingListener.log(sql);
-//        if (logger.isDebugEnabled())
-//            logger.debug(sql);
-    }
 
 
     @Override
     public void addBatch(String sql) throws SQLException
     {
-        appendBatchItem(new BatchItem(this.current, sql));
+        addLogBatch(sql);
         statement.addBatch(sql);
     }
 
@@ -153,7 +131,7 @@ public class LoggingStatement implements Statement
     @Override
     public void clearBatch() throws SQLException
     {
-        this.batchItems.clear();
+        clearLogBatch();
         statement.clearBatch();
     }
 
@@ -195,6 +173,7 @@ public class LoggingStatement implements Statement
     @Override
     public ResultSet executeQuery(String sql) throws SQLException
     {
+        setAndLogCurrent(sql);
         return statement.executeQuery(sql);
     }
 
@@ -229,6 +208,7 @@ public class LoggingStatement implements Statement
     @Override
     public long[] executeLargeBatch() throws SQLException
     {
+        // todo
         return statement.executeLargeBatch();
     }
 

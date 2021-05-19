@@ -5,15 +5,15 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-public class SqlStatementTracker
+class SqlStatementTracker
 {
+    private static final String TAG = "?";
+
     private Renderer renderer = new DefaultRenderer();
 
     private String sql = "";
@@ -24,8 +24,7 @@ public class SqlStatementTracker
 
     private boolean logTextReaderStreams = true;
 
-    private static final String CLOB_VALUE_PLACEHOLDER = "{Clob}";
-    private static final String READER_PLACEHOLDER = "{Reader}";
+    private static final String TEXT_CLOB_VALUE_PLACEHOLDER = "{TextClob}";
 
 
 
@@ -37,13 +36,12 @@ public class SqlStatementTracker
         this.renderer = renderer;
     }
 
-
-    public void setSql(String sql) {
+    public void setSql(String sql)
+    {
         this.sql = sql;
     }
 
-
-    public void addBatch(String sql) throws SQLException
+    public void addBatch(String sql)
     {
         this.sql = sql;
         addBatch();
@@ -64,14 +62,21 @@ public class SqlStatementTracker
         }
     }
 
-    private void logAndClearBatch() {
 
-        System.out.println("******* LKGGING BATCH *******");
 
-      //  log(this.batchItems.toString());
-        clearBatch();
+    public String generateSql() {
+        return generateSql(this.sql, this.paramMap, this.renderer);
     }
-
+    public String generateBatchSql() {
+        if (this.batchItems == null || this.batchItems.size() == 0) {
+            return "";
+        }
+        List<String> sqlList = new ArrayList<>();
+        for (BatchItem batchItem : batchItems) {
+            sqlList.add(batchItem.generateSqlString());
+        }
+        return sqlList.toString();
+    }
 
 
 
@@ -93,9 +98,11 @@ public class SqlStatementTracker
      */
     public Reader setReaderParameter(int index, Reader parameter) {
         if (! logTextReaderStreams) {
+            this.setParameter(index, TEXT_CLOB_VALUE_PLACEHOLDER);
             return parameter;
         }
         else if (parameter == null) {
+            this.setParameter(index, null);
             return null;
         }
 
@@ -107,6 +114,7 @@ public class SqlStatementTracker
         }
         catch (IOException e)
         {
+            // todo - handle better
             e.printStackTrace();
             throw new RuntimeException("Error: " + e.getMessage(), e);
         }
@@ -117,8 +125,11 @@ public class SqlStatementTracker
             this.paramMap.clear();
     }
 
-    public String toString() {
-        return generateSqlString(this.sql, this.paramMap, this.renderer);
+
+    private static String generateSql(String sql, SortedMap<Integer, Object> paramMap, Renderer renderer) {
+        if (paramMap == null || paramMap.size() == 0)
+            return sql;
+        return TagUpdater.replace(sql, TAG, paramMap.values().iterator(), renderer);
     }
 
 
@@ -138,17 +149,10 @@ public class SqlStatementTracker
             this.renderer = renderer;
         }
 
-        public String toString() {
-            return generateSqlString(this.sql, this.paramMap, this.renderer);
+        public String generateSqlString() {
+            return generateSql(this.sql, this.paramMap, this.renderer);
         }
+
     }
-
-
-    private static String generateSqlString(String sql, SortedMap<Integer, Object> paramMap, Renderer renderer) {
-        if (paramMap == null || paramMap.size() == 0)
-            return sql;
-        return TagUpdater.replace(sql, "?", paramMap.values().iterator(), renderer);
-    }
-
 
 }

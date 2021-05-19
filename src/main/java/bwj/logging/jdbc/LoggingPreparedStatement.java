@@ -45,17 +45,32 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     private static final String UNICODE_STREAM_PLACEHOLDER = "{UnicodeStream}";
 
 
+    protected void setCurrentParameter(int index, Object value) {
+        this.sqlTracker.setParameter(index, value);
+    }
+
+    protected Reader setCurrentReaderParameter(int index, Reader value) {
+        return this.sqlTracker.setReaderParameter(index, value);
+    }
+    protected void clearLogParameters() {
+        sqlTracker.clearParameters();
+    }
+
+
+
+
+
     @Override
     public void clearParameters() throws SQLException
     {
-        clearTopParameters();
+        clearLogParameters();
         preparedStatement.clearParameters();
     }
 
     @Override
     public void addBatch() throws SQLException
     {
-        appendBatchItem(new BatchItem(this.current));
+        addLogBatch();
         preparedStatement.addBatch();
     }
 
@@ -225,7 +240,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     public void setClob(int parameterIndex, Clob x) throws SQLException
     {
         if (x != null) {
-            Reader innerReader = setReaderParameter(parameterIndex, x.getCharacterStream());
+            Reader innerReader = setCurrentReaderParameter(parameterIndex, x.getCharacterStream());
             preparedStatement.setClob(parameterIndex, innerReader);
         }
         else {
@@ -238,14 +253,14 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setClob(int parameterIndex, Reader reader) throws SQLException
     {
-        Reader innerReader = setReaderParameter(parameterIndex, reader);
+        Reader innerReader = setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setClob(parameterIndex, innerReader);
     }
 
     @Override
     public void setClob(int parameterIndex, Reader reader, long length) throws SQLException
     {
-        Reader innerReader = setReaderParameter(parameterIndex, reader); // todo account for length
+        Reader innerReader = setCurrentReaderParameter(parameterIndex, reader); // todo account for length
         preparedStatement.setClob(parameterIndex, innerReader, length);
     }
 
