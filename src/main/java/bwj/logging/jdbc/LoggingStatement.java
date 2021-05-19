@@ -1,18 +1,19 @@
 package bwj.logging.jdbc;
 
+import java.io.Reader;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.text.NumberFormat;
-import java.util.TreeMap;
 import java.util.logging.Logger;
 //import org.apache.log4j.Logger;
 
 public class LoggingStatement implements Statement
 {
-    public static final TagUpdater.Renderer defaultRenderer = new TagUpdater.DefaultRenderer() {
+    public static final Renderer defaultRenderer = new TagUpdater.DefaultRenderer() {
         public void render(Object object, StringBuilder sb) {
             if (object instanceof Class) {
                 sb.append('\'').append(((Class)object).getName()).append('\'');
@@ -44,61 +45,22 @@ public class LoggingStatement implements Statement
         this.current.setParameter(index, value);
     }
 
+    /**
+     * Extracing a value from a Reader for logging modifies (i.e. emptys) the Reader.
+     * Thus this method returns a 'new reader' that is to be used in place of the original.
+     * @param index index
+     * @param value reader
+     * @return refreshed reader
+     */
+    protected Reader setReaderParameter(int index, Reader value) {
+        return this.current.setReaderParameter(index, value);
+    }
+
 
 
 
 
     protected static final NumberFormat numberFormat = NumberFormat.getNumberInstance();
-
-    private class BatchItem {
-        private TagUpdater.Renderer renderer;
-
-        private String sql = "";
-
-        private TreeMap<Integer, Object> parameters = null;
-
-        public BatchItem(TagUpdater.Renderer renderer) {
-            this.renderer = renderer;
-        }
-
-        public BatchItem(BatchItem that) {
-            this(that, that.sql);
-        }
-
-        public BatchItem(BatchItem that, String sql) {
-            this.sql = sql;
-            if (that.parameters != null) {
-                this.parameters = new TreeMap<Integer, Object>();
-                this.parameters.putAll(that.parameters);
-            }
-            if (that.renderer != null)
-                this.renderer = that.renderer;
-        }
-
-        public void setSQL(String sql) {
-            this.sql = sql;
-        }
-
-        public void setParameter(int index, Object parameter) {
-            if (this.parameters == null) {
-                if (parameter == null)
-                    return;
-                this.parameters = new TreeMap<Integer, Object>();
-            }
-            this.parameters.put(Integer.valueOf(index), parameter);
-        }
-
-        public void clearParameters() {
-            if (this.parameters != null)
-                this.parameters.clear();
-        }
-
-        public String toString() {
-            if (this.parameters == null || this.parameters.size() == 0)
-                return this.sql;
-            return TagUpdater.replace(this.sql, "?", this.parameters.values().iterator(), this.renderer);
-        }
-    }
 
 
     // TODO
@@ -122,7 +84,7 @@ public class LoggingStatement implements Statement
         this.current.setSQL(sql);
     }
 
-    public LoggingStatement(Statement statement, String sql, LoggingListener loggingListener, TagUpdater.Renderer renderer) {
+    public LoggingStatement(Statement statement, String sql, LoggingListener loggingListener, Renderer renderer) {
         this.statement = statement;
         this.loggingListener = loggingListener;
         this.current = new BatchItem(renderer);

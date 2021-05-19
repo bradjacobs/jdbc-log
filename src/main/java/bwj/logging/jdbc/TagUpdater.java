@@ -28,8 +28,4 @@ public abstract class TagUpdater
         sb.append(source.substring(lastIdx));
         return sb.toString();
     }
-
-    public static interface Renderer {
-        void render(Object param1Object, StringBuilder param1StringBuilder);
-    }
 }

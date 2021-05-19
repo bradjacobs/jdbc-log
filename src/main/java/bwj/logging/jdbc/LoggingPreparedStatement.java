@@ -33,16 +33,16 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         this.preparedStatement = preparedStatement;
     }
 
-    public LoggingPreparedStatement(PreparedStatement preparedStatement, String sql, LoggingListener loggingListener, TagUpdater.Renderer renderer)
+    public LoggingPreparedStatement(PreparedStatement preparedStatement, String sql, LoggingListener loggingListener, Renderer renderer)
     {
         super(preparedStatement, sql, loggingListener, renderer);
         this.preparedStatement = preparedStatement;
     }
 
-
     // some placeholder values
     private static final String BINARY_STREAM_VALUE_PLACEHOLDER = "{BinaryStream}";
     private static final String BLOB_VALUE_PLACEHOLDER = "{Blob}";
+    private static final String UNICODE_STREAM_PLACEHOLDER = "{UnicodeStream}";
 
 
     @Override
@@ -140,21 +140,21 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setBinaryStream(int parameterIndex, InputStream x) throws SQLException
     {
-        setCurrentParameter(parameterIndex, x);
+        setCurrentParameter(parameterIndex, BINARY_STREAM_VALUE_PLACEHOLDER);
         preparedStatement.setBinaryStream(parameterIndex, x);
     }
 
     @Override
     public void setBinaryStream(int parameterIndex, InputStream x, int length) throws SQLException
     {
-        setCurrentParameter(parameterIndex, x);
+        setCurrentParameter(parameterIndex, BINARY_STREAM_VALUE_PLACEHOLDER);
         preparedStatement.setBinaryStream(parameterIndex, x, length);
     }
 
     @Override
     public void setBinaryStream(int parameterIndex, InputStream x, long length) throws SQLException
     {
-        setCurrentParameter(parameterIndex, x);
+        setCurrentParameter(parameterIndex, BINARY_STREAM_VALUE_PLACEHOLDER);
         preparedStatement.setBinaryStream(parameterIndex, x, length);
     }
 
@@ -223,22 +223,29 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setClob(int parameterIndex, Clob x) throws SQLException
     {
-        setCurrentParameter(parameterIndex, x);
-        preparedStatement.setClob(parameterIndex, x);
+        if (x != null) {
+            Reader innerReader = setReaderParameter(parameterIndex, x.getCharacterStream());
+            preparedStatement.setClob(parameterIndex, innerReader);
+        }
+        else {
+            setCurrentParameter(parameterIndex, null);
+            preparedStatement.setClob(parameterIndex, x);
+
+        }
     }
 
     @Override
     public void setClob(int parameterIndex, Reader reader) throws SQLException
     {
-        setCurrentParameter(parameterIndex, reader);
-        preparedStatement.setClob(parameterIndex, reader);
+        Reader innerReader = setReaderParameter(parameterIndex, reader);
+        preparedStatement.setClob(parameterIndex, innerReader);
     }
 
     @Override
     public void setClob(int parameterIndex, Reader reader, long length) throws SQLException
     {
-        setCurrentParameter(parameterIndex, reader);
-        preparedStatement.setClob(parameterIndex, reader, length);
+        Reader innerReader = setReaderParameter(parameterIndex, reader); // todo account for length
+        preparedStatement.setClob(parameterIndex, innerReader, length);
     }
 
     @Override
@@ -441,7 +448,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Deprecated
     public void setUnicodeStream(int parameterIndex, InputStream x, int length) throws SQLException
     {
-        setCurrentParameter(parameterIndex, x);
+        setCurrentParameter(parameterIndex, UNICODE_STREAM_PLACEHOLDER);
         preparedStatement.setUnicodeStream(parameterIndex, x, length);
     }
 

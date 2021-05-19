@@ -30,7 +30,7 @@ public class LoggingCallableStatement extends LoggingPreparedStatement implement
         this.callableStatement = callableStatement;
     }
 
-    public LoggingCallableStatement(CallableStatement callableStatement, String sql, LoggingListener loggingListener, TagUpdater.Renderer renderer) {
+    public LoggingCallableStatement(CallableStatement callableStatement, String sql, LoggingListener loggingListener, Renderer renderer) {
         super(callableStatement, sql, loggingListener, renderer);
         this.callableStatement = callableStatement;
     }

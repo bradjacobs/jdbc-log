@@ -25,7 +25,7 @@ public class LoggingConnection implements Connection
 
     private final LoggingListener loggingListener;
 
-    private final TagUpdater.Renderer renderer;
+    private final Renderer renderer;
 
 
 
