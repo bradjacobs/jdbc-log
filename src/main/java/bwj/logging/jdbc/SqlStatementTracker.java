@@ -6,34 +6,27 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Map;
 
 class SqlStatementTracker
 {
-    private static final String TAG = "?";
-
-    private Renderer renderer = new DefaultRenderer();
-
     private String sql = "";
 
     private List<BatchItem> batchItems = null;
-    private SortedMap<Integer, Object> paramMap = null;
+    private Map<Integer, Object> paramMap = null;
 
 
     private boolean logTextReaderStreams = true;
 
     private static final String TEXT_CLOB_VALUE_PLACEHOLDER = "{TextClob}";
 
+    private TagFiller tagFiller = new TagFiller();
 
 
-    public SqlStatementTracker() {
-        this(new DefaultRenderer());
-    }
-
-    public SqlStatementTracker(Renderer renderer) {
-        this.renderer = renderer;
+    public SqlStatementTracker()
+    {
     }
 
     public void setSql(String sql)
@@ -52,7 +45,7 @@ class SqlStatementTracker
         if (this.batchItems == null) {
             this.batchItems = new ArrayList<>();
         }
-        this.batchItems.add(new BatchItem(sql, this.paramMap, this.renderer ));
+        this.batchItems.add(new BatchItem(sql, this.paramMap, this.tagFiller ));
     }
 
     public void clearBatch()
@@ -65,8 +58,9 @@ class SqlStatementTracker
 
 
     public String generateSql() {
-        return generateSql(this.sql, this.paramMap, this.renderer);
+        return tagFiller.replace(this.sql, this.paramMap);
     }
+
     public String generateBatchSql() {
         if (this.batchItems == null || this.batchItems.size() == 0) {
             return "";
@@ -79,13 +73,18 @@ class SqlStatementTracker
     }
 
 
-
     public void setParameter(int index, Object parameter) {
         if (this.paramMap == null) {
-            this.paramMap = new TreeMap<>();
+            this.paramMap = new HashMap<>();
         }
         this.paramMap.put(index, parameter);
     }
+
+    public void clearParameters() {
+        if (this.paramMap != null)
+            this.paramMap.clear();
+    }
+
 
     /**
      * If configured, this will allow logging of 'large' text param values.
@@ -120,17 +119,7 @@ class SqlStatementTracker
         }
     }
 
-    public void clearParameters() {
-        if (this.paramMap != null)
-            this.paramMap.clear();
-    }
 
-
-    private static String generateSql(String sql, SortedMap<Integer, Object> paramMap, Renderer renderer) {
-        if (paramMap == null || paramMap.size() == 0)
-            return sql;
-        return TagUpdater.replace(sql, TAG, paramMap.values().iterator(), renderer);
-    }
 
 
     /**
@@ -138,21 +127,21 @@ class SqlStatementTracker
      */
     protected static class BatchItem {
         private final String sql;
-        private final SortedMap<Integer, Object> paramMap;
-        private final Renderer renderer;
+        private final Map<Integer, Object> paramMap;
+        private final TagFiller tagFiller;
 
-        public BatchItem(String sql, SortedMap<Integer, Object> paramMap, Renderer renderer)
+        public BatchItem(String sql, Map<Integer, Object> paramMap, TagFiller tagFiller)
         {
             this.sql = sql;
             // batchItem makes it's own copy of the params so they don't get side-effected/modified.
-            this.paramMap = new TreeMap<>(paramMap);
-            this.renderer = renderer;
+            this.paramMap = new HashMap<>(paramMap);
+            this.tagFiller = tagFiller;
         }
 
-        public String generateSqlString() {
-            return generateSql(this.sql, this.paramMap, this.renderer);
+        public String generateSqlString()
+        {
+            return tagFiller.replace(this.sql, this.paramMap);
         }
-
     }
 
 }

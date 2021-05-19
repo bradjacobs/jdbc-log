@@ -33,7 +33,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         this.preparedStatement = preparedStatement;
     }
 
-    // some placeholder values
+    // some log placeholder values for certain types that will never try to actually 'log'.
     private static final String BINARY_STREAM_VALUE_PLACEHOLDER = "{BinaryStream}";
     private static final String BLOB_VALUE_PLACEHOLDER = "{Blob}";
     private static final String UNICODE_STREAM_PLACEHOLDER = "{UnicodeStream}";
@@ -220,6 +220,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setCharacterStream(int parameterIndex, Reader reader, int length) throws SQLException
     {
+        setCurrentParameter(parameterIndex, reader);
         preparedStatement.setCharacterStream(parameterIndex, reader, length);
     }
 
@@ -240,7 +241,6 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         else {
             setCurrentParameter(parameterIndex, null);
             preparedStatement.setClob(parameterIndex, x);
-
         }
     }
 
@@ -323,10 +323,10 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     }
 
     @Override
-    public void setNCharacterStream(int parameterIndex, Reader value, long length) throws SQLException
+    public void setNCharacterStream(int parameterIndex, Reader reader, long length) throws SQLException
     {
-        //         setCurrentParameter(parameterIndex, x);
-        preparedStatement.setNCharacterStream(parameterIndex, value, length);
+        setCurrentParameter(parameterIndex, reader);
+        preparedStatement.setNCharacterStream(parameterIndex, reader, length);
     }
 
     @Override

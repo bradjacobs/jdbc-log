@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 public class LoggingStatement implements Statement
 {
 
-
     protected void setAndLogCurrent(String sql) {
         sqlTracker.setSql(sql);
         logCurrent();
@@ -57,10 +56,6 @@ public class LoggingStatement implements Statement
 
 
 
-
-    protected static final NumberFormat numberFormat = NumberFormat.getNumberInstance();
-
-
     // TODO
     //private static final Logger logger = Logger.getLogger(LoggingStatement.class);
     private static final Logger logger = null;
@@ -76,16 +71,12 @@ public class LoggingStatement implements Statement
     public LoggingStatement(Statement statement, LoggingListener loggingListener) {
         this.statement = statement;
         this.loggingListener = loggingListener;
-//        this.sqlTracker = new BatchItem(defaultRenderer);
         this.sqlTracker = new SqlStatementTracker();
     }
 
     public LoggingStatement(Statement statement, String sql, LoggingListener loggingListener) {
         this.statement = statement;
-
-
         this.loggingListener = loggingListener;
-//        this.sqlTracker = new BatchItem(defaultRenderer);
         this.sqlTracker = new SqlStatementTracker();
         this.sqlTracker.setSql(sql);
     }
@@ -98,7 +89,6 @@ public class LoggingStatement implements Statement
         addLogBatch(sql);
         statement.addBatch(sql);
     }
-
 
     @Override
     public void cancel() throws SQLException
@@ -123,7 +113,6 @@ public class LoggingStatement implements Statement
     {
         statement.closeOnCompletion();
     }
-
 
     @Override
     public void clearBatch() throws SQLException
@@ -205,7 +194,7 @@ public class LoggingStatement implements Statement
     @Override
     public long[] executeLargeBatch() throws SQLException
     {
-        // todo
+        logAndClearBatch();
         return statement.executeLargeBatch();
     }
 
@@ -303,7 +292,6 @@ public class LoggingStatement implements Statement
     {
         return statement.getQueryTimeout();
     }
-
 
     @Override
     public ResultSet getResultSet() throws SQLException
