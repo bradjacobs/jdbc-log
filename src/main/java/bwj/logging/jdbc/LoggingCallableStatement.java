@@ -30,11 +30,6 @@ public class LoggingCallableStatement extends LoggingPreparedStatement implement
         this.callableStatement = callableStatement;
     }
 
-    public LoggingCallableStatement(CallableStatement callableStatement, String sql, LoggingListener loggingListener, Renderer renderer) {
-        super(callableStatement, sql, loggingListener, renderer);
-        this.callableStatement = callableStatement;
-    }
-
 
     @Override
     public void registerOutParameter(int parameterIndex, int sqlType) throws SQLException

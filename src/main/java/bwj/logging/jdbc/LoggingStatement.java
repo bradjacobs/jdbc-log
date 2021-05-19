@@ -69,6 +69,10 @@ public class LoggingStatement implements Statement
     protected SqlStatementTracker sqlTracker;
     private final LoggingListener loggingListener;
 
+
+
+
+
     public LoggingStatement(Statement statement, LoggingListener loggingListener) {
         this.statement = statement;
         this.loggingListener = loggingListener;
@@ -82,13 +86,6 @@ public class LoggingStatement implements Statement
 
         this.loggingListener = loggingListener;
 //        this.sqlTracker = new BatchItem(defaultRenderer);
-        this.sqlTracker = new SqlStatementTracker();
-        this.sqlTracker.setSql(sql);
-    }
-
-    public LoggingStatement(Statement statement, String sql, LoggingListener loggingListener, Renderer renderer) {
-        this.statement = statement;
-        this.loggingListener = loggingListener;
         this.sqlTracker = new SqlStatementTracker();
         this.sqlTracker.setSql(sql);
     }
@@ -240,6 +237,7 @@ public class LoggingStatement implements Statement
         return statement.executeLargeUpdate(sql, columnNames);
     }
 
+    // TODO fix - currently returns a 'normal' jdbc connection instead of a LoggingConnection.
     @Override
     public Connection getConnection() throws SQLException
     {

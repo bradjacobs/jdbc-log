@@ -33,12 +33,6 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         this.preparedStatement = preparedStatement;
     }
 
-    public LoggingPreparedStatement(PreparedStatement preparedStatement, String sql, LoggingListener loggingListener, Renderer renderer)
-    {
-        super(preparedStatement, sql, loggingListener, renderer);
-        this.preparedStatement = preparedStatement;
-    }
-
     // some placeholder values
     private static final String BINARY_STREAM_VALUE_PLACEHOLDER = "{BinaryStream}";
     private static final String BLOB_VALUE_PLACEHOLDER = "{Blob}";
