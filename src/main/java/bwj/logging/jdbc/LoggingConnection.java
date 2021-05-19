@@ -25,7 +25,6 @@ public class LoggingConnection implements Connection
 
     private final LoggingListener loggingListener;
 
-    private final Renderer renderer;
 
 
 
@@ -40,7 +39,7 @@ public class LoggingConnection implements Connection
 
         }
 
-        this.renderer = LoggingStatement.defaultRenderer;
+        //this.renderer = LoggingStatement.defaultRenderer;
     }
 
     //      public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {

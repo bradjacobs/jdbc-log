@@ -55,6 +55,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void addBatch() throws SQLException
     {
+        appendBatchItem(new BatchItem(this.current));
         preparedStatement.addBatch();
     }
 
@@ -329,7 +330,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setNString(int parameterIndex, String value) throws SQLException
     {
-        //setCurrentParameter(parameterIndex, x);
+        setCurrentParameter(parameterIndex, value);
         preparedStatement.setNString(parameterIndex, value);
     }
 

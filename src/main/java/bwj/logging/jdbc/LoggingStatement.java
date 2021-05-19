@@ -8,24 +8,39 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.text.NumberFormat;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Logger;
 //import org.apache.log4j.Logger;
 
 public class LoggingStatement implements Statement
 {
-    public static final Renderer defaultRenderer = new TagUpdater.DefaultRenderer() {
-        public void render(Object object, StringBuilder sb) {
-            if (object instanceof Class) {
-                sb.append('\'').append(((Class)object).getName()).append('\'');
-            } else if (object instanceof String || object instanceof java.util.Date) {
-                sb.append('\'').append(object).append('\'');
-            } else if (object instanceof Boolean) {
-                sb.append(((Boolean)object).booleanValue() ? 1 : 0);
-            } else {
-                super.render(object, sb);
-            }
-        }
-    };
+//    public static final Renderer defaultRenderer = new TagUpdater.DefaultRenderer() {
+//        public void render(Object object, StringBuilder sb) {
+//            if (object instanceof Class) {
+//                sb.append('\'').append(((Class)object).getName()).append('\'');
+//            } else if (object instanceof String || object instanceof java.util.Date) {
+//                sb.append('\'').append(object).append('\'');
+//            } else if (object instanceof Boolean) {
+//                sb.append((Boolean) object ? 1 : 0);
+//            } else {
+//                super.render(object, sb);
+//            }
+//        }
+//    };
+
+    private List<BatchItem> batchItems = new LinkedList<BatchItem>();
+
+    protected void appendBatchItem(BatchItem batchItem) {
+        this.batchItems.add(batchItem);
+    }
+    private void logAndClearBatch() {
+
+        System.out.println("******* LKGGING BATCH *******");
+
+        log(this.batchItems.toString());
+        this.batchItems = new LinkedList<BatchItem>();
+    }
 
 
     private void setAndLogCurrent(String sql) {
@@ -68,26 +83,28 @@ public class LoggingStatement implements Statement
     private static final Logger logger = null;
 
     private Statement statement;
-    private BatchItem current;
+    protected BatchItem current;
     private final LoggingListener loggingListener;
 
     public LoggingStatement(Statement statement, LoggingListener loggingListener) {
         this.statement = statement;
         this.loggingListener = loggingListener;
-        this.current = new BatchItem(defaultRenderer);
+//        this.current = new BatchItem(defaultRenderer);
+        this.current = new BatchItem();
     }
 
     public LoggingStatement(Statement statement, String sql, LoggingListener loggingListener) {
         this.statement = statement;
         this.loggingListener = loggingListener;
-        this.current = new BatchItem(defaultRenderer);
+//        this.current = new BatchItem(defaultRenderer);
+        this.current = new BatchItem();
         this.current.setSQL(sql);
     }
 
     public LoggingStatement(Statement statement, String sql, LoggingListener loggingListener, Renderer renderer) {
         this.statement = statement;
         this.loggingListener = loggingListener;
-        this.current = new BatchItem(renderer);
+        this.current = new BatchItem();
         this.current.setSQL(sql);
     }
 
@@ -251,18 +268,21 @@ public class LoggingStatement implements Statement
     @Override
     public void addBatch(String sql) throws SQLException
     {
+        appendBatchItem(new BatchItem(this.current, sql));
         statement.addBatch(sql);
     }
 
     @Override
     public void clearBatch() throws SQLException
     {
+        this.batchItems.clear();
         statement.clearBatch();
     }
 
     @Override
     public int[] executeBatch() throws SQLException
     {
+        logAndClearBatch();
         return statement.executeBatch();
     }
 

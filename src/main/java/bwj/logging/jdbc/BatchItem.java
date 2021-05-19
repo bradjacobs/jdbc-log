@@ -5,8 +5,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.sql.Clob;
-import java.sql.SQLException;
+
 import java.util.TreeMap;
 
 class BatchItem
@@ -22,6 +21,10 @@ class BatchItem
     private static final String CLOB_VALUE_PLACEHOLDER = "{Clob}";
     private static final String READER_PLACEHOLDER = "{Reader}";
 
+
+    public BatchItem() {
+        this.renderer = new DefaultRenderer();
+    }
 
 
     public BatchItem(Renderer renderer) {
@@ -40,8 +43,7 @@ class BatchItem
             this.parameters = new TreeMap<Integer, Object>();
             this.parameters.putAll(that.parameters);
         }
-        if (that.renderer != null)
-            this.renderer = that.renderer;
+        this.renderer = that.renderer;
     }
 
     public void setSQL(String sql) {
