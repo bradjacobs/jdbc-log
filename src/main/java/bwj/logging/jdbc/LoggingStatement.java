@@ -72,9 +72,6 @@ public class LoggingStatement implements Statement
     }
 
 
-
-
-
     protected static final NumberFormat numberFormat = NumberFormat.getNumberInstance();
 
 
@@ -95,6 +92,8 @@ public class LoggingStatement implements Statement
 
     public LoggingStatement(Statement statement, String sql, LoggingListener loggingListener) {
         this.statement = statement;
+
+
         this.loggingListener = loggingListener;
 //        this.current = new BatchItem(defaultRenderer);
         this.current = new BatchItem();
@@ -118,78 +117,18 @@ public class LoggingStatement implements Statement
     }
 
 
-
     @Override
-    public ResultSet executeQuery(String sql) throws SQLException
+    public void addBatch(String sql) throws SQLException
     {
-        return statement.executeQuery(sql);
+        appendBatchItem(new BatchItem(this.current, sql));
+        statement.addBatch(sql);
     }
 
-    @Override
-    public int executeUpdate(String sql) throws SQLException
-    {
-        setAndLogCurrent(sql);
-        return statement.executeUpdate(sql);
-    }
-
-    @Override
-    public void close() throws SQLException
-    {
-        statement.close();
-    }
-
-    @Override
-    public int getMaxFieldSize() throws SQLException
-    {
-        return statement.getMaxFieldSize();
-    }
-
-    @Override
-    public void setMaxFieldSize(int max) throws SQLException
-    {
-        statement.setMaxFieldSize(max);
-    }
-
-    @Override
-    public int getMaxRows() throws SQLException
-    {
-        return statement.getMaxRows();
-    }
-
-    @Override
-    public void setMaxRows(int max) throws SQLException
-    {
-        statement.setMaxRows(max);
-    }
-
-    @Override
-    public void setEscapeProcessing(boolean enable) throws SQLException
-    {
-        statement.setEscapeProcessing(enable);
-    }
-
-    @Override
-    public int getQueryTimeout() throws SQLException
-    {
-        return statement.getQueryTimeout();
-    }
-
-    @Override
-    public void setQueryTimeout(int seconds) throws SQLException
-    {
-        statement.setQueryTimeout(seconds);
-    }
 
     @Override
     public void cancel() throws SQLException
     {
         statement.cancel();
-    }
-
-    @Override
-    public SQLWarning getWarnings() throws SQLException
-    {
-        return statement.getWarnings();
     }
 
     @Override
@@ -199,78 +138,17 @@ public class LoggingStatement implements Statement
     }
 
     @Override
-    public void setCursorName(String name) throws SQLException
+    public void close() throws SQLException
     {
-        statement.setCursorName(name);
+        statement.close();
     }
 
     @Override
-    public boolean execute(String sql) throws SQLException
+    public void closeOnCompletion() throws SQLException
     {
-        setAndLogCurrent(sql);
-        return statement.execute(sql);
+        statement.closeOnCompletion();
     }
 
-    @Override
-    public ResultSet getResultSet() throws SQLException
-    {
-        return statement.getResultSet();
-    }
-
-    @Override
-    public int getUpdateCount() throws SQLException
-    {
-        return statement.getUpdateCount();
-    }
-
-    @Override
-    public boolean getMoreResults() throws SQLException
-    {
-        return statement.getMoreResults();
-    }
-
-    @Override
-    public void setFetchDirection(int direction) throws SQLException
-    {
-        statement.setFetchDirection(direction);
-    }
-
-    @Override
-    public int getFetchDirection() throws SQLException
-    {
-        return statement.getFetchDirection();
-    }
-
-    @Override
-    public void setFetchSize(int rows) throws SQLException
-    {
-        statement.setFetchSize(rows);
-    }
-
-    @Override
-    public int getFetchSize() throws SQLException
-    {
-        return statement.getFetchSize();
-    }
-
-    @Override
-    public int getResultSetConcurrency() throws SQLException
-    {
-        return statement.getResultSetConcurrency();
-    }
-
-    @Override
-    public int getResultSetType() throws SQLException
-    {
-        return statement.getResultSetType();
-    }
-
-    @Override
-    public void addBatch(String sql) throws SQLException
-    {
-        appendBatchItem(new BatchItem(this.current, sql));
-        statement.addBatch(sql);
-    }
 
     @Override
     public void clearBatch() throws SQLException
@@ -280,49 +158,10 @@ public class LoggingStatement implements Statement
     }
 
     @Override
-    public int[] executeBatch() throws SQLException
-    {
-        logAndClearBatch();
-        return statement.executeBatch();
-    }
-
-    @Override
-    public Connection getConnection() throws SQLException
-    {
-        return statement.getConnection();
-    }
-
-    @Override
-    public boolean getMoreResults(int current) throws SQLException
-    {
-        return statement.getMoreResults(current);
-    }
-
-    @Override
-    public ResultSet getGeneratedKeys() throws SQLException
-    {
-        return statement.getGeneratedKeys();
-    }
-
-    @Override
-    public int executeUpdate(String sql, int autoGeneratedKeys) throws SQLException
+    public boolean execute(String sql) throws SQLException
     {
         setAndLogCurrent(sql);
-        return statement.executeUpdate(sql, autoGeneratedKeys);
-    }
-
-    @Override
-    public int executeUpdate(String sql, int[] columnIndexes) throws SQLException
-    {
-        setAndLogCurrent(sql);
-        return statement.executeUpdate(sql, columnIndexes);
-    }
-
-    @Override
-    public int executeUpdate(String sql, String[] columnNames) throws SQLException
-    {
-        setAndLogCurrent(sql);
-        return statement.executeUpdate(sql, columnNames);
+        return statement.execute(sql);
     }
 
     @Override
@@ -347,57 +186,44 @@ public class LoggingStatement implements Statement
     }
 
     @Override
-    public int getResultSetHoldability() throws SQLException
+    public int[] executeBatch() throws SQLException
     {
-        return statement.getResultSetHoldability();
+        logAndClearBatch();
+        return statement.executeBatch();
     }
 
     @Override
-    public boolean isClosed() throws SQLException
+    public ResultSet executeQuery(String sql) throws SQLException
     {
-        return statement.isClosed();
+        return statement.executeQuery(sql);
     }
 
     @Override
-    public void setPoolable(boolean poolable) throws SQLException
+    public int executeUpdate(String sql) throws SQLException
     {
-        statement.setPoolable(poolable);
+        setAndLogCurrent(sql);
+        return statement.executeUpdate(sql);
     }
 
     @Override
-    public boolean isPoolable() throws SQLException
+    public int executeUpdate(String sql, int autoGeneratedKeys) throws SQLException
     {
-        return statement.isPoolable();
+        setAndLogCurrent(sql);
+        return statement.executeUpdate(sql, autoGeneratedKeys);
     }
 
     @Override
-    public void closeOnCompletion() throws SQLException
+    public int executeUpdate(String sql, int[] columnIndexes) throws SQLException
     {
-        statement.closeOnCompletion();
+        setAndLogCurrent(sql);
+        return statement.executeUpdate(sql, columnIndexes);
     }
 
     @Override
-    public boolean isCloseOnCompletion() throws SQLException
+    public int executeUpdate(String sql, String[] columnNames) throws SQLException
     {
-        return statement.isCloseOnCompletion();
-    }
-
-    @Override
-    public long getLargeUpdateCount() throws SQLException
-    {
-        return statement.getLargeUpdateCount();
-    }
-
-    @Override
-    public void setLargeMaxRows(long max) throws SQLException
-    {
-        statement.setLargeMaxRows(max);
-    }
-
-    @Override
-    public long getLargeMaxRows() throws SQLException
-    {
-        return statement.getLargeMaxRows();
+        setAndLogCurrent(sql);
+        return statement.executeUpdate(sql, columnNames);
     }
 
     @Override
@@ -432,6 +258,181 @@ public class LoggingStatement implements Statement
     {
         setAndLogCurrent(sql);
         return statement.executeLargeUpdate(sql, columnNames);
+    }
+
+    @Override
+    public Connection getConnection() throws SQLException
+    {
+        return statement.getConnection();
+    }
+
+    @Override
+    public ResultSet getGeneratedKeys() throws SQLException
+    {
+        return statement.getGeneratedKeys();
+    }
+
+    @Override
+    public int getFetchDirection() throws SQLException
+    {
+        return statement.getFetchDirection();
+    }
+
+    @Override
+    public int getFetchSize() throws SQLException
+    {
+        return statement.getFetchSize();
+    }
+
+    @Override
+    public long getLargeUpdateCount() throws SQLException
+    {
+        return statement.getLargeUpdateCount();
+    }
+
+    @Override
+    public int getMaxFieldSize() throws SQLException
+    {
+        return statement.getMaxFieldSize();
+    }
+
+    @Override
+    public void setMaxFieldSize(int max) throws SQLException
+    {
+        statement.setMaxFieldSize(max);
+    }
+
+    @Override
+    public int getMaxRows() throws SQLException
+    {
+        return statement.getMaxRows();
+    }
+
+    @Override
+    public boolean getMoreResults() throws SQLException
+    {
+        return statement.getMoreResults();
+    }
+
+    @Override
+    public boolean getMoreResults(int current) throws SQLException
+    {
+        return statement.getMoreResults(current);
+    }
+
+    @Override
+    public int getQueryTimeout() throws SQLException
+    {
+        return statement.getQueryTimeout();
+    }
+
+
+    @Override
+    public ResultSet getResultSet() throws SQLException
+    {
+        return statement.getResultSet();
+    }
+
+    @Override
+    public int getResultSetHoldability() throws SQLException
+    {
+        return statement.getResultSetHoldability();
+    }
+
+    @Override
+    public int getResultSetConcurrency() throws SQLException
+    {
+        return statement.getResultSetConcurrency();
+    }
+
+    @Override
+    public int getResultSetType() throws SQLException
+    {
+        return statement.getResultSetType();
+    }
+
+    @Override
+    public int getUpdateCount() throws SQLException
+    {
+        return statement.getUpdateCount();
+    }
+
+    @Override
+    public SQLWarning getWarnings() throws SQLException
+    {
+        return statement.getWarnings();
+    }
+
+    @Override
+    public boolean isClosed() throws SQLException
+    {
+        return statement.isClosed();
+    }
+
+    @Override
+    public boolean isCloseOnCompletion() throws SQLException
+    {
+        return statement.isCloseOnCompletion();
+    }
+
+    @Override
+    public boolean isPoolable() throws SQLException
+    {
+        return statement.isPoolable();
+    }
+
+    @Override
+    public void setCursorName(String name) throws SQLException
+    {
+        statement.setCursorName(name);
+    }
+
+    @Override
+    public void setEscapeProcessing(boolean enable) throws SQLException
+    {
+        statement.setEscapeProcessing(enable);
+    }
+
+    @Override
+    public void setFetchDirection(int direction) throws SQLException
+    {
+        statement.setFetchDirection(direction);
+    }
+
+    @Override
+    public void setFetchSize(int rows) throws SQLException
+    {
+        statement.setFetchSize(rows);
+    }
+
+    @Override
+    public long getLargeMaxRows() throws SQLException
+    {
+        return statement.getLargeMaxRows();
+    }
+
+    @Override
+    public void setLargeMaxRows(long max) throws SQLException
+    {
+        statement.setLargeMaxRows(max);
+    }
+
+    @Override
+    public void setMaxRows(int max) throws SQLException
+    {
+        statement.setMaxRows(max);
+    }
+
+    @Override
+    public void setPoolable(boolean poolable) throws SQLException
+    {
+        statement.setPoolable(poolable);
+    }
+
+    @Override
+    public void setQueryTimeout(int seconds) throws SQLException
+    {
+        statement.setQueryTimeout(seconds);
     }
 
     @Override
