@@ -52,8 +52,6 @@ class BatchItem
 
     public void setParameter(int index, Object parameter) {
         if (this.parameters == null) {
-            if (parameter == null)
-                return;
             this.parameters = new TreeMap<Integer, Object>();
         }
         this.parameters.put(index, parameter);
