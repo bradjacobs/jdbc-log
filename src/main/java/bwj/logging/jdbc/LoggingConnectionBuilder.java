@@ -2,34 +2,46 @@ package bwj.logging.jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class LoggingConnectionBuilder
 {
-    private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
-    private static final String DATE_PATTERN = "yyyy-MM-dd";
-    private static final String TIME_PATTERN = "yyyy-MM-dd";
-    private static final ZoneId DEFAULT_ZONE = ZoneId.of("UTC");
+    private static final ZoneId DEFAULT_ZONE = ZoneId.of("UTC");;
 
 
-    private static final String DEFAULT_TAG = "?";
-
-
-    private static final String tag = DEFAULT_TAG;  // ever deal w/ non-question marks?
-    private boolean logTextStreams = false;
+    private final ZoneId zoneId;
+    private static final String tag = "?";
+    private boolean logTextStreams = Boolean.FALSE;
 
     private final List<LoggingListener> loggingListeners = new ArrayList<>();
     private final Map<Class, SqlParamRenderer> renderOverrideMap = new HashMap<>();
-    private final Map<Class, SqlParamRenderer> finalRenderMap = new HashMap<>();
 
     private TagFiller tagFiller = null;
 
+    public LoggingConnectionBuilder()
+    {
+        this(DEFAULT_ZONE);
+    }
+
+
+    /**
+     * can Optionally supply a custom timezone
+     *    (used for rendering dates and timestamps to strings)
+     * Note: "ZoneId.systemDefault" can be used for the current local timezone.
+     * @param zoneId
+     */
+    public LoggingConnectionBuilder(ZoneId zoneId)
+    {
+        // if explicity passed in a null, change to default
+        if (zoneId == null) {
+            zoneId = DEFAULT_ZONE;
+        }
+        this.zoneId = zoneId;
+    }
 
     public LoggingConnectionBuilder withLogListener(LoggingListener logListener) {
         loggingListeners.add(logListener);
@@ -43,57 +55,85 @@ public class LoggingConnectionBuilder
 
     // todo - begin
     //   this is a all a little kludgy clunky
-    public LoggingConnectionBuilder withDatesAsDefaultStrings() {
-        return
-            withLogStringTimestamp(DATE_TIME_PATTERN)
-            .withLogStringDate(DATE_PATTERN)
-            .withLogStringTime(TIME_PATTERN);
-    }
 
-
-    public LoggingConnectionBuilder withLogNumericTimestamp() {
-        renderOverrideMap.put(java.sql.Timestamp.class, new ChronoNumericParamRenderer());
-        return this;
-    }
-    public LoggingConnectionBuilder withLogStringTimestamp(String pattern) {
-        return this.withLogStringTimestamp(pattern, DEFAULT_ZONE);
-    }
-    public LoggingConnectionBuilder withLogStringTimestamp(String pattern, ZoneId zoneId) {
-        renderOverrideMap.put(java.sql.Timestamp.class, new ChronoStringParamRenderer(pattern, zoneId));
+    /**
+     * Sets the date/time class with default string pattern output
+     *  java.sql.Timestamp -> yyyy-MM-dd HH:mm:ss
+     *  java.sql.Date -> yyyy-MM-dd
+     *  java.sql.Time -> HH:mm:ss
+     * @return
+     */
+    public LoggingConnectionBuilder withChronoDefaultStrings() {
+        renderOverrideMap.putAll(DefaultSqlParamRendererFactory.defaultChronoStringRenderers(this.zoneId));
         return this;
     }
 
-    public LoggingConnectionBuilder withLogNumericDate() {
-        renderOverrideMap.put(java.sql.Date.class, new ChronoNumericParamRenderer());
-        return this;
-    }
-    public LoggingConnectionBuilder withLogStringDate(String pattern) {
-        return this.withLogStringDate(pattern, DEFAULT_ZONE);
-    }
-    public LoggingConnectionBuilder withLogStringDate(String pattern, ZoneId zoneId) {
-        renderOverrideMap.put(java.sql.Date.class, new ChronoStringParamRenderer(pattern, zoneId));
+    /**
+     * Custom string output for java.sql.Timestamp classes
+     * @param pattern
+     * @return
+     */
+    public LoggingConnectionBuilder withTimestampOnlyCustomString(String pattern) {
+        renderOverrideMap.putAll(DefaultSqlParamRendererFactory.customTimestampString(pattern, this.zoneId));
         return this;
     }
 
-    public LoggingConnectionBuilder withLogNumericTime() {
-        renderOverrideMap.put(java.sql.Time.class, new ChronoNumericParamRenderer());
+    /**
+     * Custom string output for java.sql.Date classes
+     * @param pattern
+     * @return
+     */
+    public LoggingConnectionBuilder withDateOnlyCustomString(String pattern) {
+        renderOverrideMap.putAll(DefaultSqlParamRendererFactory.customDateString(pattern, this.zoneId));
         return this;
     }
-    public LoggingConnectionBuilder withLogStringTime(String pattern) {
-        return this.withLogStringTime(pattern, DEFAULT_ZONE);
+
+    /**
+     * Custom string output for java.sql.Time classes
+     * @param pattern
+     * @return
+     */
+    public LoggingConnectionBuilder withTimeOnlyCustomString(String pattern) {
+        renderOverrideMap.putAll(DefaultSqlParamRendererFactory.customTimeString(pattern, this.zoneId));
+        return this;
     }
-    public LoggingConnectionBuilder withLogStringTime(String pattern, ZoneId zoneId) {
-        renderOverrideMap.put(java.sql.Time.class, new ChronoStringParamRenderer(pattern, zoneId));
+
+
+
+    public LoggingConnectionBuilder withChronoDefaultNumerics() {
+        renderOverrideMap.putAll(DefaultSqlParamRendererFactory.defaultChronoNumericRenderers());
+        return this;
+    }
+
+    /**
+     * Apply ParamRender for all the date/time types
+     * @param paramRenderer
+     * @return
+     */
+    public LoggingConnectionBuilder withChronoParamRenderer(SqlParamRenderer paramRenderer) {
+        if (paramRenderer != null) {
+            for (Class clz : DefaultSqlParamRendererFactory.getDateTimeClasses()) {
+                renderOverrideMap.put(clz, paramRenderer);
+            }
+        }
+        return this;
+    }
+
+    public LoggingConnectionBuilder withParamRenderer(Class clazz, SqlParamRenderer paramRenderer) {
+        if (clazz != null && paramRenderer != null) {
+            renderOverrideMap.put(clazz, paramRenderer);
+        }
         return this;
     }
     // todo  end
+
 
 
     public LoggingConnection build(Connection connection) {
         if (connection == null) {
             throw new IllegalArgumentException("Connection cannot be null.");
         }
-        if (this.finalRenderMap.isEmpty()) {
+        if (this.tagFiller == null) {
             initializeFinalRenderMap(connection);
         }
 
@@ -106,8 +146,8 @@ public class LoggingConnectionBuilder
 
     private void initializeFinalRenderMap(Connection connection)
     {
-        synchronized (this.finalRenderMap) {
-            if (this.finalRenderMap.isEmpty())
+        synchronized (this) {
+            if (this.tagFiller == null)
             {
                 // get the db provider type if possbile
                 String dbProductName = null;
@@ -118,13 +158,13 @@ public class LoggingConnectionBuilder
                     /* ignore */
                 }
 
-                Map<Class, SqlParamRenderer> defaultMap = DefaultSqlParamRendererFactory.createDefaultMap(dbProductName);
-                this.finalRenderMap.putAll(defaultMap);
+                // create initial map w/ default values
+                Map<Class, SqlParamRenderer> paramRenderMap = DefaultSqlParamRendererFactory.createDefaultMap(dbProductName, this.zoneId);
 
-                // add overrides over any existing default entries (if applicable)
-                this.finalRenderMap.putAll(renderOverrideMap);
+                // add overrides (that can overrule an existing map entries)
+                paramRenderMap.putAll(renderOverrideMap);
 
-                this.tagFiller = new TagFiller(DEFAULT_TAG, finalRenderMap);
+                this.tagFiller = new TagFiller(tag, paramRenderMap);
             }
         }
     }

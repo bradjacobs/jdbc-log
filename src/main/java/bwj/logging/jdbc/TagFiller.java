@@ -25,8 +25,9 @@ public class TagFiller
         if (paramRenderMap == null) {
             paramRenderMap = Collections.emptyMap();
         }
-        this.paramRenderMap = paramRenderMap;
+        this.paramRenderMap = Collections.unmodifiableMap(paramRenderMap);
     }
+
 
     public String replace(String source, Map<Integer, Object> paramMap)
     {
@@ -72,18 +73,32 @@ public class TagFiller
 
     public void appendValue(Object object, StringBuilder sb)
     {
-        SqlParamRenderer paramRenderer = null;
-        if (object != null) {
-            paramRenderer = paramRenderMap.get(object.getClass());
-        }
-
-        if (paramRenderer == null) {
-            paramRenderer = DEFAULT_PARAM_RENDERER;
-        }
+        SqlParamRenderer paramRenderer = fetchParamRenderer(object);
 
         // todo - fix type checking
         paramRenderer.appendParamValue(object, sb);
+    }
 
+
+    private SqlParamRenderer fetchParamRenderer(Object object) {
+        if (object == null) {
+            return DEFAULT_PARAM_RENDERER;
+        }
+
+        // try quick way first if have exact class match
+        SqlParamRenderer renderer = paramRenderMap.get(object.getClass());
+        if (renderer != null) {
+            return renderer;
+        }
+
+        // loop thru the entries to account for any 'inheritence' matches.
+        for (Map.Entry<Class, SqlParamRenderer> entry : paramRenderMap.entrySet())
+        {
+            if (entry.getKey().isInstance(object)) {
+                return entry.getValue();
+            }
+        }
+        return DEFAULT_PARAM_RENDERER;
     }
 
 
