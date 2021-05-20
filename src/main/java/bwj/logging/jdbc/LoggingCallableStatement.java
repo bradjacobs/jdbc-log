@@ -28,12 +28,10 @@ public class LoggingCallableStatement extends LoggingPreparedStatement implement
 
     public LoggingCallableStatement(
         CallableStatement callableStatement,
-        String sql,
         List<LoggingListener> loggingListeners,
-        TagFiller tagFiller,
-        boolean logTextStreams)
+        SqlStatementTracker sqlStatementTracker)
     {
-        super(callableStatement, sql, loggingListeners, tagFiller, logTextStreams);
+        super(callableStatement, loggingListeners, sqlStatementTracker);
         this.callableStatement = callableStatement;
     }
 

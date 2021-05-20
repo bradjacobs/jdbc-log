@@ -70,25 +70,12 @@ public class LoggingStatement implements Statement
 
 
 
-
-
-    public LoggingStatement(Statement statement, List<LoggingListener> loggingListeners)
-    {
-        this(statement, loggingListeners, new SqlStatementTracker());
-    }
-
-    protected LoggingStatement(Statement statement, List<LoggingListener> loggingListeners, SqlStatementTracker sqlStatementTracker)
+    public LoggingStatement(Statement statement, List<LoggingListener> loggingListeners, SqlStatementTracker sqlStatementTracker)
     {
         this.statement = statement;
         this.loggingListeners = loggingListeners;
         this.sqlTracker = sqlStatementTracker;
     }
-
-//    public LoggingStatement(Statement statement, String sql, LoggingListener loggingListener) {
-//        this.statement = statement;
-//        this.loggingListener = loggingListener;
-//        this.sqlTracker = new SqlStatementTracker(sql);
-//    }
 
 
 

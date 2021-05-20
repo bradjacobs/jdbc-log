@@ -30,12 +30,10 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
 
     public LoggingPreparedStatement(
         PreparedStatement preparedStatement,
-        String sql,
         List<LoggingListener> loggingListeners,
-        TagFiller tagFiller,
-        boolean logTextStreams)
+        SqlStatementTracker sqlStatementTracker)
     {
-        super(preparedStatement, loggingListeners, new SqlStatementTracker(sql, tagFiller, logTextStreams));
+        super(preparedStatement, loggingListeners, sqlStatementTracker);
         this.preparedStatement = preparedStatement;
     }
 
@@ -43,14 +41,21 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     private static final String BINARY_STREAM_VALUE_PLACEHOLDER = "{BinaryStream}";
     private static final String BLOB_VALUE_PLACEHOLDER = "{Blob}";
     private static final String UNICODE_STREAM_PLACEHOLDER = "{UnicodeStream}";
+    private static final String TEXT_CLOB_VALUE_PLACEHOLDER = "{TextClob}";
+
 
 
     protected void setCurrentParameter(int index, Object value) {
         this.sqlTracker.setParameter(index, value);
     }
-
     protected Reader setCurrentReaderParameter(int index, Reader value) {
-        return this.sqlTracker.setReaderParameter(index, value);
+        if (sqlTracker.canLogReaderStreams()) {
+            return this.sqlTracker.setReaderParameter(index, value);
+        }
+        else {
+            setCurrentParameter(index, TEXT_CLOB_VALUE_PLACEHOLDER);
+            return value;
+        }
     }
     protected void clearLogParameters() {
         sqlTracker.clearParameters();

@@ -41,15 +41,18 @@ public class LoggingConnection implements Connection
 
     private Statement logWrap(Statement statement)
     {
-        return new LoggingStatement(statement, logListeners);
+        SqlStatementTracker sqlStatementTracker = new SqlStatementTracker();
+        return new LoggingStatement(statement, logListeners, sqlStatementTracker);
     }
     private PreparedStatement logWrap(PreparedStatement preparedStatement, String sql)
     {
-        return new LoggingPreparedStatement(preparedStatement, sql, logListeners, tagFiller, logTextStreams);
+        SqlStatementTracker sqlStatementTracker = new SqlStatementTracker(sql, tagFiller, logTextStreams);
+        return new LoggingPreparedStatement(preparedStatement, logListeners, sqlStatementTracker);
     }
     private CallableStatement logWrap(CallableStatement callableStatement, String sql)
     {
-        return new LoggingCallableStatement(callableStatement, sql, logListeners, tagFiller, logTextStreams);
+        SqlStatementTracker sqlStatementTracker = new SqlStatementTracker(sql, tagFiller, logTextStreams);
+        return new LoggingCallableStatement(callableStatement, logListeners, sqlStatementTracker);
     }
 
 

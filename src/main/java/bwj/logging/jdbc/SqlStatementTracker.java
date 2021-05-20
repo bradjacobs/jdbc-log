@@ -19,8 +19,6 @@ class SqlStatementTracker
 
 
 
-    private static final String TEXT_CLOB_VALUE_PLACEHOLDER = "{TextClob}";
-
     private final TagFiller tagFiller;
     private final boolean logTextReaderStreams;
 
@@ -37,6 +35,11 @@ class SqlStatementTracker
         this.tagFiller = tagFiller;
         this.logTextReaderStreams = logTextStreams;
     }
+
+    public boolean canLogReaderStreams() {
+        return logTextReaderStreams;
+    }
+
 
     public void setSql(String sql)
     {
@@ -108,7 +111,7 @@ class SqlStatementTracker
      */
     public Reader setReaderParameter(int index, Reader parameter) {
         if (! logTextReaderStreams) {
-            this.setParameter(index, TEXT_CLOB_VALUE_PLACEHOLDER);
+            this.setParameter(index, "_{text clob}_");
             return parameter;
         }
         else if (parameter == null) {
