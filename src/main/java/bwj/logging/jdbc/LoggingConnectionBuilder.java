@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class LoggingConnectionBuilder
 {
-    private static final ZoneId DEFAULT_ZONE = ZoneId.of("UTC");;
+    private static final ZoneId DEFAULT_ZONE = DefaultSqlParamRendererFactory.DEFAULT_ZONE;
 
 
     private final ZoneId zoneId;
@@ -36,7 +36,7 @@ public class LoggingConnectionBuilder
      */
     public LoggingConnectionBuilder(ZoneId zoneId)
     {
-        // if explicity passed in a null, change to default
+        // if explicitly passed in a null, change to default
         if (zoneId == null) {
             zoneId = DEFAULT_ZONE;
         }
@@ -155,13 +155,14 @@ public class LoggingConnectionBuilder
                     dbProductName = connection.getMetaData().getDatabaseProductName();
                 }
                 catch (SQLException e) {
+                    // todo: should log error
                     /* ignore */
                 }
 
                 // create initial map w/ default values
                 Map<Class, SqlParamRenderer> paramRenderMap = DefaultSqlParamRendererFactory.createDefaultMap(dbProductName, this.zoneId);
 
-                // add overrides (that can overrule an existing map entries)
+                // add overrides (that can overrule any existing map entries)
                 paramRenderMap.putAll(renderOverrideMap);
 
                 this.tagFiller = new TagFiller(tag, paramRenderMap);

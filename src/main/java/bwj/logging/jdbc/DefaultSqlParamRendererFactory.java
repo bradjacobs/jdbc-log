@@ -78,7 +78,6 @@ public class DefaultSqlParamRendererFactory
 
 
 
-
     public static Map<Class,SqlParamRenderer> defaultChronoNumericRenderers()
     {
         Map<Class,SqlParamRenderer> resultMap = new HashMap<>();
@@ -124,7 +123,7 @@ public class DefaultSqlParamRendererFactory
 
     // This is __NOT__ a complete list by any means!
     //   values in thie enum class only have meaning if there are special param renderer types defined above.
-    private static enum DatabaseType
+    private enum DatabaseType
     {
         MYSQL,
         HSQL,
@@ -211,7 +210,6 @@ public class DefaultSqlParamRendererFactory
             sb.append(", 'YYYY-MM-DD HH24:MI:SS')");
         }
     }
-
 
 
 }

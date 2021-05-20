@@ -467,6 +467,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setSQLXML(int parameterIndex, SQLXML xmlObject) throws SQLException
     {
+        // todo
         setCurrentParameter(parameterIndex, xmlObject);
         preparedStatement.setSQLXML(parameterIndex, xmlObject);
     }

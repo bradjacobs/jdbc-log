@@ -13,8 +13,9 @@ import java.util.logging.Logger;
 
 public class MyDataSource implements DataSource
 {
-    private DataSource dataSource;
-    private final LoggingListener loggingListener = null;
+    private final DataSource dataSource;
+
+    private boolean loggingConnectionEnabled = true;
 
     private final LoggingConnectionBuilder loggingConnectionBuilder;
 
@@ -32,22 +33,26 @@ public class MyDataSource implements DataSource
 
     private static LoggingConnectionBuilder createDefaultLoggingConnectionBuilder()
     {
-        LoggingConnectionBuilder loggingConnectionBuilder = new LoggingConnectionBuilder();
-        loggingConnectionBuilder.setLogTextStreams(false);
-        return loggingConnectionBuilder;
+        return new LoggingConnectionBuilder();
     }
 
 
     public Connection getConnection() throws SQLException
     {
-        Connection internalConnection = dataSource.getConnection();
-        return loggingConnectionBuilder.build(internalConnection);
+        Connection innerConnection = dataSource.getConnection();
+        if (!loggingConnectionEnabled) {
+            return innerConnection;
+        }
+        return loggingConnectionBuilder.build(innerConnection);
     }
 
     public Connection getConnection(String username, String password) throws SQLException
     {
-        Connection internalConnection = dataSource.getConnection(username, password);
-        return loggingConnectionBuilder.build(internalConnection);
+        Connection innerConnection = dataSource.getConnection(username, password);
+        if (!loggingConnectionEnabled) {
+            return innerConnection;
+        }
+        return loggingConnectionBuilder.build(innerConnection);
     }
 
 

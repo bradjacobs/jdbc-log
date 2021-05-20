@@ -23,9 +23,11 @@ public class TagFiller
         this.tag = tag;
 
         if (paramRenderMap == null) {
-            paramRenderMap = Collections.emptyMap();
+            this.paramRenderMap = Collections.emptyMap();
         }
-        this.paramRenderMap = Collections.unmodifiableMap(paramRenderMap);
+        else {
+            this.paramRenderMap = Collections.unmodifiableMap(paramRenderMap);
+        }
     }
 
 
