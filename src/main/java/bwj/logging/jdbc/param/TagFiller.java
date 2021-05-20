@@ -1,4 +1,6 @@
-package bwj.logging.jdbc;
+package bwj.logging.jdbc.param;
+
+import bwj.logging.jdbc.param.SqlParamRenderer;
 
 import java.util.Collections;
 import java.util.Map;

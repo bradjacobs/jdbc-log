@@ -1,5 +1,9 @@
 package bwj.logging.jdbc;
 
+import bwj.logging.jdbc.param.DefaultSqlParamRendererFactory;
+import bwj.logging.jdbc.param.SqlParamRenderer;
+import bwj.logging.jdbc.param.TagFiller;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.ZoneId;

@@ -1,5 +1,7 @@
 package bwj.logging.jdbc;
 
+import bwj.logging.jdbc.param.TagFiller;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

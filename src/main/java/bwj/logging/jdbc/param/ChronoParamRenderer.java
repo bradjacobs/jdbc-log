@@ -1,4 +1,4 @@
-package bwj.logging.jdbc;
+package bwj.logging.jdbc.param;
 
 import java.util.Date;
 

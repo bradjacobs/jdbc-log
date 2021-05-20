@@ -1,4 +1,4 @@
-package bwj.logging.jdbc;
+package bwj.logging.jdbc.param;
 
 import org.apache.commons.lang.StringUtils;
 

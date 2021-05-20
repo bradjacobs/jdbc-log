@@ -1,5 +1,7 @@
 package bwj.logging.jdbc;
 
+import bwj.logging.jdbc.param.TagFiller;
+
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
