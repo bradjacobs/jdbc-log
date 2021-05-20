@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,7 +111,7 @@ public class LoggingConnectionBuilder
      * @param paramRenderer
      * @return
      */
-    public LoggingConnectionBuilder withChronoParamRenderer(SqlParamRenderer paramRenderer) {
+    public <T extends Date> LoggingConnectionBuilder withChronoParamRenderer(SqlParamRenderer<T> paramRenderer) {
         if (paramRenderer != null) {
             for (Class clz : DefaultSqlParamRendererFactory.getDateTimeClasses()) {
                 renderOverrideMap.put(clz, paramRenderer);
@@ -119,7 +120,7 @@ public class LoggingConnectionBuilder
         return this;
     }
 
-    public LoggingConnectionBuilder withParamRenderer(Class clazz, SqlParamRenderer paramRenderer) {
+    public <T> LoggingConnectionBuilder withParamRenderer(Class<T> clazz, SqlParamRenderer<T> paramRenderer) {
         if (clazz != null && paramRenderer != null) {
             renderOverrideMap.put(clazz, paramRenderer);
         }

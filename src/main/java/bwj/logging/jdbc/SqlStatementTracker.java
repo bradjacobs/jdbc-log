@@ -31,6 +31,7 @@ class SqlStatementTracker
         this.logTextReaderStreams = logTextStreams;
     }
 
+    // todo - fix name
     public boolean canLogReaderStreams() {
         return logTextReaderStreams;
     }

@@ -176,16 +176,14 @@ public class DefaultSqlParamRendererFactory
 
 
 
-    private static class StringParamRenderer implements SqlParamRenderer<String>
-    {
+    private static class StringParamRenderer implements SqlParamRenderer<String> {
         @Override
         public void appendParamValue(String value, StringBuilder sb) {
             sb.append('\'').append(value).append('\'');
         }
     }
 
-    private static class BooleanParamRenderer implements SqlParamRenderer<Boolean>
-    {
+    private static class BooleanParamRenderer implements SqlParamRenderer<Boolean> {
         @Override
         public void appendParamValue(Boolean value, StringBuilder sb) {
             sb.append( (value ? 1 : 0) );

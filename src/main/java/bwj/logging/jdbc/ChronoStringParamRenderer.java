@@ -7,7 +7,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-public class ChronoStringParamRenderer implements SqlParamRenderer<Date>
+public class ChronoStringParamRenderer<T extends Date> implements ChronoParamRenderer<T>
 {
     private static final ZoneId DEFAULT_ZONE = DefaultSqlParamRendererFactory.DEFAULT_ZONE;
     protected final DateTimeFormatter formatter;
@@ -24,7 +24,7 @@ public class ChronoStringParamRenderer implements SqlParamRenderer<Date>
     }
 
     @Override
-    public void appendParamValue(Date value, StringBuilder sb)
+    public void appendParamValue(T value, StringBuilder sb)
     {
         sb.append('\'');
         sb.append(formatter.format(Instant.ofEpochMilli(value.getTime())));
