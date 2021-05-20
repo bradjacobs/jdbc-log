@@ -118,7 +118,7 @@ public class LoggingConnectionBuilder
                     /* ignore */
                 }
 
-                Map<Class, SqlParamRenderer> defaultMap = createDefaultMap(dbProductName);
+                Map<Class, SqlParamRenderer> defaultMap = DefaultSqlParamRendererFactory.createDefaultMap(dbProductName);
                 this.finalRenderMap.putAll(defaultMap);
 
                 // add overrides over any existing default entries (if applicable)
@@ -126,84 +126,6 @@ public class LoggingConnectionBuilder
 
                 this.tagFiller = new TagFiller(DEFAULT_TAG, finalRenderMap);
             }
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-    private static final SqlParamRenderer DEFAULT_STRING_RENDERER = (value, sb) -> sb.append('\'').append(value).append('\'');
-    private static final SqlParamRenderer DEFAULT_BOOLEAN_RENDERER = (SqlParamRenderer<Boolean>) (value, sb) -> sb.append( (value ? 1 : 0) );
-
-    private Map<Class, SqlParamRenderer> createDefaultMap(String dbProductName)
-    {
-        Map<Class,SqlParamRenderer> resultMap = new HashMap<>();
-        resultMap.put(String.class, DEFAULT_STRING_RENDERER);
-        resultMap.put(Boolean.class, DEFAULT_BOOLEAN_RENDERER);
-
-        // for default have the date/time values just render as a numeric utc/epoch value.
-        //
-        resultMap.put(java.sql.Timestamp.class, new ChronoNumericParamRenderer());
-        resultMap.put(java.sql.Date.class, new ChronoNumericParamRenderer());
-        resultMap.put(java.sql.Time.class, new ChronoNumericParamRenderer());
-
-        if (dbProductName == null) {
-            return resultMap;
-        }
-
-
-        // if we "know" that certain vendors handle certain types specially, they could be added below
-        //   so don't have to be explitly set in the Builder.
-        //
-        // This is primarily for the different handling of "datetime/timestamp/date/time" types.
-        //      PROOF OF CONCEPT
-        // (i.e. very unlikely the section below would ever be considered 'complete')
-
-        if (dbProductName.toUpperCase().contains("MYSQL")) {
-
-        }
-        else if (dbProductName.toUpperCase().contains("ORACLE")) {
-            resultMap.put(java.sql.Timestamp.class, DEFAULT_ORACLE_CHRONO_PARAM_RENDERER);
-            resultMap.put(java.sql.Date.class, DEFAULT_ORACLE_CHRONO_PARAM_RENDERER);
-            resultMap.put(java.sql.Time.class, DEFAULT_ORACLE_CHRONO_PARAM_RENDERER);
-        }
-        else if (dbProductName.toUpperCase().contains("HSQL")) {
-
-        }
-        else if (dbProductName.toUpperCase().contains("SQLITE")) {
-
-        }
-        // etc, etc.
-
-        return resultMap;
-    }
-
-
-
-    //  GUESSING!
-    //    (b/c don't have oracle db to play with)
-    private static final SqlParamRenderer DEFAULT_ORACLE_CHRONO_PARAM_RENDERER = new OracleChronoStringParamRenderer();
-
-    static class OracleChronoStringParamRenderer extends ChronoStringParamRenderer
-    {
-        public OracleChronoStringParamRenderer() {
-            super(DATE_TIME_PATTERN, DEFAULT_ZONE);
-        }
-
-        @Override
-        public void appendParamValue(Date value, StringBuilder sb)
-        {
-            sb.append("to_date(");
-            sb.append('\'');
-            sb.append(formatter.format(Instant.ofEpochMilli(value.getTime())));
-            sb.append('\'');
-            sb.append(", 'YYYY-MM-DD HH24:MI:SS')");
         }
     }
 
