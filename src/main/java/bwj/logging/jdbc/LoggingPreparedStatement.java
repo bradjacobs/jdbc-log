@@ -38,10 +38,11 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     }
 
     // some log placeholder values for certain types that will never try to actually 'log'.
-    private static final String BINARY_STREAM_VALUE_PLACEHOLDER = "{BinaryStream}";
-    private static final String BLOB_VALUE_PLACEHOLDER = "{Blob}";
-    private static final String UNICODE_STREAM_PLACEHOLDER = "{UnicodeStream}";
-    private static final String TEXT_CLOB_VALUE_PLACEHOLDER = "{TextClob}";
+    private static final String BINARY_STREAM_VALUE_PLACEHOLDER = "{_BINARYSTREAM_}";
+    private static final String BLOB_VALUE_PLACEHOLDER = "{_BLOB_}";
+    private static final String UNICODE_STREAM_PLACEHOLDER = "{_UNICODESTREAM_}";
+    private static final String BYTES_VALUE_PLACEHOLDER = "{_BYTES_}";
+    private static final String TEXT_CLOB_VALUE_PLACEHOLDER = "{_CLOB_}";
 
 
 
@@ -217,28 +218,28 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setBytes(int parameterIndex, byte[] x) throws SQLException
     {
-        setCurrentParameter(parameterIndex, x);
+        setCurrentParameter(parameterIndex, BYTES_VALUE_PLACEHOLDER);
         preparedStatement.setBytes(parameterIndex, x);
     }
 
     @Override
     public void setCharacterStream(int parameterIndex, Reader reader) throws SQLException
     {
-        setCurrentParameter(parameterIndex, reader);
+        setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setCharacterStream(parameterIndex, reader);
     }
 
     @Override
     public void setCharacterStream(int parameterIndex, Reader reader, int length) throws SQLException
     {
-        setCurrentParameter(parameterIndex, reader);
+        setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setCharacterStream(parameterIndex, reader, length);
     }
 
     @Override
     public void setCharacterStream(int parameterIndex, Reader reader, long length) throws SQLException
     {
-        setCurrentParameter(parameterIndex, reader);
+        setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setCharacterStream(parameterIndex, reader, length);
     }
 
@@ -313,37 +314,43 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     }
 
     @Override
-    public void setNCharacterStream(int parameterIndex, Reader value) throws SQLException
+    public void setNCharacterStream(int parameterIndex, Reader reader) throws SQLException
     {
-        setCurrentParameter(parameterIndex, value);
-        preparedStatement.setNCharacterStream(parameterIndex, value);
+        setCurrentReaderParameter(parameterIndex, reader);
+        preparedStatement.setNCharacterStream(parameterIndex, reader);
     }
 
     @Override
-    public void setNClob(int parameterIndex, NClob value) throws SQLException
+    public void setNClob(int parameterIndex, NClob x) throws SQLException
     {
-        setCurrentParameter(parameterIndex, value);
-        preparedStatement.setNClob(parameterIndex, value);
+        if (x != null) {
+            Reader innerReader = setCurrentReaderParameter(parameterIndex, x.getCharacterStream());
+            preparedStatement.setNClob(parameterIndex, innerReader);
+        }
+        else {
+            setCurrentParameter(parameterIndex, null);
+            preparedStatement.setNClob(parameterIndex, x);
+        }
     }
 
     @Override
     public void setNClob(int parameterIndex, Reader reader) throws SQLException
     {
-        setCurrentParameter(parameterIndex, reader);
+        setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setNClob(parameterIndex, reader);
     }
 
     @Override
     public void setNCharacterStream(int parameterIndex, Reader reader, long length) throws SQLException
     {
-        setCurrentParameter(parameterIndex, reader);
+        setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setNCharacterStream(parameterIndex, reader, length);
     }
 
     @Override
     public void setNClob(int parameterIndex, Reader reader, long length) throws SQLException
     {
-        setCurrentParameter(parameterIndex, reader);
+        setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setNClob(parameterIndex, reader, length);
     }
 
