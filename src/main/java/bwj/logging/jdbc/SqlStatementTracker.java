@@ -3,6 +3,7 @@ package bwj.logging.jdbc;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -98,42 +99,6 @@ class SqlStatementTracker
         if (this.paramMap != null)
             this.paramMap.clear();
     }
-
-
-    /**
-     * IF AND ONLY IF configured, this will allow logging of 'large' text param values.
-     * Since the reader is 'read out' to obtain the string for logging,
-     *  a new Reader object is returned to be used.
-     *    WARNING:  this can potentially huge impact on memory usage.
-     * @param index
-     * @param parameter
-     * @return
-     */
-    public Reader setReaderParameter(int index, Reader parameter) {
-        if (! logTextReaderStreams) {
-            this.setParameter(index, "_{text clob}_");
-            return parameter;
-        }
-        else if (parameter == null) {
-            this.setParameter(index, null);
-            return null;
-        }
-
-        try
-        {
-            String readerString = IOUtils.toString(parameter);
-            this.setParameter(index, readerString);
-            return new StringReader(readerString);
-        }
-        catch (IOException e)
-        {
-            // todo - handle better
-            e.printStackTrace();
-            throw new RuntimeException("Error: " + e.getMessage(), e);
-        }
-    }
-
-
 
 
     /**

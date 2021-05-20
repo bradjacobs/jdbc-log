@@ -1,9 +1,15 @@
 package bwj.logging.jdbc;
 
+import org.apache.commons.io.IOUtils;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
@@ -49,18 +55,41 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     protected void setCurrentParameter(int index, Object value) {
         this.sqlTracker.setParameter(index, value);
     }
-    protected Reader setCurrentReaderParameter(int index, Reader value) {
-        if (sqlTracker.canLogReaderStreams()) {
-            return this.sqlTracker.setReaderParameter(index, value);
+
+
+    protected Reader setCurrentReaderParameter(int index, Reader reader) {
+        if (reader == null) {
+            setCurrentParameter(index, null);
+        }
+        else if (!sqlTracker.canLogReaderStreams()) {
+            setCurrentParameter(index, TEXT_CLOB_VALUE_PLACEHOLDER);
         }
         else {
-            setCurrentParameter(index, TEXT_CLOB_VALUE_PLACEHOLDER);
-            return value;
+            String value = extractString(reader);
+            setCurrentParameter(index, value);
+            reader = new StringReader(value);
         }
+        return reader;
+    }
+
+    protected InputStream setCurrentStreamParameter(int index, InputStream inputStream) {
+        if (inputStream == null) {
+            setCurrentParameter(index, null);
+        }
+        else if (!sqlTracker.canLogReaderStreams()) {
+            setCurrentParameter(index, TEXT_CLOB_VALUE_PLACEHOLDER);
+        }
+        else {
+            String value = extractString(inputStream);
+            setCurrentParameter(index, value);
+            inputStream = new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8));
+        }
+        return inputStream;
     }
     protected void clearLogParameters() {
         sqlTracker.clearParameters();
     }
+
 
 
 
@@ -134,21 +163,21 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setAsciiStream(int parameterIndex, InputStream x) throws SQLException
     {
-        setCurrentParameter(parameterIndex, x);
+        x = setCurrentStreamParameter(parameterIndex, x);
         preparedStatement.setAsciiStream(parameterIndex, x);
     }
 
     @Override
     public void setAsciiStream(int parameterIndex, InputStream x, int length) throws SQLException
     {
-        setCurrentParameter(parameterIndex, x);
+        x = setCurrentStreamParameter(parameterIndex, x);
         preparedStatement.setAsciiStream(parameterIndex, x, length);
     }
 
     @Override
     public void setAsciiStream(int parameterIndex, InputStream x, long length) throws SQLException
     {
-        setCurrentParameter(parameterIndex, x);
+        x = setCurrentStreamParameter(parameterIndex, x);
         preparedStatement.setAsciiStream(parameterIndex, x, length);
     }
 
@@ -225,21 +254,21 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setCharacterStream(int parameterIndex, Reader reader) throws SQLException
     {
-        setCurrentReaderParameter(parameterIndex, reader);
+        reader = setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setCharacterStream(parameterIndex, reader);
     }
 
     @Override
     public void setCharacterStream(int parameterIndex, Reader reader, int length) throws SQLException
     {
-        setCurrentReaderParameter(parameterIndex, reader);
+        reader = setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setCharacterStream(parameterIndex, reader, length);
     }
 
     @Override
     public void setCharacterStream(int parameterIndex, Reader reader, long length) throws SQLException
     {
-        setCurrentReaderParameter(parameterIndex, reader);
+        reader = setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setCharacterStream(parameterIndex, reader, length);
     }
 
@@ -259,15 +288,15 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setClob(int parameterIndex, Reader reader) throws SQLException
     {
-        Reader innerReader = setCurrentReaderParameter(parameterIndex, reader);
-        preparedStatement.setClob(parameterIndex, innerReader);
+        reader = setCurrentReaderParameter(parameterIndex, reader);
+        preparedStatement.setClob(parameterIndex, reader);
     }
 
     @Override
     public void setClob(int parameterIndex, Reader reader, long length) throws SQLException
     {
-        Reader innerReader = setCurrentReaderParameter(parameterIndex, reader); // todo account for length
-        preparedStatement.setClob(parameterIndex, innerReader, length);
+        reader = setCurrentReaderParameter(parameterIndex, reader);
+        preparedStatement.setClob(parameterIndex, reader, length);
     }
 
     @Override
@@ -287,7 +316,6 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setDate(int parameterIndex, Date x, Calendar cal) throws SQLException
     {
-        // todo
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setDate(parameterIndex, x, cal);
     }
@@ -316,7 +344,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setNCharacterStream(int parameterIndex, Reader reader) throws SQLException
     {
-        setCurrentReaderParameter(parameterIndex, reader);
+        reader = setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setNCharacterStream(parameterIndex, reader);
     }
 
@@ -336,21 +364,21 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setNClob(int parameterIndex, Reader reader) throws SQLException
     {
-        setCurrentReaderParameter(parameterIndex, reader);
+        reader = setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setNClob(parameterIndex, reader);
     }
 
     @Override
     public void setNCharacterStream(int parameterIndex, Reader reader, long length) throws SQLException
     {
-        setCurrentReaderParameter(parameterIndex, reader);
+        reader = setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setNCharacterStream(parameterIndex, reader, length);
     }
 
     @Override
     public void setNClob(int parameterIndex, Reader reader, long length) throws SQLException
     {
-        setCurrentReaderParameter(parameterIndex, reader);
+        reader = setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setNClob(parameterIndex, reader, length);
     }
 
@@ -453,7 +481,6 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setTime(int parameterIndex, Time x, Calendar cal) throws SQLException
     {
-        // todo
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setTime(parameterIndex, x, cal);
     }
@@ -485,6 +512,41 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     {
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setURL(parameterIndex, x);
+    }
+
+
+
+
+
+    protected String extractString(Reader reader)
+    {
+        if (reader == null) {
+            return null;
+        }
+        try {
+            return IOUtils.toString(reader);
+        }
+        catch (IOException e) {
+            throw new RuntimeException("Error: " + e.getMessage(), e);
+        }
+        finally {
+            IOUtils.closeQuietly(reader);
+        }
+    }
+    protected String extractString(InputStream inputStream)
+    {
+        if (inputStream == null) {
+            return null;
+        }
+        try {
+            return IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
+        }
+        catch (IOException e) {
+            throw new RuntimeException("Error: " + e.getMessage(), e);
+        }
+        finally {
+            IOUtils.closeQuietly(inputStream);
+        }
     }
 }
 
