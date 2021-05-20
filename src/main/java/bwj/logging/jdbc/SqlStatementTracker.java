@@ -18,15 +18,24 @@ class SqlStatementTracker
     private Map<Integer, Object> paramMap = null;
 
 
-    private boolean logTextReaderStreams = true;
 
     private static final String TEXT_CLOB_VALUE_PLACEHOLDER = "{TextClob}";
 
-    private TagFiller tagFiller = new TagFiller();
+    private final TagFiller tagFiller;
+    private final boolean logTextReaderStreams;
 
 
     public SqlStatementTracker()
     {
+        this.tagFiller = null;
+        this.logTextReaderStreams = false;
+    }
+
+    public SqlStatementTracker(String sql, TagFiller tagFiller, boolean logTextStreams)
+    {
+        this.sql = sql;
+        this.tagFiller = tagFiller;
+        this.logTextReaderStreams = logTextStreams;
     }
 
     public void setSql(String sql)
@@ -56,8 +65,10 @@ class SqlStatementTracker
     }
 
 
-
     public String generateSql() {
+        if (tagFiller == null) {
+            return sql;
+        }
         return tagFiller.replace(this.sql, this.paramMap);
     }
 
@@ -87,7 +98,7 @@ class SqlStatementTracker
 
 
     /**
-     * If configured, this will allow logging of 'large' text param values.
+     * IF AND ONLY IF configured, this will allow logging of 'large' text param values.
      * Since the reader is 'read out' to obtain the string for logging,
      *  a new Reader object is returned to be used.
      *    WARNING:  this can potentially huge impact on memory usage.
@@ -140,6 +151,9 @@ class SqlStatementTracker
 
         public String generateSqlString()
         {
+            if (tagFiller == null) {
+                return sql;
+            }
             return tagFiller.replace(this.sql, this.paramMap);
         }
     }

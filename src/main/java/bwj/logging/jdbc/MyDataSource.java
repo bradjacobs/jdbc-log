@@ -10,48 +10,46 @@ import java.util.logging.Logger;
 // todo - read this.
 //    https://docs.spring.io/spring-boot/docs/1.5.14.RELEASE/reference/html/howto-data-access.html
 
-//  https://www.baeldung.com/hibernate-persist-json-object
-
 
 public class MyDataSource implements DataSource
 {
     private DataSource dataSource;
     private final LoggingListener loggingListener = null;
 
+    private final LoggingConnectionBuilder loggingConnectionBuilder;
 
     public MyDataSource(DataSource dataSource)
     {
-
-        this.dataSource = dataSource;
+        this(dataSource, createDefaultLoggingConnectionBuilder());
     }
+
+    public MyDataSource(DataSource dataSource, LoggingConnectionBuilder loggingConnectionBuilder)
+    {
+        this.dataSource = dataSource;
+        this.loggingConnectionBuilder = loggingConnectionBuilder;
+    }
+
+
+    private static LoggingConnectionBuilder createDefaultLoggingConnectionBuilder()
+    {
+        LoggingConnectionBuilder loggingConnectionBuilder = new LoggingConnectionBuilder();
+        loggingConnectionBuilder.setLogTextStreams(false);
+        return loggingConnectionBuilder;
+    }
+
 
     public Connection getConnection() throws SQLException
     {
-        try {
-            return new LoggingConnection(dataSource.getConnection(), loggingListener);
-        }
-        catch (Exception e) {
-            e.printStackTrace();;
-            System.out.println("ERROR: " + e.getMessage());
-            int kjkj= 33;
-            throw new RuntimeException(e);
-        }
+        Connection internalConnection = dataSource.getConnection();
+        return loggingConnectionBuilder.build(internalConnection);
     }
 
     public Connection getConnection(String username, String password) throws SQLException
     {
-        try
-        {
-            return new LoggingConnection(dataSource.getConnection(username, password), loggingListener);
-        }
-        catch (Exception e) {
-            e.printStackTrace();;
-            System.out.println("ERROR: " + e.getMessage());
-            int kjkj= 33;
-            throw new RuntimeException(e);
-        }
-
+        Connection internalConnection = dataSource.getConnection(username, password);
+        return loggingConnectionBuilder.build(internalConnection);
     }
+
 
     public PrintWriter getLogWriter() throws SQLException
     {

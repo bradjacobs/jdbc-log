@@ -1,25 +1,34 @@
 package bwj.logging.jdbc;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class TagFiller
 {
     private static final String DEFAULT_TAG = "?";
+    private static final SqlParamRenderer DEFAULT_PARAM_RENDERER = new BasicParamRenderer();
 
     private final String tag;
+    private final Map<Class, SqlParamRenderer> paramRenderMap;
 
-    public TagFiller() {
-        this(DEFAULT_TAG);
+    public TagFiller(Map<Class, SqlParamRenderer> paramRenderMap) {
+        this(DEFAULT_TAG, paramRenderMap);
     }
 
-    public TagFiller(String tag) {
+    public TagFiller(String tag, Map<Class, SqlParamRenderer> paramRenderMap)
+    {
         if (tag == null || tag.isEmpty()) {
             throw new IllegalArgumentException("Must provide a tag parameter.");
         }
         this.tag = tag;
+
+        if (paramRenderMap == null) {
+            paramRenderMap = Collections.emptyMap();
+        }
+        this.paramRenderMap = paramRenderMap;
     }
 
-    public String replace(String source, Map<Integer,Object> paramMap)
+    public String replace(String source, Map<Integer, Object> paramMap)
     {
         if (source == null) {
             return null;
@@ -41,7 +50,7 @@ public class TagFiller
             sb.append(source, lastIdx, tagIdx);
 
             // distinguish b/w having a null value for a given key vs there's a missing entry in the map
-            if ( paramMap.containsKey(tagNumber)) {
+            if (paramMap.containsKey(tagNumber)) {
                 appendValue(paramMap.get(tagNumber), sb);
             }
             else {
@@ -58,20 +67,33 @@ public class TagFiller
         return sb.toString();
     }
 
+    //  SQL uses a very specific date format, which is 'YYYY-MM-DD'.
+    //  YYYY-MM-DD HH:MM:SS
 
     public void appendValue(Object object, StringBuilder sb)
     {
-        if (object instanceof Class) {
-            sb.append('\'').append(((Class) object).getName()).append('\'');
+        SqlParamRenderer paramRenderer = null;
+        if (object != null) {
+            paramRenderer = paramRenderMap.get(object.getClass());
         }
-        else if (object instanceof String || object instanceof java.util.Date) {
-            sb.append('\'').append(object).append('\'');
+
+        if (paramRenderer == null) {
+            paramRenderer = DEFAULT_PARAM_RENDERER;
         }
-        else if (object instanceof Boolean) {
-            sb.append((Boolean) object ? 1 : 0);
-        }
-        else {
-            sb.append(object);
+
+        // todo - fix type checking
+        paramRenderer.appendParamValue(object, sb);
+
+    }
+
+
+
+
+    private static class BasicParamRenderer implements SqlParamRenderer {
+        @Override
+        public void appendParamValue(Object value, StringBuilder sb)
+        {
+            sb.append(value);
         }
     }
 }

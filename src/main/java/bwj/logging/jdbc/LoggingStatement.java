@@ -1,13 +1,10 @@
 package bwj.logging.jdbc;
 
-import java.io.Reader;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
-import java.text.NumberFormat;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 //import org.apache.log4j.Logger;
@@ -47,8 +44,15 @@ public class LoggingStatement implements Statement
     protected void log(String sql) {
 
         System.out.println("****  " + sql);
-        if (this.loggingListener != null)
-            this.loggingListener.log(sql);
+
+        if (this.loggingListeners != null) {
+            for (LoggingListener loggingListener : loggingListeners) {
+                loggingListener.log(sql);
+            }
+        }
+
+//        if (this.loggingListener != null)
+//            this.loggingListener.log(sql);
 //        if (logger.isDebugEnabled())
 //            logger.debug(sql);
     }
@@ -60,26 +64,31 @@ public class LoggingStatement implements Statement
     //private static final Logger logger = Logger.getLogger(LoggingStatement.class);
     private static final Logger logger = null;
 
-    private Statement statement;
-    protected SqlStatementTracker sqlTracker;
-    private final LoggingListener loggingListener;
+    private final Statement statement;
+    protected final SqlStatementTracker sqlTracker;
+    protected final List<LoggingListener> loggingListeners;
 
 
 
 
 
-    public LoggingStatement(Statement statement, LoggingListener loggingListener) {
-        this.statement = statement;
-        this.loggingListener = loggingListener;
-        this.sqlTracker = new SqlStatementTracker();
+    public LoggingStatement(Statement statement, List<LoggingListener> loggingListeners)
+    {
+        this(statement, loggingListeners, new SqlStatementTracker());
     }
 
-    public LoggingStatement(Statement statement, String sql, LoggingListener loggingListener) {
+    protected LoggingStatement(Statement statement, List<LoggingListener> loggingListeners, SqlStatementTracker sqlStatementTracker)
+    {
         this.statement = statement;
-        this.loggingListener = loggingListener;
-        this.sqlTracker = new SqlStatementTracker();
-        this.sqlTracker.setSql(sql);
+        this.loggingListeners = loggingListeners;
+        this.sqlTracker = sqlStatementTracker;
     }
+
+//    public LoggingStatement(Statement statement, String sql, LoggingListener loggingListener) {
+//        this.statement = statement;
+//        this.loggingListener = loggingListener;
+//        this.sqlTracker = new SqlStatementTracker(sql);
+//    }
 
 
 

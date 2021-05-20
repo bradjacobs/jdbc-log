@@ -19,16 +19,25 @@ import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 public class LoggingCallableStatement extends LoggingPreparedStatement implements CallableStatement
 {
-    private CallableStatement callableStatement;
+    private final CallableStatement callableStatement;
 
-    public LoggingCallableStatement(CallableStatement callableStatement, String sql, LoggingListener loggingListener) {
-        super(callableStatement, sql, loggingListener);
+    public LoggingCallableStatement(
+        CallableStatement callableStatement,
+        String sql,
+        List<LoggingListener> loggingListeners,
+        TagFiller tagFiller,
+        boolean logTextStreams)
+    {
+        super(callableStatement, sql, loggingListeners, tagFiller, logTextStreams);
         this.callableStatement = callableStatement;
     }
+
+
 
 
     @Override

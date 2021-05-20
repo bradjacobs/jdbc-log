@@ -21,15 +21,21 @@ import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.List;
 
 public class LoggingPreparedStatement extends LoggingStatement implements PreparedStatement
 {
-    private PreparedStatement preparedStatement;
+    private final PreparedStatement preparedStatement;
 
 
-    public LoggingPreparedStatement(PreparedStatement preparedStatement, String sql, LoggingListener loggingListener)
+    public LoggingPreparedStatement(
+        PreparedStatement preparedStatement,
+        String sql,
+        List<LoggingListener> loggingListeners,
+        TagFiller tagFiller,
+        boolean logTextStreams)
     {
-        super(preparedStatement, sql, loggingListener);
+        super(preparedStatement, loggingListeners, new SqlStatementTracker(sql, tagFiller, logTextStreams));
         this.preparedStatement = preparedStatement;
     }
 

@@ -15,6 +15,7 @@ import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
@@ -23,36 +24,32 @@ public class LoggingConnection implements Connection
 {
     private final Connection connection;
 
-    private final LoggingListener loggingListener;
+    // todo - see if can clean up a little.
+    private final TagFiller tagFiller;
+    private final boolean logTextStreams;
+    private final List<LoggingListener> logListeners;
 
 
 
-    public LoggingConnection(Connection connection, LoggingListener loggingListener) {
+    public LoggingConnection(Connection connection, boolean logTextStreams, TagFiller tagFiller, List<LoggingListener> logListeners) {
         this.connection = connection;
-        this.loggingListener = loggingListener;
-        String dbName = null;
-        try {
-            dbName = connection.getMetaData().getDatabaseProductName();
-        }
-        catch (SQLException ignore) {
-
-        }
-
-        //this.renderer = LoggingStatement.defaultRenderer;
+        this.logTextStreams = logTextStreams;
+        this.tagFiller = tagFiller;
+        this.logListeners = logListeners;
     }
 
 
     private Statement logWrap(Statement statement)
     {
-        return new LoggingStatement(statement, loggingListener);
+        return new LoggingStatement(statement, logListeners);
     }
     private PreparedStatement logWrap(PreparedStatement preparedStatement, String sql)
     {
-        return new LoggingPreparedStatement(preparedStatement, sql, loggingListener);
+        return new LoggingPreparedStatement(preparedStatement, sql, logListeners, tagFiller, logTextStreams);
     }
     private CallableStatement logWrap(CallableStatement callableStatement, String sql)
     {
-        return new LoggingCallableStatement(callableStatement, sql, loggingListener);
+        return new LoggingCallableStatement(callableStatement, sql, logListeners, tagFiller, logTextStreams);
     }
 
 
