@@ -22,6 +22,13 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Logging Wrapper around CallableStatements
+ *
+ *  ***** NOTE: *****
+ *     ONLY works when setting numeric parameter indexes
+ *     Not currently supported when setting parameter by name.
+ */
 public class LoggingCallableStatement extends LoggingPreparedStatement implements CallableStatement
 {
     private final CallableStatement callableStatement;
@@ -35,18 +42,21 @@ public class LoggingCallableStatement extends LoggingPreparedStatement implement
         this.callableStatement = callableStatement;
     }
 
+    private static final String OUT_PLACEHOLDER = "{_OUTPARAM_}";
 
 
 
     @Override
     public void registerOutParameter(int parameterIndex, int sqlType) throws SQLException
     {
+        setCurrentParameter(parameterIndex, OUT_PLACEHOLDER);
         callableStatement.registerOutParameter(parameterIndex, sqlType);
     }
 
     @Override
     public void registerOutParameter(int parameterIndex, int sqlType, int scale) throws SQLException
     {
+        setCurrentParameter(parameterIndex, OUT_PLACEHOLDER);
         callableStatement.registerOutParameter(parameterIndex, sqlType, scale);
     }
 
@@ -198,6 +208,7 @@ public class LoggingCallableStatement extends LoggingPreparedStatement implement
     @Override
     public void registerOutParameter(int parameterIndex, int sqlType, String typeName) throws SQLException
     {
+        setCurrentParameter(parameterIndex, OUT_PLACEHOLDER);
         callableStatement.registerOutParameter(parameterIndex, sqlType, typeName);
     }
 
@@ -732,18 +743,21 @@ public class LoggingCallableStatement extends LoggingPreparedStatement implement
     @Override
     public void registerOutParameter(int parameterIndex, SQLType sqlType) throws SQLException
     {
+        setCurrentParameter(parameterIndex, OUT_PLACEHOLDER);
         callableStatement.registerOutParameter(parameterIndex, sqlType);
     }
 
     @Override
     public void registerOutParameter(int parameterIndex, SQLType sqlType, int scale) throws SQLException
     {
+        setCurrentParameter(parameterIndex, OUT_PLACEHOLDER);
         callableStatement.registerOutParameter(parameterIndex, sqlType, scale);
     }
 
     @Override
     public void registerOutParameter(int parameterIndex, SQLType sqlType, String typeName) throws SQLException
     {
+        setCurrentParameter(parameterIndex, OUT_PLACEHOLDER);
         callableStatement.registerOutParameter(parameterIndex, sqlType, typeName);
     }
 
