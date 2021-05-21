@@ -7,9 +7,9 @@ public class RendererDefinitions
     private SqlParamRenderer<Object> defaultRenderer = null;
     private SqlParamRenderer<Boolean> boooleanRenderer = null;
     private SqlParamRenderer<String> stringRenderer = null;
-    private SqlParamRenderer<Date> timestampRenderer = null;
-    private SqlParamRenderer<Date> dateRenderer = null;
-    private SqlParamRenderer<Date> timeRenderer = null;
+    private SqlParamRenderer<?> timestampRenderer = null;
+    private SqlParamRenderer<?> dateRenderer = null;
+    private SqlParamRenderer<?> timeRenderer = null;
 
     public SqlParamRenderer<Object> getDefaultRenderer() {
         return defaultRenderer;
@@ -35,27 +35,27 @@ public class RendererDefinitions
         this.stringRenderer = stringRenderer;
     }
 
-    public SqlParamRenderer<Date> getTimestampRenderer() {
-        return timestampRenderer;
+    public <T extends Date> SqlParamRenderer<T> getTimestampRenderer() {
+        return (SqlParamRenderer<T>) timestampRenderer;
     }
 
-    public void setTimestampRenderer(SqlParamRenderer<Date> timestampRenderer) {
+    public <T extends Date> void setTimestampRenderer(SqlParamRenderer<T> timestampRenderer) {
         this.timestampRenderer = timestampRenderer;
     }
 
-    public SqlParamRenderer<Date> getDateRenderer() {
-        return dateRenderer;
+    public <T extends Date> SqlParamRenderer<T> getDateRenderer() {
+        return (SqlParamRenderer<T>) dateRenderer;
     }
 
-    public void setDateRenderer(SqlParamRenderer<Date> dateRenderer) {
+    public <T extends Date> void setDateRenderer(SqlParamRenderer<T> dateRenderer) {
         this.dateRenderer = dateRenderer;
     }
 
-    public SqlParamRenderer<Date> getTimeRenderer() {
-        return timeRenderer;
+    public <T extends Date> SqlParamRenderer<T> getTimeRenderer() {
+        return (SqlParamRenderer<T>) timeRenderer;
     }
 
-    public void setTimeRenderer(SqlParamRenderer<Date> timeRenderer) {
+    public <T extends Date> void setTimeRenderer(SqlParamRenderer<T> timeRenderer) {
         this.timeRenderer = timeRenderer;
     }
 

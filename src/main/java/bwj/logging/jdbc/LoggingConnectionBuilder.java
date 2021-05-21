@@ -1,5 +1,6 @@
 package bwj.logging.jdbc;
 
+import bwj.logging.jdbc.param.ChronoParamRenderer;
 import bwj.logging.jdbc.param.ChronoParamRendererFactory;
 import bwj.logging.jdbc.param.DefaultSqlParamRendererFactory;
 import bwj.logging.jdbc.param.RendererDefinitions;
@@ -9,6 +10,7 @@ import bwj.logging.jdbc.param.TagFiller;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,6 +34,26 @@ public class LoggingConnectionBuilder
     {
         this(DEFAULT_ZONE);
     }
+
+
+    public static void main(String[] args)
+    {
+        LoggingConnectionBuilder builder = new LoggingConnectionBuilder();
+        TimeRender timeRenderer = new TimeRender();
+        builder.withChronoParamRenderer(timeRenderer);
+    }
+
+
+    private static class TimeRender implements ChronoParamRenderer<Time>
+    {
+
+        @Override
+        public void appendParamValue(Time value, StringBuilder sb)
+        {
+            System.out.println("YO");
+        }
+    }
+
 
 
     /**
@@ -117,7 +139,7 @@ public class LoggingConnectionBuilder
      * @param paramRenderer
      * @return
      */
-    public LoggingConnectionBuilder withChronoParamRenderer(SqlParamRenderer<Date> paramRenderer) {
+    public <T extends Date> LoggingConnectionBuilder withChronoParamRenderer(SqlParamRenderer<T> paramRenderer) {
         overrideRendererDefinitions.setTimestampRenderer(paramRenderer);
         overrideRendererDefinitions.setDateRenderer(paramRenderer);
         overrideRendererDefinitions.setTimeRenderer(paramRenderer);

@@ -10,14 +10,15 @@ import java.util.Date;
 
 public class ChronoParamRendererFactory
 {
-    public static final String DEFAULT_TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss";
-    public static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd";
-    public static final String DEFAULT_TIME_PATTERN = "HH:mm:ss";
-    public static final ZoneId DEFAULT_ZONE = ZoneId.of("UTC");
+    private static final String DEFAULT_TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    private static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd";
+    private static final String DEFAULT_TIME_PATTERN = "HH:mm:ss";
+    private static final ZoneId DEFAULT_ZONE = ZoneId.of("UTC");
 
+    private ChronoParamRendererFactory() { }
 
     /**
-     * Will reeder any Timestamp/Date/Time object into a string using the given dateFormatter pattern.
+     * Will render any Timestamp/Date/Time object into a string using the given dateFormatter pattern.
      * @param pattern date/time pattern
      * @return renderer
      * @see DateTimeFormatterBuilder#appendPattern(String)
@@ -27,14 +28,14 @@ public class ChronoParamRendererFactory
     }
 
      /**
-     * Will reeder any Timestamp/Date/Time object into a string using the given dateFormatter pattern.
+     * Will render any Timestamp/Date/Time object into a string using the given dateFormatter pattern.
      * @param pattern date/time pattern
      * @return renderer
      * @see DateTimeFormatterBuilder#appendPattern(String)
      */
 
     /**
-     * Will reeder any Timestamp/Date/Time object into a string using the given dateFormatter pattern.
+     * Will render any Timestamp/Date/Time object into a string using the given dateFormatter pattern.
      * @param pattern date/time pattern
      * @param zoneId optional timezone to use to generate date string pattern
      * @return renderer

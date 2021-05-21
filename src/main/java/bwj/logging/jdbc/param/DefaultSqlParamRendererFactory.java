@@ -28,8 +28,8 @@ public class DefaultSqlParamRendererFactory
         rendererDefinitions.setBoooleanRenderer(DEFAULT_BOOLEAN_PARAM_RENDERER);
 
         rendererDefinitions.setTimestampRenderer(ChronoParamRendererFactory.createDefaultTimestampParamRenderer());
-        rendererDefinitions.setTimestampRenderer(ChronoParamRendererFactory.createDefaultDateParamRenderer());
-        rendererDefinitions.setTimestampRenderer(ChronoParamRendererFactory.createDefaultDateParamRenderer());
+        rendererDefinitions.setDateRenderer(ChronoParamRendererFactory.createDefaultDateParamRenderer());
+        rendererDefinitions.setTimeRenderer(ChronoParamRendererFactory.createDefaultTimeParamRenderer());
 
 
         // if able to recognize the db type, can more accurately set default values.
@@ -48,8 +48,8 @@ public class DefaultSqlParamRendererFactory
                 break;
             case MYSQL:
                 rendererDefinitions.setTimestampRenderer(ChronoParamRendererFactory.createDefaultTimestampParamRenderer());
-                rendererDefinitions.setTimestampRenderer(ChronoParamRendererFactory.createDefaultDateParamRenderer());
-                rendererDefinitions.setTimestampRenderer(ChronoParamRendererFactory.createDefaultDateParamRenderer());
+                rendererDefinitions.setDateRenderer(ChronoParamRendererFactory.createDefaultDateParamRenderer());
+                rendererDefinitions.setTimeRenderer(ChronoParamRendererFactory.createDefaultTimeParamRenderer());
                 break;
             case ORACLE:
                 rendererDefinitions.setAllTimeDateRenderers(new OracleChronoStringParamRenderer(zoneId));
@@ -88,30 +88,14 @@ public class DefaultSqlParamRendererFactory
         }
 
         dbName = dbName.toUpperCase();
-
-        if (dbName.contains("MYSQL")) {
-            return DatabaseType.MYSQL;
-        }
-        else if (dbName.contains("HSQL")) {
-            return DatabaseType.HSQL;
-        }
-        else if (dbName.contains("SQLITE")) {
-            return DatabaseType.SQLITE;
-        }
-        else if (dbName.contains("ORACLE")) {
-            return DatabaseType.ORACLE;
-        }
-        else if (dbName.contains("POSTGRES")) {
-            return DatabaseType.POSTGRES;
-        }
-        else if (dbName.contains("SQLSERVER") || dbName.contains("SQL SERVER")) {
-            return DatabaseType.SQLSERVER;
-        }
-        else {
-            return DatabaseType.UNKNOWN;
-        }
+        if (dbName.contains("MYSQL")) { return DatabaseType.MYSQL; }
+        else if (dbName.contains("HSQL")) { return DatabaseType.HSQL; }
+        else if (dbName.contains("SQLITE")) { return DatabaseType.SQLITE; }
+        else if (dbName.contains("ORACLE")) { return DatabaseType.ORACLE; }
+        else if (dbName.contains("POSTGRES")) { return DatabaseType.POSTGRES; }
+        else if (dbName.contains("SQLSERVER") || dbName.contains("SQL SERVER")) { return DatabaseType.SQLSERVER; }
+        else { return DatabaseType.UNKNOWN; }
     }
-
 
 
 
