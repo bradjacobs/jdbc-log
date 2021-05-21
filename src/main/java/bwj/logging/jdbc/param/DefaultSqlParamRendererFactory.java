@@ -2,123 +2,62 @@ package bwj.logging.jdbc.param;
 
 import java.time.Instant;
 import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 public class DefaultSqlParamRendererFactory
 {
-    public static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
-    public static final String DATE_PATTERN = "yyyy-MM-dd";
-    public static final String TIME_PATTERN = "HH:mm:ss";
-
     public static final ZoneId DEFAULT_ZONE = ZoneId.of("UTC");
 
-    private static final SqlParamRenderer DEFAULT_STRING_PARAM_RENDERER = new StringParamRenderer();
-    private static final SqlParamRenderer DEFAULT_BOOLEAN_PARAM_RENDERER = new BooleanParamRenderer();
+    private static final SqlParamRenderer<Object> DEFAULT_PARAM_RENDERER = new BasicParamRenderer();
+    private static final SqlParamRenderer<String> DEFAULT_STRING_PARAM_RENDERER = new StringParamRenderer();
+    private static final SqlParamRenderer<Boolean> DEFAULT_BOOLEAN_PARAM_RENDERER = new BooleanParamRenderer();
 
 
-    private static final Set<Class> dateTimeClasses =
-        Collections.unmodifiableSet(new HashSet<Class>(
-            Arrays.asList(
-                java.sql.Timestamp.class,
-                java.sql.Date.class,
-                java.sql.Time.class)
-        ));
 
-    public static Set<Class> getDateTimeClasses() {
-        return dateTimeClasses;
+
+    public static RendererDefinitions createDefaultDefinitions(String dbProductName)
+    {
+        return createDefaultDefinitions(dbProductName, DEFAULT_ZONE);
     }
 
-
-
-    public static Map<Class, SqlParamRenderer> createDefaultMap(String dbProductName)
+    public static RendererDefinitions createDefaultDefinitions(String dbProductName, ZoneId zoneId)
     {
-        return createDefaultMap(dbProductName, DEFAULT_ZONE);
-    }
+        RendererDefinitions rendererDefinitions = new RendererDefinitions();
+        rendererDefinitions.setDefaultRenderer(DEFAULT_PARAM_RENDERER);
+        rendererDefinitions.setStringRenderer(DEFAULT_STRING_PARAM_RENDERER);
+        rendererDefinitions.setBoooleanRenderer(DEFAULT_BOOLEAN_PARAM_RENDERER);
 
-    public static Map<Class, SqlParamRenderer> createDefaultMap(String dbProductName, ZoneId zoneId)
-    {
-        Map<Class,SqlParamRenderer> resultMap = new HashMap<>();
-        resultMap.put(String.class, DEFAULT_STRING_PARAM_RENDERER);
-        resultMap.put(Boolean.class, DEFAULT_BOOLEAN_PARAM_RENDERER);
-
-        // for date/time "defaults" have the values render as a type of "string" b/c that seems most popular.
-        resultMap.putAll(defaultChronoStringRenderers(zoneId));
+        rendererDefinitions.setTimestampRenderer(ChronoParamRendererFactory.createDefaultTimestampParamRenderer());
+        rendererDefinitions.setTimestampRenderer(ChronoParamRendererFactory.createDefaultDateParamRenderer());
+        rendererDefinitions.setTimestampRenderer(ChronoParamRendererFactory.createDefaultDateParamRenderer());
 
 
-        //  IF happen to idenfity the db vendor type, then might be able to set better defaults
+        // if able to recognize the db type, can more accurately set default values.
+        //     ********
         //
-        //    NOTE....this is all currently GUESSING!
+        //          NOTE....this is all currently GUESSING!
+        //
+        //     ********
         DatabaseType dbType = identifyDatabaseType(dbProductName);
-
 
         switch (dbType)
         {
             case SQLITE:
-                resultMap.putAll(defaultChronoNumericRenderers());
+                // show all the times and epoch millis
+                rendererDefinitions.setAllTimeDateRenderers(ChronoParamRendererFactory.createChronoNumericParamRenderer());
                 break;
             case MYSQL:
-                resultMap.putAll(defaultChronoStringRenderers(zoneId));
+                rendererDefinitions.setTimestampRenderer(ChronoParamRendererFactory.createDefaultTimestampParamRenderer());
+                rendererDefinitions.setTimestampRenderer(ChronoParamRendererFactory.createDefaultDateParamRenderer());
+                rendererDefinitions.setTimestampRenderer(ChronoParamRendererFactory.createDefaultDateParamRenderer());
                 break;
             case ORACLE:
-                for (Class dateTimeClass : dateTimeClasses) {
-                    resultMap.put(dateTimeClass, new OracleChronoStringParamRenderer(zoneId));
-                }
+                rendererDefinitions.setAllTimeDateRenderers(new OracleChronoStringParamRenderer(zoneId));
                 break;
         }
 
-        return resultMap;
+        return rendererDefinitions;
     }
-
-
-
-
-    public static Map<Class,SqlParamRenderer> defaultChronoNumericRenderers()
-    {
-        Map<Class,SqlParamRenderer> resultMap = new HashMap<>();
-        for (Class dateTimeClass : dateTimeClasses) {
-            resultMap.put(dateTimeClass, new ChronoNumericParamRenderer());
-        }
-
-        return resultMap;
-    }
-
-    public static Map<Class,SqlParamRenderer> defaultChronoStringRenderers(ZoneId zoneId)
-    {
-        Map<Class,SqlParamRenderer> resultMap = new HashMap<>();
-        resultMap.putAll(defaultTimestampString(zoneId));
-        resultMap.putAll(defaultDateString(zoneId));
-        resultMap.putAll(defaultTimeString(zoneId));
-        return resultMap;
-    }
-
-    public static Map<Class,SqlParamRenderer> defaultTimestampString(ZoneId zoneId) {
-        return customTimestampString(DATE_TIME_PATTERN, zoneId);
-    }
-    public static Map<Class,SqlParamRenderer> defaultDateString(ZoneId zoneId) {
-        return customTimestampString(DATE_PATTERN, zoneId);
-    }
-    public static Map<Class,SqlParamRenderer> defaultTimeString(ZoneId zoneId) {
-        return customTimestampString(TIME_PATTERN, zoneId);
-    }
-
-    public static Map<Class,SqlParamRenderer> customTimestampString(String pattern, ZoneId zoneId) {
-        return Collections.singletonMap(java.sql.Timestamp.class, new ChronoStringParamRenderer(pattern, zoneId));
-    }
-    public static Map<Class,SqlParamRenderer> customDateString(String pattern, ZoneId zoneId) {
-        return Collections.singletonMap(java.sql.Date.class, new ChronoStringParamRenderer(pattern, zoneId));
-    }
-    public static Map<Class,SqlParamRenderer> customTimeString(String pattern, ZoneId zoneId) {
-        return Collections.singletonMap(java.sql.Time.class, new ChronoStringParamRenderer(pattern, zoneId));
-    }
-
-
-
 
 
     // This is __NOT__ a complete list by any means!
@@ -176,6 +115,19 @@ public class DefaultSqlParamRendererFactory
 
 
 
+    static SqlParamRenderer<String> getDefaultStringRenderer() {
+        return DEFAULT_STRING_PARAM_RENDERER;
+    }
+    static SqlParamRenderer<Boolean> getDefaultBooleanRenderer() {
+        return DEFAULT_BOOLEAN_PARAM_RENDERER;
+    }
+
+    private static class BasicParamRenderer implements SqlParamRenderer<Object> {
+        @Override
+        public void appendParamValue(Object value, StringBuilder sb) {
+            sb.append(value);
+        }
+    }
     private static class StringParamRenderer implements SqlParamRenderer<String> {
         @Override
         public void appendParamValue(String value, StringBuilder sb) {
@@ -192,10 +144,11 @@ public class DefaultSqlParamRendererFactory
 
 
 
-    private static class OracleChronoStringParamRenderer extends ChronoStringParamRenderer
+    // todo: neeeds a better home.
+    private static class OracleChronoStringParamRenderer extends ChronoParamRendererFactory.ChronoStringParamRenderer<Date>
     {
         public OracleChronoStringParamRenderer(ZoneId zoneId) {
-            super(DATE_TIME_PATTERN, zoneId);
+            super("yyyy-MM-dd HH:mm:ss", zoneId);
         }
 
         @Override
@@ -208,6 +161,5 @@ public class DefaultSqlParamRendererFactory
             sb.append(", 'YYYY-MM-DD HH24:MI:SS')");
         }
     }
-
 
 }

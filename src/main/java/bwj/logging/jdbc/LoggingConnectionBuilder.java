@@ -1,6 +1,9 @@
 package bwj.logging.jdbc;
 
+import bwj.logging.jdbc.param.ChronoParamRendererFactory;
 import bwj.logging.jdbc.param.DefaultSqlParamRendererFactory;
+import bwj.logging.jdbc.param.RendererDefinitions;
+import bwj.logging.jdbc.param.RendererSelector;
 import bwj.logging.jdbc.param.SqlParamRenderer;
 import bwj.logging.jdbc.param.TagFiller;
 
@@ -9,9 +12,7 @@ import java.sql.SQLException;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class LoggingConnectionBuilder
 {
@@ -23,7 +24,7 @@ public class LoggingConnectionBuilder
     private boolean logTextStreams = Boolean.FALSE;
 
     private final List<LoggingListener> loggingListeners = new ArrayList<>();
-    private final Map<Class, SqlParamRenderer> renderOverrideMap = new HashMap<>();
+    private final RendererDefinitions overrideRendererDefinitions = new RendererDefinitions();
 
     private TagFiller tagFiller = null;
 
@@ -69,7 +70,9 @@ public class LoggingConnectionBuilder
      * @return
      */
     public LoggingConnectionBuilder withChronoDefaultStrings() {
-        renderOverrideMap.putAll(DefaultSqlParamRendererFactory.defaultChronoStringRenderers(this.zoneId));
+        overrideRendererDefinitions.setTimestampRenderer(ChronoParamRendererFactory.createDefaultTimestampParamRenderer(zoneId));
+        overrideRendererDefinitions.setDateRenderer(ChronoParamRendererFactory.createDefaultDateParamRenderer(zoneId));
+        overrideRendererDefinitions.setTimeRenderer(ChronoParamRendererFactory.createDefaultTimeParamRenderer(zoneId));
         return this;
     }
 
@@ -79,7 +82,7 @@ public class LoggingConnectionBuilder
      * @return
      */
     public LoggingConnectionBuilder withTimestampOnlyCustomString(String pattern) {
-        renderOverrideMap.putAll(DefaultSqlParamRendererFactory.customTimestampString(pattern, this.zoneId));
+        overrideRendererDefinitions.setTimestampRenderer(ChronoParamRendererFactory.createChronoStringParamRenderer(pattern, zoneId));
         return this;
     }
 
@@ -89,7 +92,7 @@ public class LoggingConnectionBuilder
      * @return
      */
     public LoggingConnectionBuilder withDateOnlyCustomString(String pattern) {
-        renderOverrideMap.putAll(DefaultSqlParamRendererFactory.customDateString(pattern, this.zoneId));
+        overrideRendererDefinitions.setDateRenderer(ChronoParamRendererFactory.createChronoStringParamRenderer(pattern, zoneId));
         return this;
     }
 
@@ -99,14 +102,13 @@ public class LoggingConnectionBuilder
      * @return
      */
     public LoggingConnectionBuilder withTimeOnlyCustomString(String pattern) {
-        renderOverrideMap.putAll(DefaultSqlParamRendererFactory.customTimeString(pattern, this.zoneId));
+        overrideRendererDefinitions.setTimeRenderer(ChronoParamRendererFactory.createChronoStringParamRenderer(pattern, zoneId));
         return this;
     }
 
 
-
     public LoggingConnectionBuilder withChronoDefaultNumerics() {
-        renderOverrideMap.putAll(DefaultSqlParamRendererFactory.defaultChronoNumericRenderers());
+        overrideRendererDefinitions.setAllTimeDateRenderers(ChronoParamRendererFactory.createChronoNumericParamRenderer());
         return this;
     }
 
@@ -115,22 +117,13 @@ public class LoggingConnectionBuilder
      * @param paramRenderer
      * @return
      */
-    public <T extends Date> LoggingConnectionBuilder withChronoParamRenderer(SqlParamRenderer<T> paramRenderer) {
-        if (paramRenderer != null) {
-            for (Class clz : DefaultSqlParamRendererFactory.getDateTimeClasses()) {
-                renderOverrideMap.put(clz, paramRenderer);
-            }
-        }
+    public LoggingConnectionBuilder withChronoParamRenderer(SqlParamRenderer<Date> paramRenderer) {
+        overrideRendererDefinitions.setTimestampRenderer(paramRenderer);
+        overrideRendererDefinitions.setDateRenderer(paramRenderer);
+        overrideRendererDefinitions.setTimeRenderer(paramRenderer);
         return this;
     }
 
-    public <T> LoggingConnectionBuilder withParamRenderer(Class<T> clazz, SqlParamRenderer<T> paramRenderer) {
-        if (clazz != null && paramRenderer != null) {
-            renderOverrideMap.put(clazz, paramRenderer);
-        }
-        return this;
-    }
-    // todo  end
 
 
 
@@ -165,14 +158,37 @@ public class LoggingConnectionBuilder
                 }
 
                 // create initial map w/ default values
-                Map<Class, SqlParamRenderer> paramRenderMap = DefaultSqlParamRendererFactory.createDefaultMap(dbProductName, this.zoneId);
+                RendererDefinitions rendereDefinitions = DefaultSqlParamRendererFactory.createDefaultDefinitions(dbProductName, zoneId);
 
-                // add overrides (that can overrule any existing map entries)
-                paramRenderMap.putAll(renderOverrideMap);
+                mergeInOverrideDefintions(rendereDefinitions, this.overrideRendererDefinitions);
+                RendererSelector rendererSelector = new RendererSelector(rendereDefinitions);
 
-                this.tagFiller = new TagFiller(tag, paramRenderMap);
+                this.tagFiller = new TagFiller(tag, rendererSelector);
             }
         }
     }
+
+    private void mergeInOverrideDefintions(RendererDefinitions base, RendererDefinitions override)
+    {
+        if (override.getDefaultRenderer() != null) {
+            base.setDefaultRenderer(override.getDefaultRenderer());
+        }
+        if (override.getBoooleanRenderer() != null) {
+            base.setBoooleanRenderer(override.getBoooleanRenderer());
+        }
+        if (override.getStringRenderer() != null) {
+            base.setStringRenderer(override.getStringRenderer());
+        }
+        if (override.getTimestampRenderer() != null) {
+            base.setTimestampRenderer(override.getTimestampRenderer());
+        }
+        if (override.getDateRenderer() != null) {
+            base.setDateRenderer(override.getDateRenderer());
+        }
+        if (override.getTimeRenderer() != null) {
+            base.setTimestampRenderer(override.getTimeRenderer());
+        }
+    }
+
 
 }

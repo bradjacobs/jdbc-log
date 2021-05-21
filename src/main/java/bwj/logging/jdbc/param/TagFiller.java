@@ -1,35 +1,32 @@
 package bwj.logging.jdbc.param;
 
-import bwj.logging.jdbc.param.SqlParamRenderer;
 
-import java.util.Collections;
 import java.util.Map;
 
 public class TagFiller
 {
     private static final String DEFAULT_TAG = "?";
-    private static final SqlParamRenderer DEFAULT_PARAM_RENDERER = new BasicParamRenderer();
 
     private final String tag;
-    private final Map<Class, SqlParamRenderer> paramRenderMap;
+    private final RendererSelector rendererSelector;
 
-    public TagFiller(Map<Class, SqlParamRenderer> paramRenderMap) {
-        this(DEFAULT_TAG, paramRenderMap);
+    public TagFiller(RendererSelector rendererSelector)
+    {
+        this(DEFAULT_TAG, rendererSelector);
     }
 
-    public TagFiller(String tag, Map<Class, SqlParamRenderer> paramRenderMap)
+
+    public TagFiller(String tag, RendererSelector rendererSelector)
     {
         if (tag == null || tag.isEmpty()) {
             throw new IllegalArgumentException("Must provide a tag parameter.");
         }
         this.tag = tag;
 
-        if (paramRenderMap == null) {
-            this.paramRenderMap = Collections.emptyMap();
+        if (rendererSelector == null) {
+            throw new IllegalArgumentException("Must provide a rendererSelector.");
         }
-        else {
-            this.paramRenderMap = Collections.unmodifiableMap(paramRenderMap);
-        }
+        this.rendererSelector = rendererSelector;
     }
 
 
@@ -77,42 +74,11 @@ public class TagFiller
 
     public void appendValue(Object object, StringBuilder sb)
     {
-        SqlParamRenderer paramRenderer = fetchParamRenderer(object);
+        SqlParamRenderer paramRenderer = rendererSelector.getRenderer(object);
 
         // todo - fix type checking
         paramRenderer.appendParamValue(object, sb);
     }
 
 
-    private SqlParamRenderer fetchParamRenderer(Object object) {
-        if (object == null) {
-            return DEFAULT_PARAM_RENDERER;
-        }
-
-        // try quick way first if have exact class match
-        SqlParamRenderer renderer = paramRenderMap.get(object.getClass());
-        if (renderer != null) {
-            return renderer;
-        }
-
-        // loop thru the entries to account for any 'inheritence' matches.
-        for (Map.Entry<Class, SqlParamRenderer> entry : paramRenderMap.entrySet())
-        {
-            if (entry.getKey().isInstance(object)) {
-                return entry.getValue();
-            }
-        }
-        return DEFAULT_PARAM_RENDERER;
-    }
-
-
-
-
-    private static class BasicParamRenderer implements SqlParamRenderer {
-        @Override
-        public void appendParamValue(Object value, StringBuilder sb)
-        {
-            sb.append(value);
-        }
-    }
 }
