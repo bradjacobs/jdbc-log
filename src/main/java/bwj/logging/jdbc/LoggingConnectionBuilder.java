@@ -1,6 +1,5 @@
 package bwj.logging.jdbc;
 
-import bwj.logging.jdbc.param.ChronoParamRendererFactory;
 import bwj.logging.jdbc.param.DefaultSqlParamRendererFactory;
 import bwj.logging.jdbc.param.RendererDefinitions;
 import bwj.logging.jdbc.param.RendererSelector;
@@ -73,16 +72,6 @@ public class LoggingConnectionBuilder
     }
 
 
-    /**
-     * Configures Timestamps, Dates, Times to rendered as strings with default format pattern
-     *   i.e. "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd", and "HH:mm:ss" respectively
-     */
-    public LoggingConnectionBuilder withChronoDefaultStrings() {
-        overrideRendererDefinitions.setTimestampRenderer(ChronoParamRendererFactory.createDefaultTimestampParamRenderer(zoneId));
-        overrideRendererDefinitions.setDateRenderer(ChronoParamRendererFactory.createDefaultDateParamRenderer(zoneId));
-        overrideRendererDefinitions.setTimeRenderer(ChronoParamRendererFactory.createDefaultTimeParamRenderer(zoneId));
-        return this;
-    }
 
     /**
      * Custom date format string pattern for rendering java.sql.Timestamp as strings
@@ -90,7 +79,7 @@ public class LoggingConnectionBuilder
      * @see java.time.format.DateTimeFormatter
      */
     public LoggingConnectionBuilder withTimestampOnlyCustomString(String pattern) {
-        overrideRendererDefinitions.setTimestampRenderer(ChronoParamRendererFactory.createChronoStringParamRenderer(pattern, zoneId));
+        overrideRendererDefinitions.setTimestampRenderer(DefaultSqlParamRendererFactory.createDateStringParamRenderer(pattern, zoneId));
         return this;
     }
 
@@ -100,7 +89,7 @@ public class LoggingConnectionBuilder
      * @see java.time.format.DateTimeFormatter
      */
     public LoggingConnectionBuilder withDateOnlyCustomString(String pattern) {
-        overrideRendererDefinitions.setDateRenderer(ChronoParamRendererFactory.createChronoStringParamRenderer(pattern, zoneId));
+        overrideRendererDefinitions.setDateRenderer(DefaultSqlParamRendererFactory.createDateStringParamRenderer(pattern, zoneId));
         return this;
     }
 
@@ -110,25 +99,24 @@ public class LoggingConnectionBuilder
      * @see java.time.format.DateTimeFormatter
      */
     public LoggingConnectionBuilder withTimeOnlyCustomString(String pattern) {
-        overrideRendererDefinitions.setTimeRenderer(ChronoParamRendererFactory.createChronoStringParamRenderer(pattern, zoneId));
+        overrideRendererDefinitions.setTimeRenderer(DefaultSqlParamRendererFactory.createDateStringParamRenderer(pattern, zoneId));
         return this;
     }
 
 
     /**
-     * Enable all timestamp/date/time instandes to rendered as numeric (unix/epoch time)
+     * Enable all timestamp/date/time instanes to rendered as numeric (unix/epoch time)
      */
     public LoggingConnectionBuilder withChronoDefaultNumerics() {
-        overrideRendererDefinitions.setAllTimeDateRenderers(ChronoParamRendererFactory.createChronoNumericParamRenderer());
+        overrideRendererDefinitions.setAllTimeDateRenderers(DefaultSqlParamRendererFactory.createDateNumericDParamRenderer());
         return this;
     }
 
-    // todo - fix: method below could cause ClassCastExxeption
     /**
-     * Apply ParamRender for all the date/time types
+     * Apply ParamRender for all the timestamp/date/time types
      * @param paramRenderer paramRenderer
      */
-    public <T extends Date> LoggingConnectionBuilder withChronoParamRenderer(SqlParamRenderer<T> paramRenderer) {
+    public LoggingConnectionBuilder withChronoParamRenderer(SqlParamRenderer<Date> paramRenderer) {
         overrideRendererDefinitions.setTimestampRenderer(paramRenderer);
         overrideRendererDefinitions.setDateRenderer(paramRenderer);
         overrideRendererDefinitions.setTimeRenderer(paramRenderer);

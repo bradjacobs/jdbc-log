@@ -15,17 +15,10 @@ public class TagFiller
         this(DEFAULT_TAG, rendererSelector);
     }
 
-
     public TagFiller(String tag, RendererSelector rendererSelector)
     {
-        if (tag == null || tag.isEmpty()) {
-            throw new IllegalArgumentException("Must provide a tag parameter.");
-        }
+        validateParams(tag, rendererSelector);
         this.tag = tag;
-
-        if (rendererSelector == null) {
-            throw new IllegalArgumentException("Must provide a rendererSelector.");
-        }
         this.rendererSelector = rendererSelector;
     }
 
@@ -69,16 +62,23 @@ public class TagFiller
         return sb.toString();
     }
 
-    //  SQL uses a very specific date format, which is 'YYYY-MM-DD'.
-    //  YYYY-MM-DD HH:MM:SS
 
     public void appendValue(Object object, StringBuilder sb)
     {
         SqlParamRenderer paramRenderer = rendererSelector.getRenderer(object);
 
-        // todo - fix type checking
         paramRenderer.appendParamValue(object, sb);
     }
 
+
+    private void validateParams(String tag, RendererSelector rendererSelector) throws IllegalArgumentException
+    {
+        if (tag == null || tag.isEmpty()) {
+            throw new IllegalArgumentException("Must provide a tag parameter.");
+        }
+        if (rendererSelector == null) {
+            throw new IllegalArgumentException("Must provide a rendererSelector.");
+        }
+    }
 
 }
