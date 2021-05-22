@@ -1,6 +1,5 @@
 package bwj.logging.jdbc;
 
-import bwj.logging.jdbc.param.ChronoParamRenderer;
 import bwj.logging.jdbc.param.ChronoParamRendererFactory;
 import bwj.logging.jdbc.param.DefaultSqlParamRendererFactory;
 import bwj.logging.jdbc.param.RendererDefinitions;
@@ -10,12 +9,16 @@ import bwj.logging.jdbc.param.TagFiller;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ *
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/format/DateTimeFormatter.html">DateTimeFormatter</a>
+ */
 public class LoggingConnectionBuilder
 {
     private static final ZoneId DEFAULT_ZONE = DefaultSqlParamRendererFactory.DEFAULT_ZONE;
@@ -30,37 +33,20 @@ public class LoggingConnectionBuilder
 
     private TagFiller tagFiller = null;
 
+    /**
+     * Default LoggingConnectionBuilder constructor
+     *   will use "UTC" timezone for any Date/Timesteamp string value formatting.
+     */
     public LoggingConnectionBuilder()
     {
         this(DEFAULT_ZONE);
     }
 
-
-    public static void main(String[] args)
-    {
-        LoggingConnectionBuilder builder = new LoggingConnectionBuilder();
-        TimeRender timeRenderer = new TimeRender();
-        builder.withChronoParamRenderer(timeRenderer);
-    }
-
-
-    private static class TimeRender implements ChronoParamRenderer<Time>
-    {
-
-        @Override
-        public void appendParamValue(Time value, StringBuilder sb)
-        {
-            System.out.println("YO");
-        }
-    }
-
-
-
     /**
-     * can Optionally supply a custom timezone
-     *    (used for rendering dates and timestamps to strings)
-     * Note: "ZoneId.systemDefault" can be used for the current local timezone.
-     * @param zoneId
+     * LoggingConnectionBuilder constructor
+     * Optionally supply a custom timezone (used any Date/Timesteamp string value formatting.)
+     *    note: "ZoneId.systemDefault" can be used for the current local timezone.
+     * @param zoneId ( default: UTC )
      */
     public LoggingConnectionBuilder(ZoneId zoneId)
     {
@@ -75,21 +61,21 @@ public class LoggingConnectionBuilder
         loggingListeners.add(logListener);
         return this;
     }
+
+    /**
+     * Enables to abiltty to log Text Clob/Reader/InputStream values
+     *    WARNING: can significantly impact performance if enabled.
+     * @param streamLoggingEnabled  (default: FALSE)
+     */
     public LoggingConnectionBuilder setStreamLoggingEnabled(boolean streamLoggingEnabled) {
         this.streamLoggingEnabled = streamLoggingEnabled;
         return this;
     }
 
 
-    // todo - begin
-    //   this is a all a little kludgy clunky
-
     /**
-     * Sets the date/time class with default string pattern output
-     *  java.sql.Timestamp -> yyyy-MM-dd HH:mm:ss
-     *  java.sql.Date -> yyyy-MM-dd
-     *  java.sql.Time -> HH:mm:ss
-     * @return
+     * Configures Timestamps, Dates, Times to rendered as strings with default format pattern
+     *   i.e. "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd", and "HH:mm:ss" respectively
      */
     public LoggingConnectionBuilder withChronoDefaultStrings() {
         overrideRendererDefinitions.setTimestampRenderer(ChronoParamRendererFactory.createDefaultTimestampParamRenderer(zoneId));
@@ -99,9 +85,9 @@ public class LoggingConnectionBuilder
     }
 
     /**
-     * Custom string output for java.sql.Timestamp classes
-     * @param pattern
-     * @return
+     * Custom date format string pattern for rendering java.sql.Timestamp as strings
+     * @param pattern date format pattern
+     * @see java.time.format.DateTimeFormatter
      */
     public LoggingConnectionBuilder withTimestampOnlyCustomString(String pattern) {
         overrideRendererDefinitions.setTimestampRenderer(ChronoParamRendererFactory.createChronoStringParamRenderer(pattern, zoneId));
@@ -109,9 +95,9 @@ public class LoggingConnectionBuilder
     }
 
     /**
-     * Custom string output for java.sql.Date classes
-     * @param pattern
-     * @return
+     * Custom date format string pattern for rendering java.sql.Date as strings
+     * @param pattern date format pattern
+     * @see java.time.format.DateTimeFormatter
      */
     public LoggingConnectionBuilder withDateOnlyCustomString(String pattern) {
         overrideRendererDefinitions.setDateRenderer(ChronoParamRendererFactory.createChronoStringParamRenderer(pattern, zoneId));
@@ -119,9 +105,9 @@ public class LoggingConnectionBuilder
     }
 
     /**
-     * Custom string output for java.sql.Time classes
-     * @param pattern
-     * @return
+     * Custom date format string pattern for rendering java.sql.Time as strings
+     * @param pattern date format pattern
+     * @see java.time.format.DateTimeFormatter
      */
     public LoggingConnectionBuilder withTimeOnlyCustomString(String pattern) {
         overrideRendererDefinitions.setTimeRenderer(ChronoParamRendererFactory.createChronoStringParamRenderer(pattern, zoneId));
@@ -129,15 +115,18 @@ public class LoggingConnectionBuilder
     }
 
 
+    /**
+     * Enable all timestamp/date/time instandes to rendered as numeric (unix/epoch time)
+     */
     public LoggingConnectionBuilder withChronoDefaultNumerics() {
         overrideRendererDefinitions.setAllTimeDateRenderers(ChronoParamRendererFactory.createChronoNumericParamRenderer());
         return this;
     }
 
+    // todo - fix: method below could cause ClassCastExxeption
     /**
      * Apply ParamRender for all the date/time types
-     * @param paramRenderer
-     * @return
+     * @param paramRenderer paramRenderer
      */
     public <T extends Date> LoggingConnectionBuilder withChronoParamRenderer(SqlParamRenderer<T> paramRenderer) {
         overrideRendererDefinitions.setTimestampRenderer(paramRenderer);
@@ -147,8 +136,11 @@ public class LoggingConnectionBuilder
     }
 
 
-
-
+    /**
+     * Creates a LoggingConnection
+     * @param connection the original connection to be wrapped with LoggingConnection.
+     * @return loggingConnection
+     */
     public LoggingConnection build(Connection connection) {
         if (connection == null) {
             throw new IllegalArgumentException("Connection cannot be null.");
@@ -156,8 +148,6 @@ public class LoggingConnectionBuilder
         if (this.tagFiller == null) {
             initializeFinalRenderMap(connection);
         }
-
-        // todo - add validation if any params are set incorrect.
 
         return new LoggingConnection(connection, this.streamLoggingEnabled, this.tagFiller, this.loggingListeners);
     }
@@ -179,7 +169,7 @@ public class LoggingConnectionBuilder
                     /* ignore */
                 }
 
-                // create initial map w/ default values
+                // create initial defn's w/ defaul values
                 RendererDefinitions rendereDefinitions = DefaultSqlParamRendererFactory.createDefaultDefinitions(dbProductName, zoneId);
 
                 mergeInOverrideDefintions(rendereDefinitions, this.overrideRendererDefinitions);
@@ -211,6 +201,5 @@ public class LoggingConnectionBuilder
             base.setTimestampRenderer(override.getTimeRenderer());
         }
     }
-
 
 }
