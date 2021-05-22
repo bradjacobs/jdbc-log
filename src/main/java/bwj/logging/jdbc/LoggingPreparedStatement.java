@@ -95,6 +95,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
 
 
 
+    /** @inheritDoc */
     @Override
     public void clearParameters() throws SQLException
     {
@@ -102,6 +103,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.clearParameters();
     }
 
+    /** @inheritDoc */
     @Override
     public void addBatch() throws SQLException
     {
@@ -110,6 +112,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     }
 
 
+    /** @inheritDoc */
     @Override
     public boolean execute() throws SQLException
     {
@@ -117,6 +120,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         return preparedStatement.execute();
     }
 
+    /** @inheritDoc */
     @Override
     public ResultSet executeQuery() throws SQLException
     {
@@ -124,6 +128,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         return preparedStatement.executeQuery();
     }
 
+    /** @inheritDoc */
     @Override
     public int executeUpdate() throws SQLException
     {
@@ -131,6 +136,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         return preparedStatement.executeUpdate();
     }
 
+    /** @inheritDoc */
     @Override
     public long executeLargeUpdate() throws SQLException
     {
@@ -139,6 +145,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     }
 
 
+    /** @inheritDoc */
     @Override
     public ResultSetMetaData getMetaData() throws SQLException
     {
@@ -146,6 +153,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     }
 
 
+    /** @inheritDoc */
     @Override
     public ParameterMetaData getParameterMetaData() throws SQLException
     {
@@ -153,6 +161,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     }
 
 
+    /** @inheritDoc */
     @Override
     public void setArray(int parameterIndex, Array x) throws SQLException
     {
@@ -160,6 +169,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setArray(parameterIndex, x);
     }
 
+    /** @inheritDoc */
     @Override
     public void setAsciiStream(int parameterIndex, InputStream x) throws SQLException
     {
@@ -167,6 +177,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setAsciiStream(parameterIndex, x);
     }
 
+    /** @inheritDoc */
     @Override
     public void setAsciiStream(int parameterIndex, InputStream x, int length) throws SQLException
     {
@@ -174,6 +185,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setAsciiStream(parameterIndex, x, length);
     }
 
+    /** @inheritDoc */
     @Override
     public void setAsciiStream(int parameterIndex, InputStream x, long length) throws SQLException
     {
@@ -181,6 +193,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setAsciiStream(parameterIndex, x, length);
     }
 
+    /** @inheritDoc */
     @Override
     public void setBigDecimal(int parameterIndex, BigDecimal x) throws SQLException
     {
@@ -188,6 +201,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setBigDecimal(parameterIndex, x);
     }
 
+    /** @inheritDoc */
     @Override
     public void setBinaryStream(int parameterIndex, InputStream x) throws SQLException
     {
@@ -195,6 +209,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setBinaryStream(parameterIndex, x);
     }
 
+    /** @inheritDoc */
     @Override
     public void setBinaryStream(int parameterIndex, InputStream x, int length) throws SQLException
     {
@@ -202,6 +217,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setBinaryStream(parameterIndex, x, length);
     }
 
+    /** @inheritDoc */
     @Override
     public void setBinaryStream(int parameterIndex, InputStream x, long length) throws SQLException
     {
@@ -209,6 +225,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setBinaryStream(parameterIndex, x, length);
     }
 
+    /** @inheritDoc */
     @Override
     public void setBlob(int parameterIndex, Blob x) throws SQLException
     {
@@ -216,6 +233,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setBlob(parameterIndex, x);
     }
 
+    /** @inheritDoc */
     @Override
     public void setBlob(int parameterIndex, InputStream inputStream) throws SQLException
     {
@@ -223,6 +241,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setBlob(parameterIndex, inputStream);
     }
 
+    /** @inheritDoc */
     @Override
     public void setBlob(int parameterIndex, InputStream inputStream, long length) throws SQLException
     {
@@ -230,6 +249,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setBlob(parameterIndex, inputStream, length);
     }
 
+    /** @inheritDoc */
     @Override
     public void setBoolean(int parameterIndex, boolean x) throws SQLException
     {
@@ -237,6 +257,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setBoolean(parameterIndex, x);
     }
 
+    /** @inheritDoc */
     @Override
     public void setByte(int parameterIndex, byte x) throws SQLException
     {
@@ -244,6 +265,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setByte(parameterIndex, x);
     }
 
+    /** @inheritDoc */
     @Override
     public void setBytes(int parameterIndex, byte[] x) throws SQLException
     {
@@ -251,6 +273,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setBytes(parameterIndex, x);
     }
 
+    /** @inheritDoc */
     @Override
     public void setCharacterStream(int parameterIndex, Reader reader) throws SQLException
     {
@@ -258,6 +281,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setCharacterStream(parameterIndex, reader);
     }
 
+    /** @inheritDoc */
     @Override
     public void setCharacterStream(int parameterIndex, Reader reader, int length) throws SQLException
     {
@@ -265,6 +289,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setCharacterStream(parameterIndex, reader, length);
     }
 
+    /** @inheritDoc */
     @Override
     public void setCharacterStream(int parameterIndex, Reader reader, long length) throws SQLException
     {
@@ -272,6 +297,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setCharacterStream(parameterIndex, reader, length);
     }
 
+    /** @inheritDoc */
     @Override
     public void setClob(int parameterIndex, Clob x) throws SQLException
     {
@@ -285,6 +311,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         }
     }
 
+    /** @inheritDoc */
     @Override
     public void setClob(int parameterIndex, Reader reader) throws SQLException
     {
@@ -292,6 +319,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setClob(parameterIndex, reader);
     }
 
+    /** @inheritDoc */
     @Override
     public void setClob(int parameterIndex, Reader reader, long length) throws SQLException
     {
@@ -299,6 +327,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setClob(parameterIndex, reader, length);
     }
 
+    /** @inheritDoc */
     @Override
     public void setDouble(int parameterIndex, double x) throws SQLException
     {
@@ -306,6 +335,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setDouble(parameterIndex, x);
     }
 
+    /** @inheritDoc */
     @Override
     public void setDate(int parameterIndex, Date x) throws SQLException
     {
@@ -313,6 +343,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setDate(parameterIndex, x);
     }
 
+    /** @inheritDoc */
     @Override
     public void setDate(int parameterIndex, Date x, Calendar cal) throws SQLException
     {
@@ -320,6 +351,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setDate(parameterIndex, x, cal);
     }
 
+    /** @inheritDoc */
     @Override
     public void setInt(int parameterIndex, int x) throws SQLException
     {
@@ -327,6 +359,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setInt(parameterIndex, x);
     }
 
+    /** @inheritDoc */
     @Override
     public void setFloat(int parameterIndex, float x) throws SQLException
     {
@@ -334,6 +367,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setFloat(parameterIndex, x);
     }
 
+    /** @inheritDoc */
     @Override
     public void setLong(int parameterIndex, long x) throws SQLException
     {
@@ -341,6 +375,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setLong(parameterIndex, x);
     }
 
+    /** @inheritDoc */
     @Override
     public void setNCharacterStream(int parameterIndex, Reader reader) throws SQLException
     {
@@ -348,6 +383,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setNCharacterStream(parameterIndex, reader);
     }
 
+    /** @inheritDoc */
     @Override
     public void setNClob(int parameterIndex, NClob x) throws SQLException
     {
@@ -361,6 +397,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         }
     }
 
+    /** @inheritDoc */
     @Override
     public void setNClob(int parameterIndex, Reader reader) throws SQLException
     {
@@ -368,6 +405,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setNClob(parameterIndex, reader);
     }
 
+    /** @inheritDoc */
     @Override
     public void setNCharacterStream(int parameterIndex, Reader reader, long length) throws SQLException
     {
@@ -375,6 +413,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setNCharacterStream(parameterIndex, reader, length);
     }
 
+    /** @inheritDoc */
     @Override
     public void setNClob(int parameterIndex, Reader reader, long length) throws SQLException
     {
@@ -382,6 +421,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setNClob(parameterIndex, reader, length);
     }
 
+    /** @inheritDoc */
     @Override
     public void setNString(int parameterIndex, String value) throws SQLException
     {
@@ -389,6 +429,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setNString(parameterIndex, value);
     }
 
+    /** @inheritDoc */
     @Override
     public void setNull(int parameterIndex, int sqlType) throws SQLException
     {
@@ -396,6 +437,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setNull(parameterIndex, sqlType);
     }
 
+    /** @inheritDoc */
     @Override
     public void setNull(int parameterIndex, int sqlType, String typeName) throws SQLException
     {
@@ -403,6 +445,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setNull(parameterIndex, sqlType, typeName);
     }
 
+    /** @inheritDoc */
     @Override
     public void setObject(int parameterIndex, Object x) throws SQLException
     {
@@ -410,6 +453,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setObject(parameterIndex, x);
     }
 
+    /** @inheritDoc */
     @Override
     public void setObject(int parameterIndex, Object x, int targetSqlType) throws SQLException
     {
@@ -417,6 +461,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setObject(parameterIndex, x, targetSqlType);
     }
 
+    /** @inheritDoc */
     @Override
     public void setObject(int parameterIndex, Object x, SQLType targetSqlType) throws SQLException
     {
@@ -424,6 +469,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setObject(parameterIndex, x, targetSqlType);
     }
 
+    /** @inheritDoc */
     @Override
     public void setObject(int parameterIndex, Object x, int targetSqlType, int scaleOrLength) throws SQLException
     {
@@ -431,6 +477,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setObject(parameterIndex, x, targetSqlType, scaleOrLength);
     }
 
+    /** @inheritDoc */
     @Override
     public void setObject(int parameterIndex, Object x, SQLType targetSqlType, int scaleOrLength) throws SQLException
     {
@@ -438,18 +485,21 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setObject(parameterIndex, x, targetSqlType, scaleOrLength);
     }
 
+    /** @inheritDoc */
     @Override
     public void setRef(int parameterIndex, Ref x) throws SQLException
     {
         preparedStatement.setRef(parameterIndex, x);
     }
 
+    /** @inheritDoc */
     @Override
     public void setRowId(int parameterIndex, RowId x) throws SQLException
     {
         preparedStatement.setRowId(parameterIndex, x);
     }
 
+    /** @inheritDoc */
     @Override
     public void setShort(int parameterIndex, short x) throws SQLException
     {
@@ -457,6 +507,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setShort(parameterIndex, x);
     }
 
+    /** @inheritDoc */
     @Override
     public void setString(int parameterIndex, String x) throws SQLException
     {
@@ -464,6 +515,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setString(parameterIndex, x);
     }
 
+    /** @inheritDoc */
     @Override
     public void setSQLXML(int parameterIndex, SQLXML xmlObject) throws SQLException
     {
@@ -472,6 +524,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setSQLXML(parameterIndex, xmlObject);
     }
 
+    /** @inheritDoc */
     @Override
     public void setTime(int parameterIndex, Time x) throws SQLException
     {
@@ -479,6 +532,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setTime(parameterIndex, x);
     }
 
+    /** @inheritDoc */
     @Override
     public void setTime(int parameterIndex, Time x, Calendar cal) throws SQLException
     {
@@ -486,6 +540,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setTime(parameterIndex, x, cal);
     }
 
+    /** @inheritDoc */
     @Override
     public void setTimestamp(int parameterIndex, Timestamp x) throws SQLException
     {
@@ -493,6 +548,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setTimestamp(parameterIndex, x);
     }
 
+    /** @inheritDoc */
     @Override
     public void setTimestamp(int parameterIndex, Timestamp x, Calendar cal) throws SQLException
     {
@@ -500,6 +556,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setTimestamp(parameterIndex, x, cal);
     }
 
+    /** @inheritDoc */
     @Override
     @Deprecated
     public void setUnicodeStream(int parameterIndex, InputStream x, int length) throws SQLException
@@ -508,6 +565,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setUnicodeStream(parameterIndex, x, length);
     }
 
+    /** @inheritDoc */
     @Override
     public void setURL(int parameterIndex, URL x) throws SQLException
     {
