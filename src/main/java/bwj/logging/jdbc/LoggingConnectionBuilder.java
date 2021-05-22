@@ -1,6 +1,6 @@
 package bwj.logging.jdbc;
 
-import bwj.logging.jdbc.param.DefaultSqlParamRendererFactory;
+import bwj.logging.jdbc.param.SqlParamRendererFactory;
 import bwj.logging.jdbc.param.RendererDefinitions;
 import bwj.logging.jdbc.param.RendererSelector;
 import bwj.logging.jdbc.param.SqlParamRenderer;
@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class LoggingConnectionBuilder
 {
-    private static final ZoneId DEFAULT_ZONE = DefaultSqlParamRendererFactory.DEFAULT_ZONE;
+    private static final ZoneId DEFAULT_ZONE = SqlParamRendererFactory.DEFAULT_ZONE;
 
 
     private final ZoneId zoneId;
@@ -81,7 +81,7 @@ public class LoggingConnectionBuilder
      * @see java.time.format.DateTimeFormatter
      */
     public LoggingConnectionBuilder withTimestampOnlyCustomString(String pattern) {
-        overrideRendererDefinitions.setTimestampRenderer(DefaultSqlParamRendererFactory.createDateStringParamRenderer(pattern, zoneId));
+        overrideRendererDefinitions.setTimestampRenderer(SqlParamRendererFactory.createDateStringParamRenderer(pattern, zoneId));
         return this;
     }
 
@@ -91,7 +91,7 @@ public class LoggingConnectionBuilder
      * @see java.time.format.DateTimeFormatter
      */
     public LoggingConnectionBuilder withDateOnlyCustomString(String pattern) {
-        overrideRendererDefinitions.setDateRenderer(DefaultSqlParamRendererFactory.createDateStringParamRenderer(pattern, zoneId));
+        overrideRendererDefinitions.setDateRenderer(SqlParamRendererFactory.createDateStringParamRenderer(pattern, zoneId));
         return this;
     }
 
@@ -101,7 +101,7 @@ public class LoggingConnectionBuilder
      * @see java.time.format.DateTimeFormatter
      */
     public LoggingConnectionBuilder withTimeOnlyCustomString(String pattern) {
-        overrideRendererDefinitions.setTimeRenderer(DefaultSqlParamRendererFactory.createDateStringParamRenderer(pattern, zoneId));
+        overrideRendererDefinitions.setTimeRenderer(SqlParamRendererFactory.createDateStringParamRenderer(pattern, zoneId));
         return this;
     }
 
@@ -110,7 +110,7 @@ public class LoggingConnectionBuilder
      * Enable all timestamp/date/time instanes to rendered as numeric (unix/epoch time)
      */
     public LoggingConnectionBuilder withChronoDefaultNumerics() {
-        overrideRendererDefinitions.setAllTimeDateRenderers(DefaultSqlParamRendererFactory.createDateNumericDParamRenderer());
+        overrideRendererDefinitions.setAllTimeDateRenderers(SqlParamRendererFactory.createDateNumericDParamRenderer());
         return this;
     }
 
@@ -160,7 +160,7 @@ public class LoggingConnectionBuilder
                 }
 
                 // create initial defn's w/ defaul values
-                RendererDefinitions rendereDefinitions = DefaultSqlParamRendererFactory.createDefaultDefinitions(dbProductName, zoneId);
+                RendererDefinitions rendereDefinitions = SqlParamRendererFactory.createDefaultDefinitions(dbProductName, zoneId);
 
                 mergeInOverrideDefintions(rendereDefinitions, this.overrideRendererDefinitions);
                 RendererSelector rendererSelector = new RendererSelector(rendereDefinitions);

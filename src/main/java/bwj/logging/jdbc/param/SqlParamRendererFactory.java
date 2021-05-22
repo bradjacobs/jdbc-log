@@ -8,7 +8,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-public class DefaultSqlParamRendererFactory
+public class SqlParamRendererFactory
 {
     private static final String DEFAULT_TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss";
     private static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd";
@@ -16,7 +16,18 @@ public class DefaultSqlParamRendererFactory
     public static final ZoneId DEFAULT_ZONE = ZoneId.of("UTC");
 
 
-    private DefaultSqlParamRendererFactory() { }
+    private SqlParamRendererFactory() { }
+
+
+
+    public static SqlParamRenderer<Date> createDateStringParamRenderer(String pattern, ZoneId zoneId)
+    {
+        return new ChronoStringParamRenderer(pattern, zoneId);
+    }
+    public static SqlParamRenderer<Date> createDateNumericDParamRenderer()
+    {
+        return new ChronoNumericParamRenderer();
+    }
 
 
     /**
@@ -98,15 +109,6 @@ public class DefaultSqlParamRendererFactory
         return rendererDefinitions;
     }
 
-
-    public static SqlParamRenderer<Date> createDateStringParamRenderer(String pattern, ZoneId zoneId)
-    {
-        return new ChronoStringParamRenderer(pattern, zoneId);
-    }
-    public static SqlParamRenderer<Date> createDateNumericDParamRenderer()
-    {
-        return new ChronoNumericParamRenderer();
-    }
 
 
 
@@ -228,7 +230,7 @@ public class DefaultSqlParamRendererFactory
 
     private static class ChronoStringParamRenderer implements SqlParamRenderer<Date>
     {
-        protected final DateTimeFormatter formatter;
+        private final DateTimeFormatter formatter;
 
         public ChronoStringParamRenderer(String pattern, ZoneId zoneId)
         {
@@ -238,8 +240,13 @@ public class DefaultSqlParamRendererFactory
             if (zoneId == null) {
                 zoneId = DEFAULT_ZONE;
             }
-            this.formatter = DateTimeFormatter.ofPattern(pattern).withZone(zoneId);
-        }
+
+            // give a slightly more meaningful error msg with bad parameter.
+            try {
+                formatter = DateTimeFormatter.ofPattern(pattern).withZone(zoneId);
+            } catch (Exception e) {
+                throw new IllegalArgumentException(String.format("Invalid DateFormat pattern: '%s'. Error: %s.", pattern, e.getMessage()), e);
+            }        }
 
         @Override
         public void appendParamValue(Date value, StringBuilder sb)

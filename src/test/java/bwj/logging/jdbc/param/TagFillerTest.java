@@ -238,7 +238,7 @@ public class TagFillerTest
         // NOTE: this value is: Thursday, September 27, 2018 2:07:11 AM  __GMT__
         long timeLong = 1538014031000L;
 
-        RendererDefinitions rendereDefinitions = DefaultSqlParamRendererFactory.createDefaultDefinitions("");
+        RendererDefinitions rendereDefinitions = SqlParamRendererFactory.createDefaultDefinitions("");
         rendereDefinitions.setDateRenderer( rendereDefinitions.getTimestampRenderer() );
 
         RendererSelector rendererSelector = new RendererSelector(rendereDefinitions);
@@ -283,7 +283,7 @@ public class TagFillerTest
 
     private TagFiller createTestTagFiller()
     {
-        RendererDefinitions rendereDefinitions = DefaultSqlParamRendererFactory.createDefaultDefinitions("");
+        RendererDefinitions rendereDefinitions = SqlParamRendererFactory.createDefaultDefinitions("");
         RendererSelector rendererSelector = new RendererSelector(rendereDefinitions);
         return new TagFiller(rendererSelector);
     }
