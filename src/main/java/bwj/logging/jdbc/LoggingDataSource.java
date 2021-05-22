@@ -7,33 +7,44 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
-// todo - read this.
-//    https://docs.spring.io/spring-boot/docs/1.5.14.RELEASE/reference/html/howto-data-access.html
 
-
-public class MyDataSource implements DataSource
+/**
+ *
+ * @see <a href="https://docs.spring.io/spring-boot/docs/1.5.14.RELEASE/reference/html/howto-data-access.html">Spring - Configure a Custom DataSource</a>
+ */
+public class LoggingDataSource implements DataSource
 {
     private final DataSource dataSource;
+    private final LoggingConnectionBuilder loggingConnectionBuilder;
 
     private boolean loggingConnectionEnabled = true;
 
-    private final LoggingConnectionBuilder loggingConnectionBuilder;
 
-    public MyDataSource(DataSource dataSource)
+    /**
+     * Simple Constructor uses all the "defaults" for SQL Database logging.
+     * @param dataSource dateSource
+     */
+    public LoggingDataSource(DataSource dataSource)
     {
-        this(dataSource, createDefaultLoggingConnectionBuilder());
+        this(dataSource, new LoggingConnectionBuilder());
     }
 
-    public MyDataSource(DataSource dataSource, LoggingConnectionBuilder loggingConnectionBuilder)
+    /**
+     * Custom constructor that can pass in own builder that has been 'preset' accordingly
+     * @param dataSource dateSource
+     * @param loggingConnectionBuilder loggingConnectionBuilder
+     */
+    public LoggingDataSource(DataSource dataSource, LoggingConnectionBuilder loggingConnectionBuilder)
     {
+        if (dataSource == null) {
+            throw new IllegalArgumentException("Must provide a dateSource");
+        }
+        if (loggingConnectionBuilder == null) {
+            throw new IllegalArgumentException("Must provide a loggingConnectionBuilder");
+        }
+
         this.dataSource = dataSource;
         this.loggingConnectionBuilder = loggingConnectionBuilder;
-    }
-
-
-    private static LoggingConnectionBuilder createDefaultLoggingConnectionBuilder()
-    {
-        return new LoggingConnectionBuilder();
     }
 
 
@@ -53,6 +64,26 @@ public class MyDataSource implements DataSource
             return innerConnection;
         }
         return loggingConnectionBuilder.build(innerConnection);
+    }
+
+    /**
+     * Check if LoggingConnection is enabled.
+     *  a 'false' means dislabled and calls to 'getConnection' will return the original Connection
+     *  instead of a LoggingConnection
+     * @return isEnabled.
+     */
+    public boolean isLoggingConnectionEnabled()
+    {
+        return loggingConnectionEnabled;
+    }
+
+    /**
+     * Enables usage of logging connections
+     *   default: true
+     */
+    public void setLoggingConnectionEnabled(boolean loggingConnectionEnabled)
+    {
+        this.loggingConnectionEnabled = loggingConnectionEnabled;
     }
 
 
