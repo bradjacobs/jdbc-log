@@ -72,8 +72,8 @@ public class LoggingDataSource implements DataSource
 
     /**
      * Check if LoggingConnection is enabled.
-     *  a 'false' means dislabled and calls to 'getConnection' will return the original Connection
-     *  instead of a LoggingConnection
+     *  a 'false' means logging disabled and calls to 'getConnection'
+     *  will return the original Connection instead of a LoggingConnection
      * @return isEnabled.
      */
     public boolean isLoggingConnectionEnabled()
