@@ -26,36 +26,39 @@ public class LoggingConnection implements Connection
 {
     private final Connection connection;
 
-    // todo - see if can clean up a little.
     private final TagFiller tagFiller;
     private final boolean streamLoggingEnabled;
     private final List<LoggingListener> logListeners;
 
 
-
-    public LoggingConnection(Connection connection, boolean streamLoggingEnabled, TagFiller tagFiller, List<LoggingListener> logListeners) {
+    /**
+     * Logging Connection constructor.
+     *   Use the builder to create an instance.
+     *     i.e. Connection loggingConnection = new LoggingConnectionBuilder().build(connection);
+     * @param connection original jdbc connection
+     * @param builder the loggingConnection builder
+     */
+    LoggingConnection(Connection connection, LoggingConnectionBuilder builder) {
         this.connection = connection;
-        this.streamLoggingEnabled = streamLoggingEnabled;
-        this.tagFiller = tagFiller;
-        this.logListeners = logListeners;
+        this.tagFiller = builder.tagFiller;
+        this.streamLoggingEnabled = builder.streamLoggingEnabled;
+        this.logListeners = builder.loggingListeners;
     }
 
 
     private Statement logWrap(Statement statement)
     {
-        SqlStatementTracker sqlStatementTracker = new SqlStatementTracker();
-        return new LoggingStatement(statement, logListeners, sqlStatementTracker);
+        return new LogStatementBuilder(this).build(statement);
     }
     private PreparedStatement logWrap(PreparedStatement preparedStatement, String sql)
     {
-        SqlStatementTracker sqlStatementTracker = new SqlStatementTracker(sql, tagFiller, streamLoggingEnabled);
-        return new LoggingPreparedStatement(preparedStatement, logListeners, sqlStatementTracker);
+        return new LogStatementBuilder(this).withSql(sql).build(preparedStatement);
     }
     private CallableStatement logWrap(CallableStatement callableStatement, String sql)
     {
-        SqlStatementTracker sqlStatementTracker = new SqlStatementTracker(sql, tagFiller, streamLoggingEnabled);
-        return new LoggingCallableStatement(callableStatement, logListeners, sqlStatementTracker);
+        return new LogStatementBuilder(this).withSql(sql).build(callableStatement);
     }
+
 
 
 
@@ -441,4 +444,49 @@ public class LoggingConnection implements Connection
     {
         return connection.isWrapperFor(iface);
     }
+
+
+
+
+    class LogStatementBuilder
+    {
+        private final LoggingConnection loggingConnection;
+        private String sql = null;
+
+        LogStatementBuilder(LoggingConnection loggingConnection) {
+            this.loggingConnection = loggingConnection;
+        }
+
+        LogStatementBuilder withSql(String sql) {
+            this.sql = sql;
+            return this;
+        }
+
+        LoggingStatement build(Statement statement) {
+            return new LoggingStatement(statement, this);
+        }
+        LoggingPreparedStatement build(PreparedStatement preparedStatement) {
+            return new LoggingPreparedStatement(preparedStatement, this);
+        }
+        LoggingCallableStatement build(CallableStatement callableStatement) {
+            return new LoggingCallableStatement(callableStatement, this);
+        }
+
+        SqlStatementTracker getSqlStatementTracker()
+        {
+            if (this.sql != null) {
+                return new SqlStatementTracker(this.sql, tagFiller, streamLoggingEnabled);
+            }
+            else {
+                return new SqlStatementTracker();
+            }
+        }
+        List<LoggingListener> getLogListeners() {
+            return logListeners;
+        }
+        Connection getConnection() {
+            return this.loggingConnection;
+        }
+    }
+
 }

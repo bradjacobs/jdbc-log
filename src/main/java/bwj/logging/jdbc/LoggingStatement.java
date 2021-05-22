@@ -66,14 +66,15 @@ public class LoggingStatement implements Statement
     private final Statement statement;
     protected final SqlStatementTracker sqlTracker;
     protected final List<LoggingListener> loggingListeners;
+    protected final Connection loggingConnection;
 
 
-
-    public LoggingStatement(Statement statement, List<LoggingListener> loggingListeners, SqlStatementTracker sqlStatementTracker)
+    public LoggingStatement(Statement statement, LoggingConnection.LogStatementBuilder builder)
     {
         this.statement = statement;
-        this.loggingListeners = loggingListeners;
-        this.sqlTracker = sqlStatementTracker;
+        this.loggingListeners = builder.getLogListeners();
+        this.sqlTracker = builder.getSqlStatementTracker();
+        this.loggingConnection = builder.getConnection();
     }
 
 
@@ -242,12 +243,15 @@ public class LoggingStatement implements Statement
         return statement.executeLargeUpdate(sql, columnNames);
     }
 
-    // TODO fix - currently returns a 'normal' jdbc connection instead of a LoggingConnection.
+
     /** @inheritDoc */
     @Override
     public Connection getConnection() throws SQLException
     {
-        return statement.getConnection();
+        // give the actual connection that generated this Logging Statement.
+        return loggingConnection;
+
+        //return statement.getConnection();
     }
 
     /** @inheritDoc */

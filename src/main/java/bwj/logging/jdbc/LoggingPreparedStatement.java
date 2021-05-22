@@ -28,19 +28,14 @@ import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.List;
 
 public class LoggingPreparedStatement extends LoggingStatement implements PreparedStatement
 {
     private final PreparedStatement preparedStatement;
 
-
-    public LoggingPreparedStatement(
-        PreparedStatement preparedStatement,
-        List<LoggingListener> loggingListeners,
-        SqlStatementTracker sqlStatementTracker)
+    public LoggingPreparedStatement(PreparedStatement preparedStatement, LoggingConnection.LogStatementBuilder builder)
     {
-        super(preparedStatement, loggingListeners, sqlStatementTracker);
+        super(preparedStatement, builder);
         this.preparedStatement = preparedStatement;
     }
 
@@ -54,7 +49,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
 
 
     /**
-     * Adds the parameteter value to the tracker, which is later used to generate teh SQL string.
+     * Adds the parameter value to the tracker, which is later used to generate teh SQL string.
      * @param index parameter index
      * @param value parameter value.
      */

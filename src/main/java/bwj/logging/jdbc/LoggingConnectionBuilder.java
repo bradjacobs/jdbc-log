@@ -25,16 +25,18 @@ public class LoggingConnectionBuilder
 
     private final ZoneId zoneId;
     private static final String tag = "?";
-    private boolean streamLoggingEnabled = Boolean.FALSE;
-
-    private final List<LoggingListener> loggingListeners = new ArrayList<>();
     private final RendererDefinitions overrideRendererDefinitions = new RendererDefinitions();
 
-    private TagFiller tagFiller = null;
+
+    //   package scope for LoggingConnection constructor
+    final List<LoggingListener> loggingListeners = new ArrayList<>();
+    boolean streamLoggingEnabled = Boolean.FALSE;
+    TagFiller tagFiller = null;
+
 
     /**
      * Default LoggingConnectionBuilder constructor
-     *   will use "UTC" timezone for any Date/Timesteamp string value formatting.
+     *   will use "UTC" timezone for any Date/Timestamp string value formatting.
      */
     public LoggingConnectionBuilder()
     {
@@ -137,7 +139,7 @@ public class LoggingConnectionBuilder
             initializeFinalRenderMap(connection);
         }
 
-        return new LoggingConnection(connection, this.streamLoggingEnabled, this.tagFiller, this.loggingListeners);
+        return new LoggingConnection(connection, this);
     }
 
 

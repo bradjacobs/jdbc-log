@@ -19,7 +19,6 @@ import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,12 +32,9 @@ public class LoggingCallableStatement extends LoggingPreparedStatement implement
 {
     private final CallableStatement callableStatement;
 
-    public LoggingCallableStatement(
-        CallableStatement callableStatement,
-        List<LoggingListener> loggingListeners,
-        SqlStatementTracker sqlStatementTracker)
+    public LoggingCallableStatement(CallableStatement callableStatement, LoggingConnection.LogStatementBuilder builder)
     {
-        super(callableStatement, loggingListeners, sqlStatementTracker);
+        super(callableStatement, builder);
         this.callableStatement = callableStatement;
     }
 

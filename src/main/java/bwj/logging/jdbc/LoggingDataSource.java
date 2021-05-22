@@ -36,13 +36,7 @@ public class LoggingDataSource implements DataSource
      */
     public LoggingDataSource(DataSource dataSource, LoggingConnectionBuilder loggingConnectionBuilder)
     {
-        if (dataSource == null) {
-            throw new IllegalArgumentException("Must provide a dateSource");
-        }
-        if (loggingConnectionBuilder == null) {
-            throw new IllegalArgumentException("Must provide a loggingConnectionBuilder");
-        }
-
+        validateParams(dataSource, loggingConnectionBuilder);
         this.dataSource = dataSource;
         this.loggingConnectionBuilder = loggingConnectionBuilder;
     }
@@ -139,4 +133,16 @@ public class LoggingDataSource implements DataSource
     {
         return dataSource.isWrapperFor(iface);
     }
+
+
+    private void validateParams(DataSource dataSource, LoggingConnectionBuilder loggingConnectionBuilder) throws IllegalArgumentException
+    {
+        if (dataSource == null) {
+            throw new IllegalArgumentException("Must provide a dateSource");
+        }
+        if (loggingConnectionBuilder == null) {
+            throw new IllegalArgumentException("Must provide a loggingConnectionBuilder");
+        }
+    }
+
 }
