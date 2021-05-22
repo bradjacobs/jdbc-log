@@ -36,6 +36,12 @@ public class RendererSelector
         else if (objValue instanceof java.sql.Time) {
             return rendererDefinitions.getTimeRenderer();
         }
+        else if (objValue instanceof java.util.Date) {
+            // it is possible that the JDBC can get a java.util.Date (instead of a java.sql.Date)
+            //    e.g.  setObject(x, x)
+            // if this occurs render it the same as timestamp (i.e.  date + time)
+            return rendererDefinitions.getTimestampRenderer();
+        }
         else {
             return rendererDefinitions.getDefaultRenderer();
         }
