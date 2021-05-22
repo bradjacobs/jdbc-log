@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.UncheckedIOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -43,7 +44,8 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         this.preparedStatement = preparedStatement;
     }
 
-    // some log placeholder values for certain types that will never try to actually 'log'.
+    // "PLACEHOLDERS" for certain parameters,
+    //     b/c logging blobs and streams is typically not very useful.
     private static final String BINARY_STREAM_VALUE_PLACEHOLDER = "{_BINARYSTREAM_}";
     private static final String BLOB_VALUE_PLACEHOLDER = "{_BLOB_}";
     private static final String UNICODE_STREAM_PLACEHOLDER = "{_UNICODESTREAM_}";
@@ -51,41 +53,63 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     private static final String TEXT_CLOB_VALUE_PLACEHOLDER = "{_CLOB_}";
 
 
-
+    /**
+     * Adds the parameteter value to the tracker, which is later used to generate teh SQL string.
+     * @param index parameter index
+     * @param value parameter value.
+     */
     protected void setCurrentParameter(int index, Object value) {
         this.sqlTracker.setParameter(index, value);
     }
 
-
+    /**
+     * For Reader parameters, will attempt to long the "inner string value" IFF configured
+     * Otherwise will log parameter with a placeholder value.
+     * @param index parameter index
+     * @param reader reader
+     * @return Reader
+     *   if clob logging enabled  = get back a 'new' Reader to be used instead of the passed in Reader
+     *   if clob logging disabled = get back the original passed in reader instance.
+     */
     protected Reader setCurrentReaderParameter(int index, Reader reader) {
         if (reader == null) {
             setCurrentParameter(index, null);
         }
-        else if (!sqlTracker.canLogReaderStreams()) {
-            setCurrentParameter(index, TEXT_CLOB_VALUE_PLACEHOLDER);
-        }
-        else {
+        else if (sqlTracker.isStreamLoggingEnabled()) {
             String value = extractString(reader);
             setCurrentParameter(index, value);
             reader = new StringReader(value);
         }
+        else {
+            setCurrentParameter(index, TEXT_CLOB_VALUE_PLACEHOLDER);
+        }
         return reader;
     }
 
+    /**
+     * For TEXT InputStream parameters, will attempt to long the "inner string value" IFF configured
+     * Otherwise will log parameter with a placeholder value.
+     * @param index parameter index
+     * @param inputStream inputStream
+     * @return InputStream
+     *   if clob logging enabled  = get back a 'new' InputStream to be used instead of the passed in InputStream
+     *   if clob logging disabled = get back the original passed in inputStream instance.
+     */
     protected InputStream setCurrentStreamParameter(int index, InputStream inputStream) {
         if (inputStream == null) {
             setCurrentParameter(index, null);
         }
-        else if (!sqlTracker.canLogReaderStreams()) {
-            setCurrentParameter(index, TEXT_CLOB_VALUE_PLACEHOLDER);
-        }
-        else {
+        else if (sqlTracker.isStreamLoggingEnabled()) {
             String value = extractString(inputStream);
             setCurrentParameter(index, value);
             inputStream = new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8));
         }
+        else {
+            setCurrentParameter(index, TEXT_CLOB_VALUE_PLACEHOLDER);
+        }
         return inputStream;
     }
+
     protected void clearLogParameters() {
         sqlTracker.clearParameters();
     }
@@ -151,7 +175,6 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     {
         return preparedStatement.getMetaData();
     }
-
 
     /** @inheritDoc */
     @Override
@@ -576,7 +599,6 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
 
 
 
-
     protected String extractString(Reader reader)
     {
         if (reader == null) {
@@ -586,7 +608,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
             return IOUtils.toString(reader);
         }
         catch (IOException e) {
-            throw new RuntimeException("Error: " + e.getMessage(), e);
+            throw new UncheckedIOException("Error attempting to get string value from reader for Logging: : " + e.getMessage(), e);
         }
         finally {
             IOUtils.closeQuietly(reader);
@@ -601,7 +623,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
             return IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
         }
         catch (IOException e) {
-            throw new RuntimeException("Error: " + e.getMessage(), e);
+            throw new UncheckedIOException("Error attempting to get string value from inputStream for Logging: : " + e.getMessage(), e);
         }
         finally {
             IOUtils.closeQuietly(inputStream);

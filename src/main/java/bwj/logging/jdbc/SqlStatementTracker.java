@@ -17,27 +17,26 @@ class SqlStatementTracker
 
 
     private final TagFiller tagFiller;
-    private final boolean logTextReaderStreams;
+    private final boolean streamLoggingEnabled;
 
 
     public SqlStatementTracker()
     {
         this.tagFiller = null;
-        this.logTextReaderStreams = false;
+        this.streamLoggingEnabled = false;
     }
 
-    public SqlStatementTracker(String sql, TagFiller tagFiller, boolean logTextStreams)
+    public SqlStatementTracker(String sql, TagFiller tagFiller, boolean streamLoggingEnabled)
     {
         this.sql = sql;
         this.tagFiller = tagFiller;
-        this.logTextReaderStreams = logTextStreams;
+        this.streamLoggingEnabled = streamLoggingEnabled;
     }
 
-    // todo - fix name
-    public boolean canLogReaderStreams() {
-        return logTextReaderStreams;
-    }
 
+    public boolean isStreamLoggingEnabled() {
+        return streamLoggingEnabled;
+    }
 
     public void setSql(String sql)
     {

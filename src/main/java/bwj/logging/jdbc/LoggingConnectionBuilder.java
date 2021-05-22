@@ -23,7 +23,7 @@ public class LoggingConnectionBuilder
 
     private final ZoneId zoneId;
     private static final String tag = "?";
-    private boolean logTextStreams = Boolean.FALSE;
+    private boolean streamLoggingEnabled = Boolean.FALSE;
 
     private final List<LoggingListener> loggingListeners = new ArrayList<>();
     private final RendererDefinitions overrideRendererDefinitions = new RendererDefinitions();
@@ -75,8 +75,8 @@ public class LoggingConnectionBuilder
         loggingListeners.add(logListener);
         return this;
     }
-    public LoggingConnectionBuilder setLogTextStreams(boolean logTextStreams) {
-        this.logTextStreams = logTextStreams;
+    public LoggingConnectionBuilder setStreamLoggingEnabled(boolean streamLoggingEnabled) {
+        this.streamLoggingEnabled = streamLoggingEnabled;
         return this;
     }
 
@@ -159,7 +159,7 @@ public class LoggingConnectionBuilder
 
         // todo - add validation if any params are set incorrect.
 
-        return new LoggingConnection(connection, this.logTextStreams, this.tagFiller, this.loggingListeners);
+        return new LoggingConnection(connection, this.streamLoggingEnabled, this.tagFiller, this.loggingListeners);
     }
 
 

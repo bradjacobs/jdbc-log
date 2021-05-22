@@ -28,14 +28,14 @@ public class LoggingConnection implements Connection
 
     // todo - see if can clean up a little.
     private final TagFiller tagFiller;
-    private final boolean logTextStreams;
+    private final boolean streamLoggingEnabled;
     private final List<LoggingListener> logListeners;
 
 
 
-    public LoggingConnection(Connection connection, boolean logTextStreams, TagFiller tagFiller, List<LoggingListener> logListeners) {
+    public LoggingConnection(Connection connection, boolean streamLoggingEnabled, TagFiller tagFiller, List<LoggingListener> logListeners) {
         this.connection = connection;
-        this.logTextStreams = logTextStreams;
+        this.streamLoggingEnabled = streamLoggingEnabled;
         this.tagFiller = tagFiller;
         this.logListeners = logListeners;
     }
@@ -48,12 +48,12 @@ public class LoggingConnection implements Connection
     }
     private PreparedStatement logWrap(PreparedStatement preparedStatement, String sql)
     {
-        SqlStatementTracker sqlStatementTracker = new SqlStatementTracker(sql, tagFiller, logTextStreams);
+        SqlStatementTracker sqlStatementTracker = new SqlStatementTracker(sql, tagFiller, streamLoggingEnabled);
         return new LoggingPreparedStatement(preparedStatement, logListeners, sqlStatementTracker);
     }
     private CallableStatement logWrap(CallableStatement callableStatement, String sql)
     {
-        SqlStatementTracker sqlStatementTracker = new SqlStatementTracker(sql, tagFiller, logTextStreams);
+        SqlStatementTracker sqlStatementTracker = new SqlStatementTracker(sql, tagFiller, streamLoggingEnabled);
         return new LoggingCallableStatement(callableStatement, logListeners, sqlStatementTracker);
     }
 
