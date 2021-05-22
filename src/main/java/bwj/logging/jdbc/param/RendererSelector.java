@@ -6,6 +6,12 @@ public class RendererSelector
 
     public RendererSelector(RendererDefinitions rendererDefinitions)
     {
+        if (rendererDefinitions == null) {
+            throw new IllegalArgumentException("Must provide rendererDefinitions.");
+        }
+        else if (rendererDefinitions.hasNullRenderers()) {
+            throw new IllegalArgumentException("RendererDefintions must have all values set.");
+        }
         this.rendererDefinitions = rendererDefinitions;
     }
 

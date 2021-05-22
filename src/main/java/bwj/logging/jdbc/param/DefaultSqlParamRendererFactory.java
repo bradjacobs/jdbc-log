@@ -1,5 +1,7 @@
 package bwj.logging.jdbc.param;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Date;
@@ -54,6 +56,9 @@ public class DefaultSqlParamRendererFactory
             case ORACLE:
                 rendererDefinitions.setAllTimeDateRenderers(new OracleChronoStringParamRenderer(zoneId));
                 break;
+
+            // fill in here as needed ......
+
         }
 
         return rendererDefinitions;
@@ -115,6 +120,12 @@ public class DefaultSqlParamRendererFactory
     private static class StringParamRenderer implements SqlParamRenderer<String> {
         @Override
         public void appendParamValue(String value, StringBuilder sb) {
+
+            // escape nested quotes if necessary
+            if (value.contains("'")) {
+                value = StringUtils.replace(value, "'", "''");
+            }
+
             sb.append('\'').append(value).append('\'');
         }
     }
