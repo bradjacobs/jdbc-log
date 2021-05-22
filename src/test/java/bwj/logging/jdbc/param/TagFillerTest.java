@@ -13,7 +13,6 @@ import static org.testng.Assert.assertNull;
 
 public class TagFillerTest
 {
-
     // test default case.   Numbers get filled + the string param gets quoted.
     @Test
     public void testDefaultMultiValues() throws Exception
@@ -114,12 +113,12 @@ public class TagFillerTest
 
     @Test(expectedExceptions = { IllegalArgumentException.class },
         expectedExceptionsMessageRegExp = "Must provide a tag parameter.")
-    public void testMissingRenSelector_A() throws Exception {
+    public void testMissingRenSelector() throws Exception {
         TagFiller tagFiller = new TagFiller(null, null);
     }
     @Test(expectedExceptions = { IllegalArgumentException.class },
         expectedExceptionsMessageRegExp = "Must provide a tag parameter.")
-    public void testMissingTag_B() throws Exception {
+    public void testMissingTag() throws Exception {
         TagFiller tagFiller = new TagFiller("", null);
     }
 
@@ -170,7 +169,7 @@ public class TagFillerTest
     @Test
     public void testRenderTimestamp() throws Exception
     {
-        Long timeLong = 1432260431000L;
+        long timeLong = 1432260431000L;
         String expectedTimeStringGmt = "'2015-05-22 02:07:11'";
         Timestamp timestamp = new Timestamp(timeLong);
         Map<Integer, Object> paramMap = Collections.singletonMap(1, timestamp);
