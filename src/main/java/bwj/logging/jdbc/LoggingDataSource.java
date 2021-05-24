@@ -17,7 +17,7 @@ public class LoggingDataSource implements DataSource
     private final DataSource dataSource;
     private final LoggingConnectionBuilder loggingConnectionBuilder;
 
-    private boolean loggingConnectionEnabled = true;
+    private boolean loggingEnabled = true;
 
 
     /**
@@ -47,7 +47,7 @@ public class LoggingDataSource implements DataSource
     public Connection getConnection() throws SQLException
     {
         Connection innerConnection = dataSource.getConnection();
-        if (!loggingConnectionEnabled) {
+        if (!loggingEnabled) {
             return innerConnection;
         }
         return loggingConnectionBuilder.build(innerConnection);
@@ -58,7 +58,7 @@ public class LoggingDataSource implements DataSource
     public Connection getConnection(String username, String password) throws SQLException
     {
         Connection innerConnection = dataSource.getConnection(username, password);
-        if (!loggingConnectionEnabled) {
+        if (!loggingEnabled) {
             return innerConnection;
         }
         return loggingConnectionBuilder.build(innerConnection);
@@ -70,18 +70,18 @@ public class LoggingDataSource implements DataSource
      *  will return the original Connection instead of a LoggingConnection
      * @return isEnabled.
      */
-    public boolean isLoggingConnectionEnabled()
+    public boolean isLoggingEnabled()
     {
-        return loggingConnectionEnabled;
+        return loggingEnabled;
     }
 
     /**
      * Enables usage of logging connections
      *   default: true
      */
-    public void setLoggingConnectionEnabled(boolean loggingConnectionEnabled)
+    public void setLoggingEnabled(boolean loggingEnabled)
     {
-        this.loggingConnectionEnabled = loggingConnectionEnabled;
+        this.loggingEnabled = loggingEnabled;
     }
 
 
