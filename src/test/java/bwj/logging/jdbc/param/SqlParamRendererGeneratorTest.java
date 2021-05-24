@@ -8,7 +8,7 @@ import java.util.Date;
 import static org.testng.Assert.*;
 
 
-public class SqlParamRendererFactoryTest
+public class SqlParamRendererGeneratorTest
 {
     private static final ZoneId UTC_ZONE = ZoneId.of("UTC");
     private static final ZoneId PACITIC_ZONE = ZoneId.of("US/Pacific");
@@ -28,11 +28,12 @@ public class SqlParamRendererFactoryTest
     private static final String EXPECTED_TIME_PACIFIC = "'19:07:11'";
 
 
+    private SqlParamRendererGenerator paramRendererGenerator = new SqlParamRendererGenerator();
 
     @Test
     public void testDateStringRendererBaseCase() throws Exception
     {
-        SqlParamRenderer<Date> renderer = SqlParamRendererFactory.createDateStringParamRenderer(TIMESTAMP_PATTERN, UTC_ZONE);
+        SqlParamRenderer<Date> renderer = paramRendererGenerator.createDateStringParamRenderer(TIMESTAMP_PATTERN, UTC_ZONE);
         assertEquals( getRenderedString(renderer, TEST_DATE), EXPECTED_DATETIME_UTC, "mismatch expected date string");
     }
 
@@ -40,7 +41,7 @@ public class SqlParamRendererFactoryTest
     @Test
     public void testDateStringRendererMissingZone() throws Exception
     {
-        SqlParamRenderer<Date> renderer = SqlParamRendererFactory.createDateStringParamRenderer(TIMESTAMP_PATTERN, null);
+        SqlParamRenderer<Date> renderer = paramRendererGenerator.createDateStringParamRenderer(TIMESTAMP_PATTERN, null);
         assertEquals( getRenderedString(renderer, TEST_DATE), EXPECTED_DATETIME_UTC, "mismatch expected date string");
     }
 
@@ -48,7 +49,7 @@ public class SqlParamRendererFactoryTest
     @Test
     public void testDateStringRendererCustomZone() throws Exception
     {
-        SqlParamRenderer<Date> renderer = SqlParamRendererFactory.createDateStringParamRenderer(TIMESTAMP_PATTERN, PACITIC_ZONE);
+        SqlParamRenderer<Date> renderer = paramRendererGenerator.createDateStringParamRenderer(TIMESTAMP_PATTERN, PACITIC_ZONE);
         assertEquals( getRenderedString(renderer, TEST_DATE), EXPECTED_DATETIME_PACIFIC, "mismatch expected date string");
     }
 
@@ -56,7 +57,7 @@ public class SqlParamRendererFactoryTest
     public void testDateStringRendererSqlTimestamp() throws Exception
     {
         java.sql.Timestamp sqlTimestamp = new java.sql.Timestamp(TEST_DATE_LONG);
-        SqlParamRenderer<Date> renderer = SqlParamRendererFactory.createDateStringParamRenderer(TIMESTAMP_PATTERN, UTC_ZONE);
+        SqlParamRenderer<Date> renderer = paramRendererGenerator.createDateStringParamRenderer(TIMESTAMP_PATTERN, UTC_ZONE);
         assertEquals( getRenderedString(renderer, sqlTimestamp), EXPECTED_DATETIME_UTC, "mismatch expected date string");
     }
 
@@ -64,7 +65,7 @@ public class SqlParamRendererFactoryTest
     public void testDateStringRendererSqlTimestampWithZone() throws Exception
     {
         java.sql.Timestamp sqlTimestamp = new java.sql.Timestamp(TEST_DATE_LONG);
-        SqlParamRenderer<Date> renderer = SqlParamRendererFactory.createDateStringParamRenderer(TIMESTAMP_PATTERN, PACITIC_ZONE);
+        SqlParamRenderer<Date> renderer = paramRendererGenerator.createDateStringParamRenderer(TIMESTAMP_PATTERN, PACITIC_ZONE);
         assertEquals( getRenderedString(renderer, sqlTimestamp), EXPECTED_DATETIME_PACIFIC, "mismatch expected date string");
     }
     
@@ -72,7 +73,7 @@ public class SqlParamRendererFactoryTest
     public void testDateStringRendererSqlDate() throws Exception
     {
         java.sql.Date sqlDate = new java.sql.Date(TEST_DATE_LONG);
-        SqlParamRenderer<Date> renderer = SqlParamRendererFactory.createDateStringParamRenderer(DATE_PATTERN, UTC_ZONE);
+        SqlParamRenderer<Date> renderer = paramRendererGenerator.createDateStringParamRenderer(DATE_PATTERN, UTC_ZONE);
         assertEquals( getRenderedString(renderer, sqlDate), EXPECTED_DATE_UTC, "mismatch expected date string");
     }
 
@@ -80,7 +81,7 @@ public class SqlParamRendererFactoryTest
     public void testDateStringRendererSqlDateWithZone() throws Exception
     {
         java.sql.Date sqlDate = new java.sql.Date(TEST_DATE_LONG);
-        SqlParamRenderer<Date> renderer = SqlParamRendererFactory.createDateStringParamRenderer(DATE_PATTERN, PACITIC_ZONE);
+        SqlParamRenderer<Date> renderer = paramRendererGenerator.createDateStringParamRenderer(DATE_PATTERN, PACITIC_ZONE);
         assertEquals( getRenderedString(renderer, sqlDate), EXPECTED_DATE_PACIFIC, "mismatch expected date string");
     }
 
@@ -88,7 +89,7 @@ public class SqlParamRendererFactoryTest
     public void testDateStringRendererSqlTime() throws Exception
     {
         java.sql.Time sqlTime = new java.sql.Time(TEST_DATE_LONG);
-        SqlParamRenderer<Date> renderer = SqlParamRendererFactory.createDateStringParamRenderer(TIME_PATTERN, UTC_ZONE);
+        SqlParamRenderer<Date> renderer = paramRendererGenerator.createDateStringParamRenderer(TIME_PATTERN, UTC_ZONE);
         assertEquals( getRenderedString(renderer, sqlTime), EXPECTED_TIME_UTC, "mismatch expected date string");
     }
 
@@ -96,7 +97,7 @@ public class SqlParamRendererFactoryTest
     public void testDateStringRendererSqlTimeWithZone() throws Exception
     {
         java.sql.Time sqlTime = new java.sql.Time(TEST_DATE_LONG);
-        SqlParamRenderer<Date> renderer = SqlParamRendererFactory.createDateStringParamRenderer(TIME_PATTERN, PACITIC_ZONE);
+        SqlParamRenderer<Date> renderer = paramRendererGenerator.createDateStringParamRenderer(TIME_PATTERN, PACITIC_ZONE);
         assertEquals( getRenderedString(renderer, sqlTime), EXPECTED_TIME_PACIFIC, "mismatch expected date string");
     }
 
@@ -104,21 +105,21 @@ public class SqlParamRendererFactoryTest
         expectedExceptionsMessageRegExp = "datetime formatter pattern is required.")
     public void testDateStringRenderer_MissingPattern_A() throws Exception
     {
-        SqlParamRendererFactory.createDateStringParamRenderer("", UTC_ZONE);
+        paramRendererGenerator.createDateStringParamRenderer("", UTC_ZONE);
     }
 
     @Test(expectedExceptions = { IllegalArgumentException.class },
         expectedExceptionsMessageRegExp = "datetime formatter pattern is required.")
     public void testDateStringRenderer_MissingPattern_B() throws Exception
     {
-        SqlParamRendererFactory.createDateStringParamRenderer(null, UTC_ZONE);
+        paramRendererGenerator.createDateStringParamRenderer(null, UTC_ZONE);
     }
 
     @Test(expectedExceptions = { IllegalArgumentException.class },
         expectedExceptionsMessageRegExp = "Invalid DateFormat pattern.*")
     public void testDateStringRenderer_InvalidPattern() throws Exception
     {
-        SqlParamRendererFactory.createDateStringParamRenderer("yyyy_BOGUS_", UTC_ZONE);
+        paramRendererGenerator.createDateStringParamRenderer("yyyy_BOGUS_", UTC_ZONE);
     }
 
 
