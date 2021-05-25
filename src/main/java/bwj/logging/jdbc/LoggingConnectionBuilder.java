@@ -1,10 +1,10 @@
 package bwj.logging.jdbc;
 
-import bwj.logging.jdbc.param.RendererDefinitionsFactory;
-import bwj.logging.jdbc.param.SqlParamRendererGenerator;
 import bwj.logging.jdbc.param.RendererDefinitions;
+import bwj.logging.jdbc.param.RendererDefinitionsFactory;
 import bwj.logging.jdbc.param.RendererSelector;
 import bwj.logging.jdbc.param.SqlParamRenderer;
+import bwj.logging.jdbc.param.SqlParamRendererGenerator;
 import bwj.logging.jdbc.param.TagFiller;
 
 import java.sql.Connection;
