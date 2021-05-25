@@ -49,6 +49,15 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
 
 
     /**
+     * Returns true if should attempt to log a 'real' string value whenever a Clob/Reader/Stream is used.
+     * @return true to log clobs & text streams
+     */
+    protected boolean isStreamLoggingEnabled() {
+        return sqlTracker.isStreamLoggingEnabled();
+    }
+
+
+    /**
      * Adds the parameter value to the tracker, which is later used to generate teh SQL string.
      * @param index parameter index
      * @param value parameter value.
@@ -64,20 +73,20 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
      * @param reader reader
      * @return Reader
      *   if clob logging enabled  = get back a 'new' Reader to be used instead of the passed in Reader
-     *   if clob logging disabled = get back the original passed in reader instance.
+     *   if clob logging disabled = get back the original passed in reader.
      */
     protected Reader setCurrentReaderParameter(int index, Reader reader) {
-        if (reader == null) {
-            setCurrentParameter(index, null);
+        String strValue = null;
+        if (reader != null) {
+            if (isStreamLoggingEnabled()) {
+                strValue = extractString(reader);
+                reader = new StringReader(strValue);
+            }
+            else {
+                strValue = TEXT_CLOB_VALUE_PLACEHOLDER;
+            }
         }
-        else if (sqlTracker.isStreamLoggingEnabled()) {
-            String value = extractString(reader);
-            setCurrentParameter(index, value);
-            reader = new StringReader(value);
-        }
-        else {
-            setCurrentParameter(index, TEXT_CLOB_VALUE_PLACEHOLDER);
-        }
+        setCurrentParameter(index, strValue);
         return reader;
     }
 
@@ -88,20 +97,20 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
      * @param inputStream inputStream
      * @return InputStream
      *   if clob logging enabled  = get back a 'new' InputStream to be used instead of the passed in InputStream
-     *   if clob logging disabled = get back the original passed in inputStream instance.
+     *   if clob logging disabled = get back the original passed in inputStream.
      */
     protected InputStream setCurrentStreamParameter(int index, InputStream inputStream) {
-        if (inputStream == null) {
-            setCurrentParameter(index, null);
+        String strValue = null;
+        if (inputStream != null) {
+            if (isStreamLoggingEnabled()) {
+                strValue = extractString(inputStream);
+                inputStream = new ByteArrayInputStream(strValue.getBytes(StandardCharsets.UTF_8));
+            }
+            else {
+                strValue = TEXT_CLOB_VALUE_PLACEHOLDER;
+            }
         }
-        else if (sqlTracker.isStreamLoggingEnabled()) {
-            String value = extractString(inputStream);
-            setCurrentParameter(index, value);
-            inputStream = new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8));
-        }
-        else {
-            setCurrentParameter(index, TEXT_CLOB_VALUE_PLACEHOLDER);
-        }
+        setCurrentParameter(index, strValue);
         return inputStream;
     }
 
@@ -319,6 +328,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setClob(int parameterIndex, Clob x) throws SQLException
     {
+        // note: it's possible the driver might not even allow setting a 'null' here, but still check nonetheless.
         if (x != null) {
             Reader innerReader = setCurrentReaderParameter(parameterIndex, x.getCharacterStream());
             preparedStatement.setClob(parameterIndex, innerReader);
@@ -507,6 +517,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setRef(int parameterIndex, Ref x) throws SQLException
     {
+        // NOTE: no implementation here.  (revisit IFF there's a need)
         preparedStatement.setRef(parameterIndex, x);
     }
 
@@ -537,8 +548,23 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setSQLXML(int parameterIndex, SQLXML xmlObject) throws SQLException
     {
-        // todo
-        setCurrentParameter(parameterIndex, xmlObject);
+        //  Note: this is a bit of a guess b/c many drivers don't support it
+        if (isStreamLoggingEnabled()) {
+            String sqlXmlString = null;
+            if (xmlObject != null) {
+                try {
+                    sqlXmlString = xmlObject.getString();
+                }
+                catch (Exception e) {
+                    // if exception then throw a different error to show it occurred during the SQL logging process.
+                    throw new SQLException("Error attempting to get string value from SQLXML for Logging: " + e.getMessage(), e);
+                }
+            }
+            setCurrentParameter(parameterIndex, sqlXmlString);
+        }
+        else {
+            setCurrentParameter(parameterIndex, TEXT_CLOB_VALUE_PLACEHOLDER);
+        }
         preparedStatement.setSQLXML(parameterIndex, xmlObject);
     }
 
@@ -587,7 +613,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setURL(int parameterIndex, URL x) throws SQLException
     {
-        setCurrentParameter(parameterIndex, x);
+        setCurrentParameter(parameterIndex, (x != null ? x.toString() : null) );
         preparedStatement.setURL(parameterIndex, x);
     }
 
@@ -603,7 +629,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
             return IOUtils.toString(reader);
         }
         catch (IOException e) {
-            throw new UncheckedIOException("Error attempting to get string value from reader for Logging: : " + e.getMessage(), e);
+            throw new UncheckedIOException("Error attempting to get string value from reader for Logging: " + e.getMessage(), e);
         }
         finally {
             IOUtils.closeQuietly(reader);
@@ -618,7 +644,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
             return IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
         }
         catch (IOException e) {
-            throw new UncheckedIOException("Error attempting to get string value from inputStream for Logging: : " + e.getMessage(), e);
+            throw new UncheckedIOException("Error attempting to get string value from inputStream for Logging: " + e.getMessage(), e);
         }
         finally {
             IOUtils.closeQuietly(inputStream);
