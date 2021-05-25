@@ -7,7 +7,6 @@ import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.List;
 import java.util.logging.Logger;
-//import org.apache.log4j.Logger;
 
 public class LoggingStatement implements Statement
 {
@@ -42,26 +41,15 @@ public class LoggingStatement implements Statement
 
     protected void log(String sql) {
 
-        System.out.println("****  " + sql);
-
         if (this.loggingListeners != null) {
             for (LoggingListener loggingListener : loggingListeners) {
+
+                // todo: tbd to try/catch this or not
                 loggingListener.log(sql);
             }
         }
-
-//        if (this.loggingListener != null)
-//            this.loggingListener.log(sql);
-//        if (logger.isDebugEnabled())
-//            logger.debug(sql);
     }
 
-
-
-
-    // TODO
-    //private static final Logger logger = Logger.getLogger(LoggingStatement.class);
-    private static final Logger logger = null;
 
     private final Statement statement;
     protected final SqlStatementTracker sqlTracker;
