@@ -12,9 +12,9 @@ public class RendererDefinitionsFactory
     private static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd";
     private static final String DEFAULT_TIME_PATTERN = "HH:mm:ss";
 
-    private static final String ORACLE_TS_PREFIX = "TO_TIMESTAMP(";
-    private static final String ORACLE_DATE_PREFIX = "TO_DATE(";
-    private static final String ORACLE_SUFFIX = ", 'YYYY-MM-DD HH24:MI:SS')";
+    private static final String ORACLE_TOTIMESTAMP_PREFIX = "TO_TIMESTAMP(";
+    private static final String ORACLE_TODATE_PREFIX = "TO_DATE(";
+    private static final String ORACLE_DATETIME_SUFFIX = ", 'YYYY-MM-DD HH24:MI:SS')";
 
     private static final SqlParamRendererGenerator paramRendererGenerstor = new SqlParamRendererGenerator();
 
@@ -74,15 +74,16 @@ public class RendererDefinitionsFactory
                 timeRenderer = paramRendererGenerstor.createDateNumericParamRenderer();
                 break;
             case ORACLE:
-                // oracle really dosn't have 'time' so just assign same as 'date'
-                timeRenderer = paramRendererGenerstor.createPrefixSufixParamRenderer(timestampRenderer, ORACLE_DATE_PREFIX, ORACLE_SUFFIX);
+                // NOTE: oracle really dosn't have 'time' so just assign the same as 'timestamp'
+                timeRenderer = paramRendererGenerstor.createPrefixSufixParamRenderer(timestampRenderer, ORACLE_TODATE_PREFIX, ORACLE_DATETIME_SUFFIX);
 
-                // yes, it is correct that the dateRenderer will user the inner timeestamp  (for  yyyy-MM-dd HH:mm:ss)
-                dateRenderer = paramRendererGenerstor.createPrefixSufixParamRenderer(timestampRenderer, ORACLE_DATE_PREFIX, ORACLE_SUFFIX);
+                // NOTE:  currently shows a full date/time (like timestamp)
+                //   argument could be made that this should only show 'date' portion, but error on the side of showing more info
+                dateRenderer = paramRendererGenerstor.createPrefixSufixParamRenderer(timestampRenderer, ORACLE_TODATE_PREFIX, ORACLE_DATETIME_SUFFIX);
 
                 //  set timestampRender last (or matters here)
                 //    NOTE: it is possible to have alternate w/ fractional second precision, but this is the 'default'
-                timestampRenderer = paramRendererGenerstor.createPrefixSufixParamRenderer(timestampRenderer, ORACLE_TS_PREFIX, ORACLE_SUFFIX);
+                timestampRenderer = paramRendererGenerstor.createPrefixSufixParamRenderer(timestampRenderer, ORACLE_TOTIMESTAMP_PREFIX, ORACLE_DATETIME_SUFFIX);
                 break;
 
             // fill in here as needed ......

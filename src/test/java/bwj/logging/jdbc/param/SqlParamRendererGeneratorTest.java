@@ -124,7 +124,71 @@ public class SqlParamRendererGeneratorTest
     }
 
 
-    private String getRenderedString(SqlParamRenderer<Date> renderer, Date d) {
+    @Test
+    public void testDateNumeric() throws Exception
+    {
+        java.sql.Time sqlTime = new java.sql.Time(TEST_DATE_LONG);
+        String expectedString = String.valueOf(TEST_DATE_LONG);
+        SqlParamRenderer<Date> renderer = paramRendererGenerator.createDateNumericParamRenderer();
+        assertEquals( getRenderedString(renderer, sqlTime), expectedString, "mismatch expected date string");
+    }
+
+
+    @Test
+    public void testPrefixSuffix() throws Exception
+    {
+        String prefix = "PRE_";
+        String suffix = "_POST";
+        Integer value = 77;
+        String expected = prefix + value + suffix;
+
+        SqlParamRenderer<Object> basicRenderer = paramRendererGenerator.createBasicParamRenderer();
+        SqlParamRenderer<Object> prefixSuffixRenderer = paramRendererGenerator.createPrefixSufixParamRenderer(basicRenderer, prefix, suffix);
+
+        String renderedString = getRenderedString(prefixSuffixRenderer, value);
+        assertEquals( renderedString, expected, "mismatch expected prefix/suffix string");
+    }
+
+    @Test
+    public void testPrefixSuffix_NoPrefix() throws Exception
+    {
+        String prefix = "";
+        String suffix = "_POST";
+        Integer value = 77;
+        String expected = prefix + value + suffix;
+
+        SqlParamRenderer<Object> basicRenderer = paramRendererGenerator.createBasicParamRenderer();
+        SqlParamRenderer<Object> prefixSuffixRenderer = paramRendererGenerator.createPrefixSufixParamRenderer(basicRenderer, prefix, suffix);
+
+        String renderedString = getRenderedString(prefixSuffixRenderer, value);
+        assertEquals( renderedString, expected, "mismatch expected prefix/suffix string");
+    }
+
+    @Test
+    public void testPrefixSuffix_NoSuffix() throws Exception
+    {
+        String prefix = "PRE_";
+        String suffix = null;
+        Integer value = 77;
+        String expected = prefix + value;
+
+        SqlParamRenderer<Object> basicRenderer = paramRendererGenerator.createBasicParamRenderer();
+        SqlParamRenderer<Object> prefixSuffixRenderer = paramRendererGenerator.createPrefixSufixParamRenderer(basicRenderer, prefix, suffix);
+
+        String renderedString = getRenderedString(prefixSuffixRenderer, value);
+        assertEquals( renderedString, expected, "mismatch expected prefix/suffix string");
+    }
+
+    @Test(expectedExceptions = { IllegalArgumentException.class },
+        expectedExceptionsMessageRegExp = "Renderer parameter is required.")
+    public void testPrefixSuffix_BadInput() throws Exception
+    {
+        paramRendererGenerator.createPrefixSufixParamRenderer(null, "PREFIX", "SUFFIX");
+    }
+
+
+
+    private <T> String getRenderedString(SqlParamRenderer<T> renderer, T d) {
         assertNotNull(renderer, "expected non-null renderer object");
         StringBuilder sb = new StringBuilder();
         renderer.appendParamValue(d, sb);
