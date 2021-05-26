@@ -15,7 +15,6 @@ class SqlStatementTracker
     private Map<Integer, Object> paramMap = null;
 
 
-
     private final TagFiller tagFiller;
     private final boolean streamLoggingEnabled;
 

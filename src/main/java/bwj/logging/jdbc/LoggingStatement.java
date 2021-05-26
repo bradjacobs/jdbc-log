@@ -46,7 +46,7 @@ public class LoggingStatement implements Statement
         if (this.loggingListeners != null) {
             for (LoggingListener loggingListener : loggingListeners) {
 
-                // todo: tbd to try/catch this or not
+                // todo: TBD to try/catch this or not
                 loggingListener.log(sql);
             }
         }
@@ -56,15 +56,15 @@ public class LoggingStatement implements Statement
     private final Statement statement;
     protected final SqlStatementTracker sqlTracker;
     protected final List<LoggingListener> loggingListeners;
-    protected final Connection loggingConnection;
+    protected final LoggingConnection loggingConnection;
 
 
     public LoggingStatement(Statement statement, LoggingConnection.LogStatementBuilder builder)
     {
         this.statement = statement;
-        this.loggingListeners = builder.loggingListeners;
-        this.sqlTracker = builder.getSqlStatementTracker();
+        this.sqlTracker = builder.createSqlStatementTracker();
         this.loggingConnection = builder.loggingConnection;
+        this.loggingListeners = loggingConnection.loggingListeners;
     }
 
 

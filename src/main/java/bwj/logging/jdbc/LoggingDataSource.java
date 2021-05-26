@@ -28,16 +28,6 @@ public class LoggingDataSource implements DataSource
         this(dataSource, LoggingConnectionCreator.builder().withLogListener(loggingListener).build());
     }
 
-    /**
-     * Custom constructor that can in custom config
-     * @param dataSource dateSource
-     * @param loggingSqlConfig loggingSqlConfig
-     */
-    public LoggingDataSource(DataSource dataSource, LoggingSqlConfig loggingSqlConfig)
-    {
-        this.dataSource = dataSource;
-        this.loggingConnectionCreator = new LoggingConnectionCreator(loggingSqlConfig);
-    }
 
     /**
      * Custom constructor that can in custom config

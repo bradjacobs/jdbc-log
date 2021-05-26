@@ -78,4 +78,33 @@ public class RendererDefinitions
         return false;
     }
 
+
+    /**
+     * Merges all the __NON-NULL__ values from the given defintions into the current object.
+     * @param other the RendererDefintions to merge into this object
+     */
+    public void mergeIn(RendererDefinitions other)
+    {
+        if (other.getDefaultRenderer() != null) {
+            this.setDefaultRenderer(other.getDefaultRenderer());
+        }
+        if (other.getBoooleanRenderer() != null) {
+            this.setBoooleanRenderer(other.getBoooleanRenderer());
+        }
+        if (other.getStringRenderer() != null) {
+            this.setStringRenderer(other.getStringRenderer());
+        }
+        if (other.getTimestampRenderer() != null) {
+            this.setTimestampRenderer(other.getTimestampRenderer());
+        }
+        if (other.getDateRenderer() != null) {
+            this.setDateRenderer(other.getDateRenderer());
+        }
+        if (other.getTimeRenderer() != null) {
+            this.setTimestampRenderer(other.getTimeRenderer());
+        }
+    }
+
+
+
 }
