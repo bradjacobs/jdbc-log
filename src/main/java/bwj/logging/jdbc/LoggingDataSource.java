@@ -15,18 +15,40 @@ import java.util.logging.Logger;
 public class LoggingDataSource implements DataSource
 {
     private final DataSource dataSource;
-    private final LoggingConnectionFactory loggingConnectionFactory;
+    private final LoggingConnectionCreator loggingConnectionCreator;
+
 
     /**
-     * Custom constructor that can pass in own builder that has been 'preset' accordingly
+     *
+     * @param dataSource dataSource
+     * @param loggingListener loggingListener
+     */
+    public LoggingDataSource(DataSource dataSource, LoggingListener loggingListener)
+    {
+        this(dataSource, LoggingConnectionCreator.builder().withLogListener(loggingListener).build());
+    }
+
+    /**
+     * Custom constructor that can in custom config
      * @param dataSource dateSource
      * @param loggingSqlConfig loggingSqlConfig
      */
     public LoggingDataSource(DataSource dataSource, LoggingSqlConfig loggingSqlConfig)
     {
-        validateParams(dataSource, loggingSqlConfig);
         this.dataSource = dataSource;
-        this.loggingConnectionFactory = new LoggingConnectionFactory(loggingSqlConfig);
+        this.loggingConnectionCreator = new LoggingConnectionCreator(loggingSqlConfig);
+    }
+
+    /**
+     * Custom constructor that can in custom config
+     * @param dataSource dateSource
+     * @param loggingConnectionCreator loggingConnectionCreator
+     */
+    public LoggingDataSource(DataSource dataSource, LoggingConnectionCreator loggingConnectionCreator)
+    {
+        validateParams(dataSource, loggingConnectionCreator);
+        this.dataSource = dataSource;
+        this.loggingConnectionCreator = loggingConnectionCreator;
     }
 
 
@@ -35,7 +57,7 @@ public class LoggingDataSource implements DataSource
     public Connection getConnection() throws SQLException
     {
         Connection innerConnection = dataSource.getConnection();
-        return loggingConnectionFactory.getConnection(innerConnection);
+        return loggingConnectionCreator.getConnection(innerConnection);
     }
 
     /** @inheritDoc */
@@ -43,7 +65,7 @@ public class LoggingDataSource implements DataSource
     public Connection getConnection(String username, String password) throws SQLException
     {
         Connection innerConnection = dataSource.getConnection(username, password);
-        return loggingConnectionFactory.getConnection(innerConnection);
+        return loggingConnectionCreator.getConnection(innerConnection);
     }
 
     /**
@@ -54,7 +76,7 @@ public class LoggingDataSource implements DataSource
      */
     public boolean isLoggingEnabled()
     {
-        return loggingConnectionFactory.isLoggingEnabled();
+        return loggingConnectionCreator.isLoggingEnabled();
     }
 
     /**
@@ -62,7 +84,7 @@ public class LoggingDataSource implements DataSource
      */
     public void setLoggingEnabled(boolean loggingEnabled)
     {
-        this.loggingConnectionFactory.setLoggingEnabled(loggingEnabled);
+        this.loggingConnectionCreator.setLoggingEnabled(loggingEnabled);
     }
 
 
@@ -116,13 +138,13 @@ public class LoggingDataSource implements DataSource
     }
 
 
-    private void validateParams(DataSource dataSource, LoggingSqlConfig loggingSqlConfig) throws IllegalArgumentException
+    private void validateParams(DataSource dataSource, LoggingConnectionCreator loggingConnectionCreator) throws IllegalArgumentException
     {
         if (dataSource == null) {
             throw new IllegalArgumentException("Must provide a dateSource");
         }
-        if (loggingSqlConfig == null) {
-            throw new IllegalArgumentException("Must provide a loggingSqlConfig");
+        if (loggingConnectionCreator == null) {
+            throw new IllegalArgumentException("Must provide a loggingConnectionCreator");
         }
     }
 

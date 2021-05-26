@@ -57,9 +57,16 @@ public class LoggingSqlConfig
     }
 
 
+    public static Builder builder() {
+        return new Builder<>();
+    }
 
-
-    public static class Builder {
+    public static class Builder<T extends Builder<T>>
+    {
+        // TODO - need to ponder on this
+        protected T getThis() {
+            return (T) this;
+        }
         private static final SqlParamRendererGenerator paramRendererGenerator = new SqlParamRendererGenerator();
 
         private static final String TAG = "?";
@@ -71,16 +78,13 @@ public class LoggingSqlConfig
         //   otherwise order can matter when setting some of the other fields.
         private final ZoneId zoneId;
 
-
-        private String dbTypeIdentifier = null;
-
+        private DatabaseType dbType = null;
         private final List<LoggingListener> loggingListeners = new ArrayList<>();
         private final RendererDefinitions overrideRendererDefinitions = new RendererDefinitions();
         private boolean streamLogging = DEFAULT_STREAM_LOGGING;
 
 
         // assigned during 'build'
-        private DatabaseType dbType;
         private TagFiller tagFiller;
 
 
@@ -112,18 +116,18 @@ public class LoggingSqlConfig
          *   (i.e.  if contains 'mysql', must be a MySQL database)
          * @param dbTypeIdentifier string identifying database used.  If not set then 'general database defaults' will be selected.
          */
-        public Builder withDbTypeIdentifier(String dbTypeIdentifier) {
-            this.dbTypeIdentifier= dbTypeIdentifier;
-            return this;
+        public T withDbTypeIdentifier(String dbTypeIdentifier) {
+            this.dbType = DatabaseType.identifyDatabaseType(dbTypeIdentifier);
+            return getThis();
         }
 
 
-        public Builder withLogListener(LoggingListener logListener) {
+        public T withLogListener(LoggingListener logListener) {
             if (logListener == null) {
                 throw new IllegalArgumentException("Cannot set a logging listener to null.");
             }
             loggingListeners.add(logListener);
-            return this;
+            return getThis();
         }
 
 
@@ -132,9 +136,9 @@ public class LoggingSqlConfig
          *    WARNING: could significantly impact performance if enabled.
          * @param streamLoggingEnabled  (default: FALSE)
          */
-        public Builder setStreamLoggingEnabled(boolean streamLoggingEnabled) {
+        public T setStreamLoggingEnabled(boolean streamLoggingEnabled) {
             this.streamLogging = streamLoggingEnabled;
-            return this;
+            return getThis();
         }
 
 
@@ -144,9 +148,9 @@ public class LoggingSqlConfig
          * @param pattern date format pattern
          * @see java.time.format.DateTimeFormatter
          */
-        public Builder withTimestampOnlyCustomPattern(String pattern) {
+        public T withTimestampOnlyCustomPattern(String pattern) {
             overrideRendererDefinitions.setTimestampRenderer(paramRendererGenerator.createDateStringParamRenderer(pattern, zoneId));
-            return this;
+            return getThis();
         }
 
         /**
@@ -154,9 +158,9 @@ public class LoggingSqlConfig
          * @param pattern date format pattern
          * @see java.time.format.DateTimeFormatter
          */
-        public Builder withDateOnlyCustomPattern(String pattern) {
+        public T withDateOnlyCustomPattern(String pattern) {
             overrideRendererDefinitions.setDateRenderer(paramRendererGenerator.createDateStringParamRenderer(pattern, zoneId));
-            return this;
+            return getThis();
         }
 
         /**
@@ -164,16 +168,16 @@ public class LoggingSqlConfig
          * @param pattern date format pattern
          * @see java.time.format.DateTimeFormatter
          */
-        public Builder withTimeOnlyCustomPattern(String pattern) {
+        public T withTimeOnlyCustomPattern(String pattern) {
             overrideRendererDefinitions.setTimeRenderer(paramRendererGenerator.createDateStringParamRenderer(pattern, zoneId));
-            return this;
+            return getThis();
         }
 
 
         /**
          * Enable all timestamp/date/time instanes to rendered as numeric (unix/epoch time)
          */
-        public Builder withChronoDefaultNumerics() {
+        public T withChronoDefaultNumerics() {
             return withChronoParamRenderer(paramRendererGenerator.createDateNumericParamRenderer());
         }
 
@@ -181,21 +185,20 @@ public class LoggingSqlConfig
          * Apply ParamRender for all the timestamp/date/time types
          * @param paramRenderer paramRenderer
          */
-        public Builder withChronoParamRenderer(SqlParamRenderer<Date> paramRenderer) {
+        public T withChronoParamRenderer(SqlParamRenderer<Date> paramRenderer) {
             overrideRendererDefinitions.setTimestampRenderer(paramRenderer);
             overrideRendererDefinitions.setDateRenderer(paramRenderer);
             overrideRendererDefinitions.setTimeRenderer(paramRenderer);
-            return this;
+            return getThis();
         }
 
 
-        public LoggingSqlConfig build() {
+        public LoggingSqlConfig buildConfig() {
             if (this.loggingListeners.isEmpty()) {
                 // must have at least 1 logging listener
                 loggingListeners.add(DEFAULT_LOGGING_LISTENER);
             }
 
-            this.dbType = DatabaseType.identifyDatabaseType(this.dbTypeIdentifier);
 
             // create initial defn's w/ defaul values
             RendererDefinitions rendereDefinitions = RendererDefinitionsFactory.createDefaultDefinitions(dbType, this.zoneId);

@@ -1,7 +1,5 @@
 package bwj.logging.jdbc;
 
-import bwj.logging.jdbc.param.TagFiller;
-
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
@@ -29,11 +27,11 @@ public class LoggingConnection implements Connection
 
     /**
      * Logging Connection constructor.
-     *   Use LoggingSqlConfig.Builder to create LoggingSqlConfig object;
+     *   Use LoggingConnectionCreator to make instance
      * @param connection original jdbc connection
      * @param loggingSqlConfig config pojo
      */
-    LoggingConnection(Connection connection, LoggingSqlConfig loggingSqlConfig) {
+    public LoggingConnection(Connection connection, LoggingSqlConfig loggingSqlConfig) {
         validateParams(connection, loggingSqlConfig);
         this.connection = connection;
         this.loggingSqlConfig = loggingSqlConfig;

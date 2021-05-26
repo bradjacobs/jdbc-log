@@ -1,18 +1,16 @@
 package bwj.logging.jdbc;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 
 /**
- * TODO - must rename this class   'factory' is misleading
- * LoggingConnectionFactory creates a LoggingConnection that decorates an existing connection
+ * LoggingConnectionCreator makes a LoggingConnection that decorates an existing connection
  */
-public class LoggingConnectionFactory
+public class LoggingConnectionCreator
 {
+    private boolean loggingEnabled = true;  // flag for enabling/disabling
     private final LoggingSqlConfig loggingSqlConfig;
-    private boolean loggingEnabled = true;
 
-    public LoggingConnectionFactory(LoggingSqlConfig loggingSqlConfig)
+    public LoggingConnectionCreator(LoggingSqlConfig loggingSqlConfig)
     {
         if (loggingSqlConfig == null) {
             throw new IllegalArgumentException("Must provide a loggingSqlConfig");
@@ -40,8 +38,8 @@ public class LoggingConnectionFactory
 
 
     /**
-     * If true, build will return a "LoggingConnection",
-     * If falsae, build will pass back the original connection given.
+     * If true, getConnection will return a "LoggingConnection",
+     * If false, getConnection will pass back the original connection given.
      * @return true if sql Logging enabled
      */
     public boolean isLoggingEnabled()
@@ -57,5 +55,25 @@ public class LoggingConnectionFactory
     {
         this.loggingEnabled = loggingEnabled;
     }
+
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // Builder
+    public static class Builder extends LoggingSqlConfig.Builder<Builder> {
+
+        public LoggingConnectionCreator build() {
+            LoggingSqlConfig config = super.buildConfig();
+            return new LoggingConnectionCreator(config);
+        }
+
+        @Override
+        protected Builder getThis() {
+            return this;
+        }
+    }
+
 
 }
