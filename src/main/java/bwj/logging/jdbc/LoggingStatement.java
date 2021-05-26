@@ -8,6 +8,9 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * Logging Decorator around Statements
+ */
 public class LoggingStatement implements Statement
 {
     protected void setAndLogCurrent(String sql) {
@@ -60,9 +63,9 @@ public class LoggingStatement implements Statement
     public LoggingStatement(Statement statement, LoggingConnection.LogStatementBuilder builder)
     {
         this.statement = statement;
-        this.loggingListeners = builder.getLogListeners();
+        this.loggingListeners = builder.loggingListeners;
         this.sqlTracker = builder.getSqlStatementTracker();
-        this.loggingConnection = builder.getConnection();
+        this.loggingConnection = builder.loggingConnection;
     }
 
 

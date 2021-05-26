@@ -29,6 +29,9 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
+/**
+ * Logging Decorator around PreparedStatements
+ */
 public class LoggingPreparedStatement extends LoggingStatement implements PreparedStatement
 {
     private final PreparedStatement preparedStatement;

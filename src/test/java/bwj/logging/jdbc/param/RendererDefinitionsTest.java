@@ -14,7 +14,7 @@ public class RendererDefinitionsTest
     @Test
     public void testHasNullFields() throws Exception
     {
-        RendererDefinitions rendereDefinitions = RendererDefinitionsFactory.createDefaultDefinitions("");
+        RendererDefinitions rendereDefinitions = RendererDefinitionsFactory.createDefaultDefinitions(null);
 
         assertNotNull(rendereDefinitions);
         assertFalse(rendereDefinitions.hasNullRenderers());

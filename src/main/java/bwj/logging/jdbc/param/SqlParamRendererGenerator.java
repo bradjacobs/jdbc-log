@@ -35,7 +35,7 @@ public class SqlParamRendererGenerator
     }
 
     /**
-     * 'Wrap' an existing param renderer with anddtional prefix and suffix stirngs.
+     * 'Decorate' an existing param renderer with anddtional prefix and suffix stirngs.
      * @param nestedRenderer the original param renderer
      * @param prefix string value to prepend
      * @param suffix string value to append.

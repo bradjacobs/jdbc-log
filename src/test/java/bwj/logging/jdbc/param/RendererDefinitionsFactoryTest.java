@@ -1,5 +1,6 @@
 package bwj.logging.jdbc.param;
 
+import bwj.logging.jdbc.DatabaseType;
 import org.testng.annotations.Test;
 
 import java.util.Date;
@@ -18,7 +19,7 @@ public class RendererDefinitionsFactoryTest
     @Test
     public void testOracleDefaults_Timestamp() throws Exception
     {
-        RendererDefinitions rendererDefinitions = RendererDefinitionsFactory.createDefaultDefinitions("Oracle");
+        RendererDefinitions rendererDefinitions = RendererDefinitionsFactory.createDefaultDefinitions(DatabaseType.identifyDatabaseType("Oracle"));
 
         java.sql.Timestamp sqlTimestamp = new java.sql.Timestamp(TEST_DATE_LONG);
 
@@ -34,7 +35,7 @@ public class RendererDefinitionsFactoryTest
     @Test
     public void testOracleDefaults_Date() throws Exception
     {
-        RendererDefinitions rendererDefinitions = RendererDefinitionsFactory.createDefaultDefinitions("Oracle");
+        RendererDefinitions rendererDefinitions = RendererDefinitionsFactory.createDefaultDefinitions(DatabaseType.identifyDatabaseType("Oracle"));
 
         java.sql.Date sqlDate = new java.sql.Date(TEST_DATE_LONG);
 

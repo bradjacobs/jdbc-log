@@ -1,6 +1,8 @@
 package bwj.logging.jdbc.param;
 
 
+import bwj.logging.jdbc.LoggingConnection;
+
 import java.util.Map;
 
 public class TagFiller

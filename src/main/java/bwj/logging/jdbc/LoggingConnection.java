@@ -25,24 +25,18 @@ import java.util.concurrent.Executor;
 public class LoggingConnection implements Connection
 {
     private final Connection connection;
-
-    private final TagFiller tagFiller;
-    private final boolean streamLoggingEnabled;
-    private final List<LoggingListener> logListeners;
-
+    private final LoggingSqlConfig loggingSqlConfig;
 
     /**
      * Logging Connection constructor.
-     *   Use the builder to create an instance.
-     *     i.e. Connection loggingConnection = new LoggingConnectionBuilder().build(connection);
+     *   Use LoggingSqlConfig.Builder to create LoggingSqlConfig object;
      * @param connection original jdbc connection
-     * @param builder the loggingConnection builder
+     * @param loggingSqlConfig config pojo
      */
-    LoggingConnection(Connection connection, LoggingConnectionBuilder builder) {
+    LoggingConnection(Connection connection, LoggingSqlConfig loggingSqlConfig) {
+        validateParams(connection, loggingSqlConfig);
         this.connection = connection;
-        this.tagFiller = builder.tagFiller;
-        this.streamLoggingEnabled = builder.streamLoggingEnabled;
-        this.logListeners = builder.loggingListeners;
+        this.loggingSqlConfig = loggingSqlConfig;
     }
 
 
@@ -446,15 +440,27 @@ public class LoggingConnection implements Connection
     }
 
 
+    private void validateParams(Connection connection, LoggingSqlConfig loggingSqlConfig) throws IllegalArgumentException
+    {
+        if (connection == null) {
+            throw new IllegalArgumentException("Must provide a connection");
+        }
+        if (loggingSqlConfig == null) {
+            throw new IllegalArgumentException("Must provide a loggingSqlConfig");
+        }
+    }
+
 
 
     class LogStatementBuilder
     {
-        private final LoggingConnection loggingConnection;
+        final LoggingConnection loggingConnection;
+        final List<LoggingListener> loggingListeners;
         private String sql = null;
 
         LogStatementBuilder(LoggingConnection loggingConnection) {
             this.loggingConnection = loggingConnection;
+            this.loggingListeners = loggingConnection.loggingSqlConfig.getLoggingListeners();
         }
 
         LogStatementBuilder withSql(String sql) {
@@ -474,18 +480,13 @@ public class LoggingConnection implements Connection
 
         SqlStatementTracker getSqlStatementTracker()
         {
+            // if sql != null then assume it's a PreparedStatement or CallableStatement
             if (this.sql != null) {
-                return new SqlStatementTracker(this.sql, tagFiller, streamLoggingEnabled);
+                return new SqlStatementTracker(this.sql, loggingSqlConfig.getTagFiller(), loggingSqlConfig.isStreamLoggging());
             }
             else {
                 return new SqlStatementTracker();
             }
-        }
-        List<LoggingListener> getLogListeners() {
-            return logListeners;
-        }
-        Connection getConnection() {
-            return this.loggingConnection;
         }
     }
 

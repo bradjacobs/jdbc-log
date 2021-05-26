@@ -1,5 +1,7 @@
 package bwj.logging.jdbc.param;
 
+import bwj.logging.jdbc.DatabaseType;
+
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -20,29 +22,31 @@ public class RendererDefinitionsFactory
 
     private RendererDefinitionsFactory() {}
 
+
     /**
      * Generates default field renderers
      *  NOTE: all date/timestamps will be converted to strings using UTC timezone.
-     * @param dbProductName database name identifier (optional)
-     *                      used to help pick more 'accurate' defaults
+     * @param dbType database identifier (optional) used to help pick more 'accurate' defaults
      * @return RendererDefinitions
      */
-    public static RendererDefinitions createDefaultDefinitions(String dbProductName)
+    public static RendererDefinitions createDefaultDefinitions(DatabaseType dbType)
     {
-        return createDefaultDefinitions(dbProductName, DEFAULT_ZONE);
+        return createDefaultDefinitions(dbType, DEFAULT_ZONE);
     }
 
 
     /**
      * Generates default field renderers
      *  NOTE: all date/timestamps will be converted to strings using UTC timezone.
-     * @param dbProductName database name identifier (optional)
-     *                      used to help pick more 'accurate' defaults
+     * @param dbType database identifier (optional) used to help pick more 'accurate' defaults
      * @param zoneId a timezone for use for date string formatting (default: UTC)
      * @return RendererDefinitions
      */
-    public static RendererDefinitions createDefaultDefinitions(String dbProductName, ZoneId zoneId)
+    public static RendererDefinitions createDefaultDefinitions(DatabaseType dbType, ZoneId zoneId)
     {
+        if (dbType == null) {
+            dbType = DatabaseType.UNKNOWN;
+        }
         if (zoneId == null) {
             zoneId = DEFAULT_ZONE;
         }
@@ -63,7 +67,6 @@ public class RendererDefinitionsFactory
         //          NOTE....this is all currently GUESSING!
         //
         //     ********
-        DatabaseType dbType = identifyDatabaseType(dbProductName);
 
         switch (dbType)
         {
@@ -101,44 +104,4 @@ public class RendererDefinitionsFactory
         return rendererDefinitions;
     }
 
-
-
-
-
-    // This is __NOT__ a complete list by any means!
-    //   values in thie enum class only have meaning if there are special param renderer types defined above.
-    private enum DatabaseType
-    {
-        MYSQL,
-        HSQL,
-        SQLITE,
-        ORACLE,
-        SQLSERVER,
-        POSTGRES,
-        // many many more ...
-
-        UNKNOWN,
-    }
-
-
-    /**
-     * Attempt to identify db type via string
-     * @param dbName either database product name or driver name.
-     * @return DatabaseType based on input parameter
-     */
-    private static DatabaseType identifyDatabaseType(String dbName)
-    {
-        if (dbName == null) {
-            return DatabaseType.UNKNOWN;
-        }
-
-        dbName = dbName.toUpperCase();
-        if (dbName.contains("MYSQL")) { return DatabaseType.MYSQL; }
-        else if (dbName.contains("HSQL")) { return DatabaseType.HSQL; }
-        else if (dbName.contains("SQLITE")) { return DatabaseType.SQLITE; }
-        else if (dbName.contains("ORACLE")) { return DatabaseType.ORACLE; }
-        else if (dbName.contains("POSTGRES")) { return DatabaseType.POSTGRES; }
-        else if (dbName.contains("SQLSERVER") || dbName.contains("SQL SERVER")) { return DatabaseType.SQLSERVER; }
-        else { return DatabaseType.UNKNOWN; }
-    }
 }

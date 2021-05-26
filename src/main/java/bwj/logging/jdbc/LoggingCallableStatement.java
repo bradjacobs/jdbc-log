@@ -22,7 +22,7 @@ import java.util.Calendar;
 import java.util.Map;
 
 /**
- * Logging Wrapper around CallableStatements
+ * Logging Decorator around CallableStatements
  *
  *  ***** NOTE: *****
  *     ONLY works when setting numeric parameter indexes

@@ -67,13 +67,6 @@ public class RendererDefinitions
         this.timeRenderer = timeRenderer;
     }
 
-    public void setAllTimeDateRenderers(SqlParamRenderer<Date> renderer) {
-        setTimestampRenderer(renderer);
-        setDateRenderer(renderer);
-        setTimeRenderer(renderer);
-    }
-
-
     public boolean hasNullRenderers()
     {
         if (defaultRenderer == null || boooleanRenderer == null ||
