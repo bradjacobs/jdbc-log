@@ -60,11 +60,14 @@ public class LoggingSqlConfig
     public static Builder builder() {
         return new Builder<>();
     }
+    public static Builder builder(ZoneId zoneId) {
+        return new Builder<>(zoneId);
+    }
 
     public static class Builder<T extends Builder<T>>
     {
         // TODO - need to ponder on this
-        protected T getThis() {
+        public T getThis() {
             return (T) this;
         }
         private static final SqlParamRendererGenerator paramRendererGenerator = new SqlParamRendererGenerator();
@@ -91,7 +94,7 @@ public class LoggingSqlConfig
         /**
          * LoggingSqlConfig.Builder constructor
          */
-        public Builder() {
+        protected Builder() {
             this(DEFAULT_ZONE);
         }
 
@@ -101,7 +104,7 @@ public class LoggingSqlConfig
          *     (note: 'ZoneId.systemDefault' can be used for the current local timezone
          * @param zoneId timeeZone  (default: UTC)
          */
-        public Builder(ZoneId zoneId) {
+        protected Builder(ZoneId zoneId) {
             if (zoneId == null) {
                 zoneId = DEFAULT_ZONE;
             }
@@ -198,7 +201,6 @@ public class LoggingSqlConfig
                 // must have at least 1 logging listener
                 loggingListeners.add(DEFAULT_LOGGING_LISTENER);
             }
-
 
             // create initial defn's w/ defaul values
             RendererDefinitions rendereDefinitions = RendererDefinitionsFactory.createDefaultDefinitions(dbType, this.zoneId);

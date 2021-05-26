@@ -1,6 +1,7 @@
 package bwj.logging.jdbc;
 
 import java.sql.Connection;
+import java.time.ZoneId;
 
 /**
  * LoggingConnectionCreator makes a LoggingConnection that decorates an existing connection
@@ -20,19 +21,19 @@ public class LoggingConnectionCreator
 
     /**
      * Creates a LoggingConnection
-     * @param connection the original connection to be wrapped with LoggingConnection.
+     * @param targetConnection the original connection to be wrapped/decorated with LoggingConnection.
      * @return loggingConnection
      */
-    public Connection getConnection(Connection connection) {
-        if (connection == null) {
+    public Connection getConnection(Connection targetConnection) {
+        if (targetConnection == null) {
             throw new IllegalArgumentException("Connection cannot be null.");
         }
 
         if (this.loggingEnabled) {
-            return new LoggingConnection(connection, loggingSqlConfig);
+            return new LoggingConnection(targetConnection, loggingSqlConfig);
         }
         else {
-            return connection;
+            return targetConnection;
         }
     }
 
@@ -58,11 +59,16 @@ public class LoggingConnectionCreator
 
 
     public static Builder builder() {
-        return new Builder();
+        return new Builder(null);
+    }
+    public static Builder builder(ZoneId zoneId) {
+        return new Builder(zoneId);
     }
 
     // Builder
     public static class Builder extends LoggingSqlConfig.Builder<Builder> {
+
+        protected Builder(ZoneId zoneId) { super(zoneId); }
 
         public LoggingConnectionCreator build() {
             LoggingSqlConfig config = super.buildConfig();
@@ -70,7 +76,7 @@ public class LoggingConnectionCreator
         }
 
         @Override
-        protected Builder getThis() {
+        public Builder getThis() {
             return this;
         }
     }
