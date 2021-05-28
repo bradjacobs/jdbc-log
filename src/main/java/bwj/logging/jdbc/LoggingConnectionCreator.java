@@ -1,6 +1,6 @@
 package bwj.logging.jdbc;
 
-import bwj.logging.jdbc.listeners.SoutLogListener;
+import bwj.logging.jdbc.listeners.SystemOutLogListener;
 import bwj.logging.jdbc.param.RendererDefinitions;
 import bwj.logging.jdbc.param.RendererDefinitionsFactory;
 import bwj.logging.jdbc.param.RendererSelector;
@@ -100,7 +100,7 @@ public class LoggingConnectionCreator
 
         private static final String TAG = "?";
         private static final ZoneId DEFAULT_ZONE = ZoneId.of("UTC");
-        private static final LoggingListener DEFAULT_LOGGING_LISTENER = new SoutLogListener(); // used only if no listeners are provided.
+        private static final LoggingListener DEFAULT_LOGGING_LISTENER = new SystemOutLogListener(); // used only if no listeners are provided.
 
         // note: force the zoneId to get set first (on constructor)
         //   otherwise order can matter when setting some of the other fields.
