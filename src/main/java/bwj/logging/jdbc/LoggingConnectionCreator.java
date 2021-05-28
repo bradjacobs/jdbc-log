@@ -7,6 +7,7 @@ import bwj.logging.jdbc.param.RendererSelector;
 import bwj.logging.jdbc.param.SqlParamRenderer;
 import bwj.logging.jdbc.param.SqlParamRendererGenerator;
 import bwj.logging.jdbc.param.TagFiller;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
 import java.time.ZoneId;
@@ -80,7 +81,13 @@ public class LoggingConnectionCreator
     ///////////////////////////////////////////////////////////////////////////
 
     public static Builder builder() {
-        return new Builder(null);
+        return new Builder(null);  // this will be set to 'default' timezone
+    }
+    public static Builder builder(String timeZone) {
+        if (StringUtils.isEmpty(timeZone)) {
+            return builder();
+        }
+        return builder(ZoneId.of(timeZone));
     }
     public static Builder builder(ZoneId zoneId) {
         return new Builder(zoneId);
@@ -107,13 +114,6 @@ public class LoggingConnectionCreator
         // assigned during 'build'
         private TagFiller tagFiller;
 
-
-        /**
-         * LoggingSqlConfig.Builder constructor
-         */
-        protected Builder() {
-            this(DEFAULT_ZONE);
-        }
 
         /**
          * LoggingSqlConfig.Builder constructor
