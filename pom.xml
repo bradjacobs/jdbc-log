@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 
-	<groupId>bwj.logging</groupId>
+	<groupId>com.github.bradjacobs.logging</groupId>
 	<artifactId>jdbc-log</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>jdbc-log</name>
