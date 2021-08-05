@@ -12,6 +12,9 @@ import org.apache.commons.lang3.StringUtils;
 import java.sql.Connection;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -28,12 +31,18 @@ public class LoggingConnectionCreator
     private final TagFiller tagFiller;
     private final List<LoggingListener> loggingListeners;
 
+    private static final String MISSING_LOG_LISTENER_ERR_MSG = "Logging Listeners cannot be set to null or empty collection.";
 
     LoggingConnectionCreator(Builder builder)
     {
         this.streamLogging = builder.streamLogging;
         this.tagFiller = builder.tagFiller;
-        this.loggingListeners = builder.loggingListeners;
+        this.loggingListeners = Collections.unmodifiableList(builder.loggingListeners);
+    }
+
+    public List<LoggingListener> getLoggingListeners()
+    {
+        return loggingListeners;
     }
 
     /**
@@ -142,17 +151,24 @@ public class LoggingConnectionCreator
         }
 
 
-        public Builder withLogListener(LoggingListener logListener) {
-            if (logListener == null) {
-                throw new IllegalArgumentException("Cannot set a logging listener to null.");
+        public Builder withLogListener(LoggingListener ... logListeners) {
+            if (logListeners == null || logListeners.length == 0) {
+                throw new IllegalArgumentException(MISSING_LOG_LISTENER_ERR_MSG);
             }
-            loggingListeners.add(logListener);
+            return withLogListener(Arrays.asList(logListeners));
+        }
+
+        public Builder withLogListener(Collection<LoggingListener> logListeners) {
+            if (logListeners == null || logListeners.size() == 0 || logListeners.contains(null)) {
+                throw new IllegalArgumentException(MISSING_LOG_LISTENER_ERR_MSG);
+            }
+            loggingListeners.addAll(logListeners);
             return this;
         }
 
         /**
-         * Enables abiltty to log Text Clob/Reader/InputStream values
-         *    WARNING: could significantly impact performance if enabled.
+         * Enables ability to log Text Clob/Reader/InputStream values
+         *    WARNING: could significantly impact performance if enabled!
          * @param streamLoggingEnabled  (default: FALSE)
          */
         public Builder setStreamLoggingEnabled(boolean streamLoggingEnabled) {

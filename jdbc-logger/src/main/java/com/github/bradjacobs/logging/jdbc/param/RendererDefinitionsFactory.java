@@ -72,9 +72,9 @@ public class RendererDefinitionsFactory
         {
             case SQLITE:
                 // show all the times and epoch millis
-                timestampRenderer = paramRendererGenerstor.createDateNumericParamRenderer();
-                dateRenderer = paramRendererGenerstor.createDateNumericParamRenderer();
-                timeRenderer = paramRendererGenerstor.createDateNumericParamRenderer();
+//                timestampRenderer = paramRendererGenerstor.createDateNumericParamRenderer();
+//                dateRenderer = paramRendererGenerstor.createDateNumericParamRenderer();
+//                timeRenderer = paramRendererGenerstor.createDateNumericParamRenderer();
                 break;
             case ORACLE:
                 // NOTE: oracle really dosn't have 'time' so just assign the same as 'timestamp'
