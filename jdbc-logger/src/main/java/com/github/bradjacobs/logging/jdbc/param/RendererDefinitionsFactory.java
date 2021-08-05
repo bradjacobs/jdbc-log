@@ -18,7 +18,7 @@ public class RendererDefinitionsFactory
     private static final String ORACLE_TODATE_PREFIX = "TO_DATE(";
     private static final String ORACLE_DATETIME_SUFFIX = ", 'YYYY-MM-DD HH24:MI:SS')";
 
-    private static final SqlParamRendererGenerator paramRendererGenerstor = new SqlParamRendererGenerator();
+    private static final SqlParamRendererGenerator paramRendererGenerator = new SqlParamRendererGenerator();
 
     private RendererDefinitionsFactory() {}
 
@@ -52,12 +52,12 @@ public class RendererDefinitionsFactory
         }
 
         // initially set with basic defaults
-        SqlParamRenderer<Object> defaultRenderer = paramRendererGenerstor.createBasicParamRenderer();
-        SqlParamRenderer<String> stringRenderer = paramRendererGenerstor.createStringParamRenderer();
-        SqlParamRenderer<Boolean> booleanRenderer = paramRendererGenerstor.createBooleanParamRenderer();
-        SqlParamRenderer<Date> timestampRenderer = paramRendererGenerstor.createDateStringParamRenderer(DEFAULT_TIMESTAMP_PATTERN, zoneId);
-        SqlParamRenderer<Date> dateRenderer = paramRendererGenerstor.createDateStringParamRenderer(DEFAULT_DATE_PATTERN, zoneId);
-        SqlParamRenderer<Date> timeRenderer = paramRendererGenerstor.createDateStringParamRenderer(DEFAULT_TIME_PATTERN, zoneId);
+        SqlParamRenderer<Object> defaultRenderer = paramRendererGenerator.createBasicParamRenderer();
+        SqlParamRenderer<String> stringRenderer = paramRendererGenerator.createStringParamRenderer();
+        SqlParamRenderer<Boolean> booleanRenderer = paramRendererGenerator.createBooleanParamRenderer();
+        SqlParamRenderer<Date> timestampRenderer = paramRendererGenerator.createDateStringParamRenderer(DEFAULT_TIMESTAMP_PATTERN, zoneId);
+        SqlParamRenderer<Date> dateRenderer = paramRendererGenerator.createDateStringParamRenderer(DEFAULT_DATE_PATTERN, zoneId);
+        SqlParamRenderer<Date> timeRenderer = paramRendererGenerator.createDateStringParamRenderer(DEFAULT_TIME_PATTERN, zoneId);
 
 
         // Now Check if able to recognize the Database type, which make alter
@@ -72,21 +72,21 @@ public class RendererDefinitionsFactory
         {
             case SQLITE:
                 // show all the times and epoch millis
-//                timestampRenderer = paramRendererGenerstor.createDateNumericParamRenderer();
-//                dateRenderer = paramRendererGenerstor.createDateNumericParamRenderer();
-//                timeRenderer = paramRendererGenerstor.createDateNumericParamRenderer();
+//                timestampRenderer = paramRendererGenerator.createDateNumericParamRenderer();
+//                dateRenderer = paramRendererGenerator.createDateNumericParamRenderer();
+//                timeRenderer = paramRendererGenerator.createDateNumericParamRenderer();
                 break;
             case ORACLE:
-                // NOTE: oracle really dosn't have 'time' so just assign the same as 'timestamp'
-                timeRenderer = paramRendererGenerstor.createPrefixSufixParamRenderer(timestampRenderer, ORACLE_TODATE_PREFIX, ORACLE_DATETIME_SUFFIX);
+                // NOTE: oracle really doesn't have 'time' so just assign the same as 'timestamp'
+                timeRenderer = paramRendererGenerator.createPrefixSuffixParamRenderer(timestampRenderer, ORACLE_TODATE_PREFIX, ORACLE_DATETIME_SUFFIX);
 
                 // NOTE:  currently shows a full date/time (like timestamp)
                 //   argument could be made that this should only show 'date' portion, but error on the side of showing more info
-                dateRenderer = paramRendererGenerstor.createPrefixSufixParamRenderer(timestampRenderer, ORACLE_TODATE_PREFIX, ORACLE_DATETIME_SUFFIX);
+                dateRenderer = paramRendererGenerator.createPrefixSuffixParamRenderer(timestampRenderer, ORACLE_TODATE_PREFIX, ORACLE_DATETIME_SUFFIX);
 
                 //  set timestampRender last (or matters here)
                 //    NOTE: it is possible to have alternate w/ fractional second precision, but this is the 'default'
-                timestampRenderer = paramRendererGenerstor.createPrefixSufixParamRenderer(timestampRenderer, ORACLE_TOTIMESTAMP_PREFIX, ORACLE_DATETIME_SUFFIX);
+                timestampRenderer = paramRendererGenerator.createPrefixSuffixParamRenderer(timestampRenderer, ORACLE_TOTIMESTAMP_PREFIX, ORACLE_DATETIME_SUFFIX);
                 break;
 
             // fill in here as needed ......
@@ -96,7 +96,7 @@ public class RendererDefinitionsFactory
 
         rendererDefinitions.setDefaultRenderer(defaultRenderer);
         rendererDefinitions.setStringRenderer(stringRenderer);
-        rendererDefinitions.setBoooleanRenderer(booleanRenderer);
+        rendererDefinitions.setBooleanRenderer(booleanRenderer);
         rendererDefinitions.setTimestampRenderer(timestampRenderer);
         rendererDefinitions.setDateRenderer(dateRenderer);
         rendererDefinitions.setTimeRenderer(timeRenderer);

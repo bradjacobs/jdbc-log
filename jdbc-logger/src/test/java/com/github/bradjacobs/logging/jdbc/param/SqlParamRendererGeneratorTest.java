@@ -143,7 +143,7 @@ public class SqlParamRendererGeneratorTest
         String expected = prefix + value + suffix;
 
         SqlParamRenderer<Object> basicRenderer = paramRendererGenerator.createBasicParamRenderer();
-        SqlParamRenderer<Object> prefixSuffixRenderer = paramRendererGenerator.createPrefixSufixParamRenderer(basicRenderer, prefix, suffix);
+        SqlParamRenderer<Object> prefixSuffixRenderer = paramRendererGenerator.createPrefixSuffixParamRenderer(basicRenderer, prefix, suffix);
 
         String renderedString = getRenderedString(prefixSuffixRenderer, value);
         assertEquals( renderedString, expected, "mismatch expected prefix/suffix string");
@@ -158,7 +158,7 @@ public class SqlParamRendererGeneratorTest
         String expected = prefix + value + suffix;
 
         SqlParamRenderer<Object> basicRenderer = paramRendererGenerator.createBasicParamRenderer();
-        SqlParamRenderer<Object> prefixSuffixRenderer = paramRendererGenerator.createPrefixSufixParamRenderer(basicRenderer, prefix, suffix);
+        SqlParamRenderer<Object> prefixSuffixRenderer = paramRendererGenerator.createPrefixSuffixParamRenderer(basicRenderer, prefix, suffix);
 
         String renderedString = getRenderedString(prefixSuffixRenderer, value);
         assertEquals( renderedString, expected, "mismatch expected prefix/suffix string");
@@ -173,7 +173,7 @@ public class SqlParamRendererGeneratorTest
         String expected = prefix + value;
 
         SqlParamRenderer<Object> basicRenderer = paramRendererGenerator.createBasicParamRenderer();
-        SqlParamRenderer<Object> prefixSuffixRenderer = paramRendererGenerator.createPrefixSufixParamRenderer(basicRenderer, prefix, suffix);
+        SqlParamRenderer<Object> prefixSuffixRenderer = paramRendererGenerator.createPrefixSuffixParamRenderer(basicRenderer, prefix, suffix);
 
         String renderedString = getRenderedString(prefixSuffixRenderer, value);
         assertEquals( renderedString, expected, "mismatch expected prefix/suffix string");
@@ -183,7 +183,7 @@ public class SqlParamRendererGeneratorTest
         expectedExceptionsMessageRegExp = "Renderer parameter is required.")
     public void testPrefixSuffix_BadInput() throws Exception
     {
-        paramRendererGenerator.createPrefixSufixParamRenderer(null, "PREFIX", "SUFFIX");
+        paramRendererGenerator.createPrefixSuffixParamRenderer(null, "PREFIX", "SUFFIX");
     }
 
 

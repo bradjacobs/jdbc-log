@@ -5,7 +5,7 @@ import java.util.Date;
 public class RendererDefinitions
 {
     private SqlParamRenderer<Object> defaultRenderer = null;
-    private SqlParamRenderer<Boolean> boooleanRenderer = null;
+    private SqlParamRenderer<Boolean> booleanRenderer = null;
     private SqlParamRenderer<String> stringRenderer = null;
     private SqlParamRenderer<Date> timestampRenderer = null;
     private SqlParamRenderer<Date> dateRenderer = null;
@@ -27,12 +27,12 @@ public class RendererDefinitions
         this.defaultRenderer = defaultRenderer;
     }
 
-    public SqlParamRenderer<Boolean> getBoooleanRenderer() {
-        return boooleanRenderer;
+    public SqlParamRenderer<Boolean> getBooleanRenderer() {
+        return booleanRenderer;
     }
 
-    public void setBoooleanRenderer(SqlParamRenderer<Boolean> boooleanRenderer) {
-        this.boooleanRenderer = boooleanRenderer;
+    public void setBooleanRenderer(SqlParamRenderer<Boolean> booleanRenderer) {
+        this.booleanRenderer = booleanRenderer;
     }
 
     public SqlParamRenderer<String> getStringRenderer() {
@@ -69,7 +69,7 @@ public class RendererDefinitions
 
     public boolean hasNullRenderers()
     {
-        if (defaultRenderer == null || boooleanRenderer == null ||
+        if (defaultRenderer == null || booleanRenderer == null ||
             stringRenderer == null || timestampRenderer == null ||
             dateRenderer == null || timeRenderer == null)
         {
@@ -80,7 +80,7 @@ public class RendererDefinitions
 
 
     /**
-     * Merges all the __NON-NULL__ values from the given defintions into the current object.
+     * Merges all the __NON-NULL__ values from the given definitions into the current object.
      * @param other the RendererDefintions to merge into this object
      */
     public void mergeIn(RendererDefinitions other)
@@ -88,8 +88,8 @@ public class RendererDefinitions
         if (other.getDefaultRenderer() != null) {
             this.setDefaultRenderer(other.getDefaultRenderer());
         }
-        if (other.getBoooleanRenderer() != null) {
-            this.setBoooleanRenderer(other.getBoooleanRenderer());
+        if (other.getBooleanRenderer() != null) {
+            this.setBooleanRenderer(other.getBooleanRenderer());
         }
         if (other.getStringRenderer() != null) {
             this.setStringRenderer(other.getStringRenderer());

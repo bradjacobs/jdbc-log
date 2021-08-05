@@ -30,6 +30,8 @@ import java.util.Map;
  */
 public class LoggingCallableStatement extends LoggingPreparedStatement implements CallableStatement
 {
+    private static final String OUT_PLACEHOLDER = "{_OUTPARAM_}";
+
     private final CallableStatement callableStatement;
 
     public LoggingCallableStatement(CallableStatement callableStatement, LoggingConnection.LogStatementBuilder builder)
@@ -37,9 +39,6 @@ public class LoggingCallableStatement extends LoggingPreparedStatement implement
         super(callableStatement, builder);
         this.callableStatement = callableStatement;
     }
-
-    private static final String OUT_PLACEHOLDER = "{_OUTPARAM_}";
-
 
 
     /** @inheritDoc */

@@ -1,9 +1,9 @@
 package com.github.bradjacobs.logging.jdbc;
 
 import com.github.bradjacobs.logging.jdbc.listeners.SystemOutLogListener;
+import com.github.bradjacobs.logging.jdbc.param.ParamRendererSelector;
 import com.github.bradjacobs.logging.jdbc.param.RendererDefinitions;
 import com.github.bradjacobs.logging.jdbc.param.RendererDefinitionsFactory;
-import com.github.bradjacobs.logging.jdbc.param.ParamRendererSelector;
 import com.github.bradjacobs.logging.jdbc.param.SqlParamRenderer;
 import com.github.bradjacobs.logging.jdbc.param.SqlParamRendererGenerator;
 import com.github.bradjacobs.logging.jdbc.param.TagFiller;
@@ -126,9 +126,9 @@ public class LoggingConnectionCreator
 
         /**
          * LoggingSqlConfig.Builder constructor
-         *   Can optionally supply a custom timezone (used any Date/Timesteamp string value formatting.)
+         *   Can optionally supply a custom timezone (used any Date/Timestamp string value formatting.)
          *     (note: 'ZoneId.systemDefault' can be used for the current local timezone
-         * @param zoneId timeeZone  (default: UTC)
+         * @param zoneId timeZone  (default: UTC)
          */
         protected Builder(ZoneId zoneId) {
             if (zoneId == null) {
@@ -140,7 +140,7 @@ public class LoggingConnectionCreator
 
         /**
          * Any string value that can help identify which type of database is used.  (MySQL, HSQL, PostGres, etc, etc)
-         *   Could be JDBC url, driver class name, hardocded string.
+         *   Could be JDBC url, driver class name, hardcoded string.
          * The config will look for specific 'substrings' to determine database type.
          *   (i.e.  if contains 'mysql', must be a MySQL database)
          * @param dbTypeIdentifier string identifying database used.  If not set then 'general database defaults' will be selected.
@@ -207,7 +207,7 @@ public class LoggingConnectionCreator
         }
 
         /**
-         * Enable all timestamp/date/time instanes to rendered as numeric (unix/epoch time)
+         * Enable all timestamp/date/time instances to rendered as numeric (unix/epoch time)
          */
         public Builder withChronoDefaultNumerics() {
             return withChronoParamRenderer(paramRendererGenerator.createDateNumericParamRenderer());
@@ -230,12 +230,12 @@ public class LoggingConnectionCreator
                 loggingListeners.add(DEFAULT_LOGGING_LISTENER);  // must have at least 1 listener
             }
 
-            // create initial defn's w/ defaul values
-            RendererDefinitions rendereDefinitions = RendererDefinitionsFactory.createDefaultDefinitions(dbType, this.zoneId);
+            // create initial defn's w/ default values
+            RendererDefinitions rendererDefinitions = RendererDefinitionsFactory.createDefaultDefinitions(dbType, this.zoneId);
 
             // add any overrides to replace defaults (if applicable)
-            rendereDefinitions.mergeIn(this.overrideRendererDefinitions);
-            ParamRendererSelector rendererSelector = new ParamRendererSelector(rendereDefinitions);
+            rendererDefinitions.mergeIn(this.overrideRendererDefinitions);
+            ParamRendererSelector rendererSelector = new ParamRendererSelector(rendererDefinitions);
 
             this.tagFiller = new TagFiller(TAG, rendererSelector);
             return new LoggingConnectionCreator(this);

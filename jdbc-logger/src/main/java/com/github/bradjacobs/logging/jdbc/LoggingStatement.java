@@ -238,10 +238,9 @@ public class LoggingStatement implements Statement
     @Override
     public Connection getConnection() throws SQLException
     {
-        // give the actual connection that generated this Logging Statement.
+        // give the _actual_ connection that generated this Logging Statement.
+        //   ( instead of statement.getConnection() )
         return loggingConnection;
-
-        //return statement.getConnection();
     }
 
     /** @inheritDoc */

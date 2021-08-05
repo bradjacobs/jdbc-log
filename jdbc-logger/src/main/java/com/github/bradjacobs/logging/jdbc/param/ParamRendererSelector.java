@@ -10,7 +10,7 @@ public class ParamRendererSelector
             throw new IllegalArgumentException("Must provide rendererDefinitions.");
         }
         else if (rendererDefinitions.hasNullRenderers()) {
-            throw new IllegalArgumentException("RendererDefintions must have all values set.");
+            throw new IllegalArgumentException("RendererDefinitions must have all values set.");
         }
         this.rendererDefinitions = rendererDefinitions;
     }
@@ -22,7 +22,7 @@ public class ParamRendererSelector
             return rendererDefinitions.getStringRenderer();
         }
         else if (objValue instanceof Boolean) {
-            return rendererDefinitions.getBoooleanRenderer();
+            return rendererDefinitions.getBooleanRenderer();
         }
         else if (objValue instanceof java.sql.Timestamp) {
             return rendererDefinitions.getTimestampRenderer();

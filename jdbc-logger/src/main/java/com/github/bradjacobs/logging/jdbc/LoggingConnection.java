@@ -451,7 +451,6 @@ public class LoggingConnection implements Connection
 
 
 
-
     class LogStatementBuilder
     {
         final LoggingConnection loggingConnection;

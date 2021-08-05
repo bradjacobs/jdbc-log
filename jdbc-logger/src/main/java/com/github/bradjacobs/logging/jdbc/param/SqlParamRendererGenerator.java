@@ -35,20 +35,20 @@ public class SqlParamRendererGenerator
     }
 
     /**
-     * 'Decorate' an existing param renderer with anddtional prefix and suffix stirngs.
+     * 'Decorate' an existing param renderer with additional prefix and suffix strings.
      * @param nestedRenderer the original param renderer
      * @param prefix string value to prepend
      * @param suffix string value to append.
      * @return renderer
      */
-    public <T> PrefixSuffixParamRenderer<T> createPrefixSufixParamRenderer(SqlParamRenderer<T> nestedRenderer, String prefix, String suffix)
+    public <T> PrefixSuffixParamRenderer<T> createPrefixSuffixParamRenderer(SqlParamRenderer<T> nestedRenderer, String prefix, String suffix)
     {
         return new PrefixSuffixParamRenderer<>(nestedRenderer, prefix, suffix);
     }
 
     /**
      * Create super generic param renderer.  Basically will just 'toString' the object.
-     * @return
+     * @return renderer
      */
     public SqlParamRenderer<Object> createBasicParamRenderer()
     {
