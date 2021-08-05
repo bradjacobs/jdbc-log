@@ -3,6 +3,7 @@ package com.github.bradjacobs.logging.jdbc;
 import org.apache.commons.io.IOUtils;
 
 import java.io.ByteArrayInputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -635,7 +636,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
             throw new UncheckedIOException("Error attempting to get string value from reader for Logging: " + e.getMessage(), e);
         }
         finally {
-            IOUtils.closeQuietly(reader);
+            closeQuietly(reader);
         }
     }
     protected String extractString(InputStream inputStream)
@@ -650,7 +651,21 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
             throw new UncheckedIOException("Error attempting to get string value from inputStream for Logging: " + e.getMessage(), e);
         }
         finally {
-            IOUtils.closeQuietly(inputStream);
+            closeQuietly(inputStream);
+        }
+    }
+
+
+    private void closeQuietly(Closeable closeable)
+    {
+        if (closeable != null)
+        {
+            try {
+                closeable.close();
+            }
+            catch (IOException e) {
+               /* ignore */
+            }
         }
     }
 }
