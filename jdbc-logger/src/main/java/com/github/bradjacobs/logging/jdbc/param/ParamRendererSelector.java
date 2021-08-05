@@ -1,10 +1,10 @@
 package com.github.bradjacobs.logging.jdbc.param;
 
-public class RendererSelector
+public class ParamRendererSelector
 {
     private final RendererDefinitions rendererDefinitions;
 
-    public RendererSelector(RendererDefinitions rendererDefinitions)
+    public ParamRendererSelector(RendererDefinitions rendererDefinitions)
     {
         if (rendererDefinitions == null) {
             throw new IllegalArgumentException("Must provide rendererDefinitions.");
@@ -17,9 +17,6 @@ public class RendererSelector
 
 
     public SqlParamRenderer getRenderer(Object objValue) {
-        if (objValue == null) {
-            return rendererDefinitions.getDefaultRenderer();
-        }
 
         if (objValue instanceof String) {
             return rendererDefinitions.getStringRenderer();

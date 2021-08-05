@@ -8,14 +8,14 @@ public class TagFiller
     private static final String DEFAULT_TAG = "?";
 
     private final String tag;
-    private final RendererSelector rendererSelector;
+    private final ParamRendererSelector rendererSelector;
 
-    public TagFiller(RendererSelector rendererSelector)
+    public TagFiller(ParamRendererSelector rendererSelector)
     {
         this(DEFAULT_TAG, rendererSelector);
     }
 
-    public TagFiller(String tag, RendererSelector rendererSelector)
+    public TagFiller(String tag, ParamRendererSelector rendererSelector)
     {
         validateParams(tag, rendererSelector);
         this.tag = tag;
@@ -71,7 +71,7 @@ public class TagFiller
     }
 
 
-    private void validateParams(String tag, RendererSelector rendererSelector) throws IllegalArgumentException
+    private void validateParams(String tag, ParamRendererSelector rendererSelector) throws IllegalArgumentException
     {
         if (tag == null || tag.isEmpty()) {
             throw new IllegalArgumentException("Must provide a tag parameter.");

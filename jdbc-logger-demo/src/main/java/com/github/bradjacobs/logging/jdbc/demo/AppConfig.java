@@ -26,17 +26,8 @@ public class AppConfig
 
     public AppConfig()
     {
-        int kkkk = 33;
-        int kls =- 33;
     }
 
-//    @Bean
-//    @Primary
-//    @ConfigurationProperties(prefix = "datasource")
-//    public DataSource dataSource() {
-//        DataSource innerDs = DataSourceBuilder.create().build();
-//        return new MyDataSource(innerDs);
-//    }
 
 
     @Primary
@@ -46,16 +37,14 @@ public class AppConfig
 
         DataSource innerDataSource = dataSourceProperties.initializeDataSourceBuilder().build();
 
-
-        try
-        {
-            Connection c = innerDataSource.getConnection();
-            int kj = 3333;
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
+        // below lead to a way to runtime detect the actual db type (based on driver)
+        //   but currently very low priority
+//        try {
+//            Connection c = innerDataSource.getConnection();
+//        }
+//        catch (SQLException e) {
+//            e.printStackTrace();
+//        }
 
 
         LoggingListener loggingListener = sql -> {
@@ -64,10 +53,7 @@ public class AppConfig
             }
         };
 
-//        return innerDataSource;
-
         LoggingConnectionCreator logConnCreator = LoggingConnectionCreator.builder().withLogListener(loggingListener).build();
-
 
         LoggingDataSource loggingDataSource = new LoggingDataSource(innerDataSource, loggingListener);
 

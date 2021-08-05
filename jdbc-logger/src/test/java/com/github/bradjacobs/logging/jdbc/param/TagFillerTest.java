@@ -241,7 +241,7 @@ public class TagFillerTest
         RendererDefinitions rendereDefinitions = RendererDefinitionsFactory.createDefaultDefinitions(null);
         rendereDefinitions.setDateRenderer( rendereDefinitions.getTimestampRenderer() );
 
-        RendererSelector rendererSelector = new RendererSelector(rendereDefinitions);
+        ParamRendererSelector rendererSelector = new ParamRendererSelector(rendereDefinitions);
         TagFiller tagFiller = new TagFiller(rendererSelector);
 
 
@@ -284,7 +284,7 @@ public class TagFillerTest
     private TagFiller createTestTagFiller()
     {
         RendererDefinitions rendereDefinitions = RendererDefinitionsFactory.createDefaultDefinitions(null);
-        RendererSelector rendererSelector = new RendererSelector(rendereDefinitions);
+        ParamRendererSelector rendererSelector = new ParamRendererSelector(rendereDefinitions);
         return new TagFiller(rendererSelector);
     }
 

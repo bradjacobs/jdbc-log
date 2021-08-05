@@ -3,7 +3,7 @@ package com.github.bradjacobs.logging.jdbc;
 import com.github.bradjacobs.logging.jdbc.listeners.SystemOutLogListener;
 import com.github.bradjacobs.logging.jdbc.param.RendererDefinitions;
 import com.github.bradjacobs.logging.jdbc.param.RendererDefinitionsFactory;
-import com.github.bradjacobs.logging.jdbc.param.RendererSelector;
+import com.github.bradjacobs.logging.jdbc.param.ParamRendererSelector;
 import com.github.bradjacobs.logging.jdbc.param.SqlParamRenderer;
 import com.github.bradjacobs.logging.jdbc.param.SqlParamRendererGenerator;
 import com.github.bradjacobs.logging.jdbc.param.TagFiller;
@@ -235,7 +235,7 @@ public class LoggingConnectionCreator
 
             // add any overrides to replace defaults (if applicable)
             rendereDefinitions.mergeIn(this.overrideRendererDefinitions);
-            RendererSelector rendererSelector = new RendererSelector(rendereDefinitions);
+            ParamRendererSelector rendererSelector = new ParamRendererSelector(rendereDefinitions);
 
             this.tagFiller = new TagFiller(TAG, rendererSelector);
             return new LoggingConnectionCreator(this);

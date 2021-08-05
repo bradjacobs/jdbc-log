@@ -23,7 +23,7 @@ public class LoggingDataSource implements DataSource
      * @param dataSource dataSource
      * @param loggingListener loggingListener
      */
-    public LoggingDataSource(DataSource dataSource, LoggingListener loggingListener)
+    public LoggingDataSource(DataSource dataSource, LoggingListener ... loggingListener)
     {
         this(dataSource, LoggingConnectionCreator.builder().withLogListener(loggingListener).build());
     }
@@ -70,7 +70,7 @@ public class LoggingDataSource implements DataSource
     }
 
     /**
-     * Enables usage of logging connections
+     * Enables logging
      */
     public void setLoggingEnabled(boolean loggingEnabled)
     {
