@@ -34,9 +34,11 @@ public class LoggingStatement implements Statement
         log( sqlTracker.generateSql() );
     }
     protected void logCurrentBatch() {
-        String batchSql = sqlTracker.generateBatchSql();
-        if (batchSql != null && batchSql.length() != 0) {
-            log( batchSql );
+        List<String> batchSqlList = sqlTracker.generateBatchSql();
+        if (batchSqlList != null && batchSqlList.size() > 0) {
+            for (String sql : batchSqlList) {
+                log( sql );
+            }
         }
     }
 

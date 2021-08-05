@@ -3,6 +3,7 @@ package com.github.bradjacobs.logging.jdbc;
 import com.github.bradjacobs.logging.jdbc.param.TagFiller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,8 +22,7 @@ class SqlStatementTracker
 
     public SqlStatementTracker()
     {
-        this.tagFiller = null;
-        this.streamLoggingEnabled = false;
+        this("", null, false);
     }
 
     public SqlStatementTracker(String sql, TagFiller tagFiller, boolean streamLoggingEnabled)
@@ -71,15 +71,15 @@ class SqlStatementTracker
         return tagFiller.replace(this.sql, this.paramMap);
     }
 
-    public String generateBatchSql() {
+    public List<String> generateBatchSql() {
         if (this.batchItems == null || this.batchItems.size() == 0) {
-            return "";
+            return Collections.emptyList();
         }
         List<String> sqlList = new ArrayList<>();
         for (BatchItem batchItem : batchItems) {
             sqlList.add(batchItem.generateSqlString());
         }
-        return sqlList.toString();
+        return sqlList;
     }
 
 
