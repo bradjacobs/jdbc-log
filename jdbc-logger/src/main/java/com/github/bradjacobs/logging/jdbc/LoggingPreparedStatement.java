@@ -37,9 +37,9 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
 {
     private final PreparedStatement preparedStatement;
 
-    public LoggingPreparedStatement(PreparedStatement preparedStatement, LoggingConnection.LogStatementBuilder builder)
+    public LoggingPreparedStatement(PreparedStatement preparedStatement, LoggingConnection loggingConnection, String sql)
     {
-        super(preparedStatement, builder);
+        super(preparedStatement, loggingConnection, sql);
         this.preparedStatement = preparedStatement;
     }
 

@@ -34,9 +34,9 @@ public class LoggingCallableStatement extends LoggingPreparedStatement implement
 
     private final CallableStatement callableStatement;
 
-    public LoggingCallableStatement(CallableStatement callableStatement, LoggingConnection.LogStatementBuilder builder)
+    public LoggingCallableStatement(CallableStatement callableStatement, LoggingConnection loggingConnection, String sql)
     {
-        super(callableStatement, builder);
+        super(callableStatement, loggingConnection, sql);
         this.callableStatement = callableStatement;
     }
 

@@ -52,15 +52,15 @@ public class LoggingConnection implements Connection
 
     private Statement logWrap(Statement statement)
     {
-        return new LogStatementBuilder(this).build(statement);
+        return new LoggingStatement(statement, this);
     }
     private PreparedStatement logWrap(PreparedStatement preparedStatement, String sql)
     {
-        return new LogStatementBuilder(this).withSql(sql).build(preparedStatement);
+        return new LoggingPreparedStatement(preparedStatement, this, sql);
     }
     private CallableStatement logWrap(CallableStatement callableStatement, String sql)
     {
-        return new LogStatementBuilder(this).withSql(sql).build(callableStatement);
+        return new LoggingCallableStatement(callableStatement, this, sql);
     }
 
 
@@ -447,44 +447,6 @@ public class LoggingConnection implements Connection
     public boolean isWrapperFor(Class<?> iface) throws SQLException
     {
         return targetConnection.isWrapperFor(iface);
-    }
-
-
-
-    class LogStatementBuilder
-    {
-        final LoggingConnection loggingConnection;
-        private String sql = null;
-
-        LogStatementBuilder(LoggingConnection loggingConnection) {
-            this.loggingConnection = loggingConnection;
-        }
-
-        LogStatementBuilder withSql(String sql) {
-            this.sql = sql;
-            return this;
-        }
-
-        LoggingStatement build(Statement statement) {
-            return new LoggingStatement(statement, this);
-        }
-        LoggingPreparedStatement build(PreparedStatement preparedStatement) {
-            return new LoggingPreparedStatement(preparedStatement, this);
-        }
-        LoggingCallableStatement build(CallableStatement callableStatement) {
-            return new LoggingCallableStatement(callableStatement, this);
-        }
-
-        SqlStatementTracker createSqlStatementTracker()
-        {
-            // if sql != null then assume it's a PreparedStatement or CallableStatement
-            if (this.sql != null) {
-                return new SqlStatementTracker(this.sql, loggingConnection.tagFiller, loggingConnection.isStreamLoggingEnabled);
-            }
-            else {
-                return new SqlStatementTracker();
-            }
-        }
     }
 
 }

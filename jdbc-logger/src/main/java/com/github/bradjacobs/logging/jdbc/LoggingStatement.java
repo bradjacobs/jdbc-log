@@ -59,12 +59,24 @@ public class LoggingStatement implements Statement
     protected final LoggingConnection loggingConnection;
 
 
-    public LoggingStatement(Statement statement, LoggingConnection.LogStatementBuilder builder)
+    public LoggingStatement(Statement statement, LoggingConnection loggingConnection)
+    {
+        this(statement, loggingConnection, null);
+    }
+
+
+    protected LoggingStatement(Statement statement, LoggingConnection loggingConnection, String sql)
     {
         this.statement = statement;
-        this.sqlTracker = builder.createSqlStatementTracker();
-        this.loggingConnection = builder.loggingConnection;
+        this.loggingConnection = loggingConnection;
         this.loggingListeners = loggingConnection.loggingListeners;
+
+        if (sql != null) {
+            this.sqlTracker = new SqlStatementTracker(sql, loggingConnection.tagFiller, loggingConnection.isStreamLoggingEnabled);
+        }
+        else {
+            this.sqlTracker = new SqlStatementTracker();
+        }
     }
 
 
