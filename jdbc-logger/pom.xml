@@ -5,10 +5,9 @@
 
 
 	<groupId>com.github.bradjacobs.logging</groupId>
-	<artifactId>jdbc-log</artifactId>
+	<artifactId>jdbc-logger</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>pom</packaging>
-	<name>jdbc-log</name>
+	<name>jdbc-logger</name>
 	<description>Jdbc logging</description>
 
 	<properties>
@@ -16,11 +15,29 @@
 		<java.version>1.8</java.version>
 	</properties>
 
-	<modules>
-		<module>jdbc-logger</module>
-		<module>jdbc-logger-demo</module>
-	</modules>
 
+	<dependencies>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.10</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.8.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>7.0.0</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
 
 	<build>
 		<plugins>
