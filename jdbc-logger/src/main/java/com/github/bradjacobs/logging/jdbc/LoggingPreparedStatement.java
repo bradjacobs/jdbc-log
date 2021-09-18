@@ -623,7 +623,6 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
 
 
 
-
     protected String extractString(Reader reader)
     {
         if (reader == null) {

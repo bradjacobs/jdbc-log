@@ -1,5 +1,6 @@
 package com.github.bradjacobs.logging.jdbc;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -69,6 +70,7 @@ public class LoggingStatement implements Statement
 
     protected LoggingStatement(Statement statement, LoggingConnection loggingConnection, String sql)
     {
+        validateParams(statement, loggingConnection);
         this.statement = statement;
         this.loggingConnection = loggingConnection;
         this.loggingListeners = loggingConnection.loggingListeners;
@@ -465,5 +467,16 @@ public class LoggingStatement implements Statement
     public boolean isWrapperFor(Class<?> iface) throws SQLException
     {
         return statement.isWrapperFor(iface);
+    }
+
+
+    private void validateParams(Statement statement, LoggingConnection loggingConnection) throws IllegalArgumentException
+    {
+        if (statement == null) {
+            throw new IllegalArgumentException("Must provide a statement");
+        }
+        if (loggingConnection == null) {
+            throw new IllegalArgumentException("Must provide a loggingConnection");
+        }
     }
 }

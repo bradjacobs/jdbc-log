@@ -84,7 +84,7 @@ public class RendererDefinitionsFactory
                 //   argument could be made that this should only show 'date' portion, but error on the side of showing more info
                 dateRenderer = paramRendererGenerator.createPrefixSuffixParamRenderer(timestampRenderer, ORACLE_TODATE_PREFIX, ORACLE_DATETIME_SUFFIX);
 
-                //  set timestampRender last (or matters here)
+                //  set timestampRender last (order matters here)
                 //    NOTE: it is possible to have alternate w/ fractional second precision, but this is the 'default'
                 timestampRenderer = paramRendererGenerator.createPrefixSuffixParamRenderer(timestampRenderer, ORACLE_TOTIMESTAMP_PREFIX, ORACLE_DATETIME_SUFFIX);
                 break;
@@ -103,5 +103,4 @@ public class RendererDefinitionsFactory
 
         return rendererDefinitions;
     }
-
 }

@@ -26,7 +26,7 @@ import java.util.Map;
  *
  *  ***** NOTE: *****
  *     Logging ONLY works when setting numeric parameter indexes
- *     i.e. Logging not currently supported when setting parameter by name.
+ *     i.e. Logging _NOT_ currently supported when setting parameter by name.
  */
 public class LoggingCallableStatement extends LoggingPreparedStatement implements CallableStatement
 {
