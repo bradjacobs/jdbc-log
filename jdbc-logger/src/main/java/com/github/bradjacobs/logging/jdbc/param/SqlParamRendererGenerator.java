@@ -83,7 +83,7 @@ public class SqlParamRendererGenerator
     /**
      * Simple default.  'toString' on the object.  Typically used for numbers.
      */
-    private class BasicParamRenderer implements SqlParamRenderer<Object> {
+    private static class BasicParamRenderer implements SqlParamRenderer<Object> {
         @Override
         public void appendParamValue(Object value, StringBuilder sb) {
             sb.append(value);
