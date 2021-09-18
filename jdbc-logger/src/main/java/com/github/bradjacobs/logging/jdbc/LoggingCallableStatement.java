@@ -25,8 +25,8 @@ import java.util.Map;
  * Logging Decorator around CallableStatements
  *
  *  ***** NOTE: *****
- *     ONLY works when setting numeric parameter indexes
- *     Not currently supported when setting parameter by name.
+ *     Logging ONLY works when setting numeric parameter indexes
+ *     i.e. Logging not currently supported when setting parameter by name.
  */
 public class LoggingCallableStatement extends LoggingPreparedStatement implements CallableStatement
 {
