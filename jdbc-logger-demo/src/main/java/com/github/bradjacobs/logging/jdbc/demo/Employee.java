@@ -1,8 +1,6 @@
 package com.github.bradjacobs.logging.jdbc.demo;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.util.Date;
 
@@ -17,14 +15,13 @@ public class Employee
 
     private String firstName;
     private String lastName;
+
+    private Date hireDate;
+    private Integer level;
+    private Double salary;
+    private Boolean active;
+
     private String notes;
-
-    // misc other fields just to represent different data types
-    private Date dateValue = new Date();
-    private Integer intValue = 33;
-    private Double doubleValue = 8724.341d;
-    private Boolean booleanValue = true;
-
 
     public Long getId() {
         return id;
@@ -50,43 +47,43 @@ public class Employee
         this.lastName = lastName;
     }
 
+    public Date getHireDate() {
+        return hireDate;
+    }
+
+    public void setHireDate(Date hireDate) {
+        this.hireDate = hireDate;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
+
+    public Double getSalary() {
+        return salary;
+    }
+
+    public void setSalary(Double salary) {
+        this.salary = salary;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
     public String getNotes() {
         return notes;
     }
 
     public void setNotes(String notes) {
         this.notes = notes;
-    }
-
-    public Date getDateValue() {
-        return dateValue;
-    }
-
-    public void setDateValue(Date dateValue) {
-        this.dateValue = dateValue;
-    }
-
-    public Integer getIntValue() {
-        return intValue;
-    }
-
-    public void setIntValue(Integer intValue) {
-        this.intValue = intValue;
-    }
-
-    public Double getDoubleValue() {
-        return doubleValue;
-    }
-
-    public void setDoubleValue(Double doubleValue) {
-        this.doubleValue = doubleValue;
-    }
-
-    public Boolean getBooleanValue() {
-        return booleanValue;
-    }
-
-    public void setBooleanValue(Boolean booleanValue) {
-        this.booleanValue = booleanValue;
     }
 }
