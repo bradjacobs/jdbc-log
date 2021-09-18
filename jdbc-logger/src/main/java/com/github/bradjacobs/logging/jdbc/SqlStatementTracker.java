@@ -10,7 +10,7 @@ import java.util.Map;
 
 class SqlStatementTracker
 {
-    private String sql = "";
+    private String sql;
 
     private List<BatchItem> batchItems = null;
     private Map<Integer, Object> paramMap = null;
@@ -107,7 +107,7 @@ class SqlStatementTracker
         public BatchItem(String sql, Map<Integer, Object> paramMap, TagFiller tagFiller)
         {
             this.sql = sql;
-            // batchItem makes it's own copy of the params so they don't get side-effected/modified.
+            // batchItem makes its own copy of the params, so they don't get side-effected/modified.
             this.paramMap = new HashMap<>(paramMap);
             this.tagFiller = tagFiller;
         }

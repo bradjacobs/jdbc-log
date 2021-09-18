@@ -69,19 +69,15 @@ public class RendererDefinitions
 
     public boolean hasNullRenderers()
     {
-        if (defaultRenderer == null || booleanRenderer == null ||
-            stringRenderer == null || timestampRenderer == null ||
-            dateRenderer == null || timeRenderer == null)
-        {
-            return true;
-        }
-        return false;
+        return (defaultRenderer == null || booleanRenderer == null ||
+                stringRenderer == null || timestampRenderer == null ||
+                dateRenderer == null || timeRenderer == null);
     }
 
 
     /**
      * Merges all the __NON-NULL__ values from the given definitions into the current object.
-     * @param other the RendererDefintions to merge into this object
+     * @param other the RendererDefinitions to merge into this object
      */
     public void mergeIn(RendererDefinitions other)
     {

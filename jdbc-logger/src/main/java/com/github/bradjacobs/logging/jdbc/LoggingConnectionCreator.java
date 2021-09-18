@@ -112,7 +112,7 @@ public class LoggingConnectionCreator
         private static final LoggingListener DEFAULT_LOGGING_LISTENER = new SystemOutLogListener(); // used only if no listeners are provided.
 
         // note: force the zoneId to get set first (on constructor)
-        //   otherwise order can matter when setting some of the other fields.
+        //   otherwise possible bug when setting other fields.
         private final ZoneId zoneId;
 
         private DatabaseType dbType = null;
@@ -139,7 +139,7 @@ public class LoggingConnectionCreator
 
 
         /**
-         * Any string value that can help identify which type of database is used.  (MySQL, HSQL, PostGres, etc, etc)
+         * Any string value that can help identify which type of database is used.  (MySQL, HSQL, PostGres, etc.)
          *   Could be JDBC url, driver class name, hardcoded string.
          * The config will look for specific 'substrings' to determine database type.
          *   (i.e.  if contains 'mysql', must be a MySQL database)
@@ -230,7 +230,7 @@ public class LoggingConnectionCreator
                 loggingListeners.add(DEFAULT_LOGGING_LISTENER);  // must have at least 1 listener
             }
 
-            // create initial defn's w/ default values
+            // create initial definitions w/ default values
             RendererDefinitions rendererDefinitions = RendererDefinitionsFactory.createDefaultDefinitions(dbType, this.zoneId);
 
             // add any overrides to replace defaults (if applicable)

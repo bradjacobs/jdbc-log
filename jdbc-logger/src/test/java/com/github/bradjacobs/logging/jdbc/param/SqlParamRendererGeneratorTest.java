@@ -29,7 +29,7 @@ public class SqlParamRendererGeneratorTest
     private static final String EXPECTED_TIME_PACIFIC = "'19:07:11'";
 
 
-    private SqlParamRendererGenerator paramRendererGenerator = new SqlParamRendererGenerator();
+    private final SqlParamRendererGenerator paramRendererGenerator = new SqlParamRendererGenerator();
 
     @Test
     public void testDateStringRendererBaseCase() throws Exception

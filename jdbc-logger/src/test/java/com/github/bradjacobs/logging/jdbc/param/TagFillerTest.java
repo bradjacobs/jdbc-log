@@ -164,7 +164,7 @@ public class TagFillerTest
 
 
     /**
-     * Replace boolean will set value as either 1 or 0
+     *
      */
     @Test
     public void testRenderTimestamp() throws Exception

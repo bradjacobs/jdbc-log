@@ -53,7 +53,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
 
 
     /**
-     * Returns true if should attempt to log a 'real' string value whenever a Clob/Reader/Stream is used.
+     * Returns true to log a 'real' string value whenever a Clob/Reader/Stream is used.
      * @return true to log clobs & text streams
      */
     protected boolean isStreamLoggingEnabled() {
