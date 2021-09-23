@@ -46,7 +46,7 @@ public class TagFiller
 
             // distinguish b/w having a null value for a given key vs there's a missing entry in the map
             if (paramMap.containsKey(tagNumber)) {
-                appendValue(paramMap.get(tagNumber), sb);
+                rendererSelector.appendParamValue(paramMap.get(tagNumber), sb);
             }
             else {
                 // specific entry missing in param map, thus just leave existing tag
@@ -63,14 +63,6 @@ public class TagFiller
     }
 
 
-    public void appendValue(Object object, StringBuilder sb)
-    {
-        SqlParamRenderer paramRenderer = rendererSelector.getRenderer(object);
-
-        paramRenderer.appendParamValue(object, sb);
-    }
-
-
     private void validateParams(String tag, ParamRendererSelector rendererSelector) throws IllegalArgumentException
     {
         if (tag == null || tag.isEmpty()) {
@@ -80,5 +72,4 @@ public class TagFiller
             throw new IllegalArgumentException("Must provide a rendererSelector.");
         }
     }
-
 }
