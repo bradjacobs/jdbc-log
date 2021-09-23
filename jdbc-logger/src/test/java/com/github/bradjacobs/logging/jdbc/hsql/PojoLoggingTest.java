@@ -199,13 +199,7 @@ public class PojoLoggingTest
 
         String sqlStatement = sqlStatements.get(0);
         assertEquals(sqlStatement.toLowerCase(), "select * from pojos");
-
-
     }
-
-
-
-
 
 
 
@@ -265,7 +259,7 @@ public class PojoLoggingTest
 
     private InputStream createInputStreamValue(String value)
     {
-        return new ByteArrayInputStream("test_stream_1".getBytes(StandardCharsets.UTF_8));
+        return new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8));
     }
 
     private Clob createClobValue(String value)
@@ -357,5 +351,4 @@ public class PojoLoggingTest
             }
         }
     }
-
 }
