@@ -81,7 +81,6 @@ public class PojoDAO
     }
 
 
-
     private boolean executeSql(String sql)
     {
         boolean success = false;
@@ -100,8 +99,6 @@ public class PojoDAO
     }
 
 
-
-
     public boolean batchinsertPojo(List<BloatedPojo> pojos) throws SQLException
     {
         conn.setAutoCommit(false);
@@ -113,26 +110,7 @@ public class PojoDAO
 
             for (BloatedPojo pojo : pojos)
             {
-                pstmt.setString(1, pojo.getName());
-                pstmt.setInt(2, pojo.getIntValue());
-                pstmt.setDouble(3, pojo.getDoubleValue());
-                pstmt.setDate(4, pojo.getSqlDateValue());
-                pstmt.setTimestamp(5, pojo.getSqlTimestampValue());
-
-                if (pojo.getClobValue() != null) {
-                    pstmt.setClob(6, pojo.getClobValue());
-                }
-                else {
-                    pstmt.setNull(7, Types.CLOB);
-                }
-
-                if (pojo.getStreamValue() != null) {
-                    pstmt.setAsciiStream(7, pojo.getStreamValue());
-                }
-                else {
-                    pstmt.setNull(7, Types.CLOB);
-                }
-
+                initializeBloatedPojoPreparedStatement(pstmt, pojo);
                 pstmt.addBatch();
             }
 
@@ -147,7 +125,6 @@ public class PojoDAO
             conn.setAutoCommit(true);
             closeQuietly(pstmt);
         }
-
 
         return true;
     }
@@ -168,30 +145,8 @@ public class PojoDAO
 
                 try {
                     pstmt = conn.prepareStatement(PREPARED_STMT_INSERT_SQL);
-                    pstmt.setString(1, pojo.getName());
-                    pstmt.setInt(2, pojo.getIntValue());
-                    pstmt.setDouble(3, pojo.getDoubleValue());
-                    pstmt.setDate(4, pojo.getSqlDateValue());
-                    pstmt.setTimestamp(5, pojo.getSqlTimestampValue());
 
-
-                    if (pojo.getClobValue() != null) {
-                        pstmt.setClob(6, pojo.getClobValue());
-                    }
-                    else {
-                        pstmt.setNull(7, Types.CLOB);
-                    }
-
-                    if (pojo.getStreamValue() != null) {
-                        pstmt.setAsciiStream(7, pojo.getStreamValue());
-                    }
-                    else {
-                        pstmt.setNull(7, Types.CLOB);
-                    }
-
-
-                    // pstmt.setDate(7, pojo.getSqlTimestamp());
-//                    pstmt.setObject(7, new Date());
+                    initializeBloatedPojoPreparedStatement(pstmt, pojo);
 
                     success = (pstmt.executeUpdate() == 1);  // success means exactly one row inserted
                 } catch (SQLException e) {
@@ -203,6 +158,31 @@ public class PojoDAO
         }
         return success;
     }
+
+    private void initializeBloatedPojoPreparedStatement(PreparedStatement pstmt, BloatedPojo pojo)
+            throws SQLException
+    {
+        pstmt.setString(1, pojo.getName());
+        pstmt.setInt(2, pojo.getIntValue());
+        pstmt.setDouble(3, pojo.getDoubleValue());
+        pstmt.setDate(4, pojo.getSqlDateValue());
+        pstmt.setTimestamp(5, pojo.getSqlTimestampValue());
+
+        if (pojo.getClobValue() != null) {
+            pstmt.setClob(6, pojo.getClobValue());
+        }
+        else {
+            pstmt.setNull(7, Types.CLOB);
+        }
+
+        if (pojo.getStreamValue() != null) {
+            pstmt.setAsciiStream(7, pojo.getStreamValue());
+        }
+        else {
+            pstmt.setNull(7, Types.CLOB);
+        }
+    }
+
 
     public void callStoredProcedure(Integer input)
     {
@@ -224,9 +204,6 @@ public class PojoDAO
                 Boolean result = pstmt.getBoolean(2);
 
                 System.out.println("RESULT: " + result);
-                int kkkk3 = 33;
-
-
             }
             catch (SQLException e) {
                 throw new RuntimeException("Unable to call stored proc " + e.getMessage(), e);
@@ -235,8 +212,6 @@ public class PojoDAO
                 closeQuietly(pstmt);
             }
         }
-
-
     }
 
 
@@ -338,6 +313,4 @@ public class PojoDAO
             }
         }
     }
-
-
 }
