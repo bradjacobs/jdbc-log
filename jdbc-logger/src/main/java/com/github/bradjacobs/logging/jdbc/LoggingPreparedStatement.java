@@ -45,11 +45,11 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
 
     // "PLACEHOLDERS" for certain parameters,
     //     b/c logging blobs and streams is typically not very useful.
-    private static final String BINARY_STREAM_VALUE_PLACEHOLDER = "__BINARYSTREAM__";
-    private static final String BLOB_VALUE_PLACEHOLDER = "__BLOB__";
-    private static final String UNICODE_STREAM_PLACEHOLDER = "__UNICODESTREAM__";
-    private static final String BYTES_VALUE_PLACEHOLDER = "__BYTES__";
-    private static final String TEXT_CLOB_VALUE_PLACEHOLDER = "__CLOB__";
+    private static final String BINARY_STREAM_VALUE_PLACEHOLDER = "{_BINARYSTREAM_}";
+    private static final String BLOB_VALUE_PLACEHOLDER = "{_BLOB_}";
+    private static final String UNICODE_STREAM_PLACEHOLDER = "{_UNICODESTREAM_}";
+    private static final String BYTES_VALUE_PLACEHOLDER = "{_BYTES_}";
+    private static final String TEXT_CLOB_VALUE_PLACEHOLDER = "{_CLOB_}";
 
 
     /**

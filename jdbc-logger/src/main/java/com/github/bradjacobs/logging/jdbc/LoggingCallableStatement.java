@@ -30,7 +30,7 @@ import java.util.Map;
  */
 public class LoggingCallableStatement extends LoggingPreparedStatement implements CallableStatement
 {
-    private static final String OUT_PLACEHOLDER = "__OUTPARAM__";
+    private static final String OUT_PLACEHOLDER = "{_OUTPARAM_}";
 
     private final CallableStatement callableStatement;
 
