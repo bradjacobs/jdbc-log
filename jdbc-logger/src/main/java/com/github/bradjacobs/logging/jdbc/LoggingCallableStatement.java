@@ -10,6 +10,7 @@ import java.sql.Blob;
 import java.sql.CallableStatement;
 import java.sql.Clob;
 import java.sql.Date;
+import java.sql.JDBCType;
 import java.sql.NClob;
 import java.sql.Ref;
 import java.sql.RowId;
@@ -30,8 +31,6 @@ import java.util.Map;
  */
 public class LoggingCallableStatement extends LoggingPreparedStatement implements CallableStatement
 {
-    private static final String OUT_PLACEHOLDER = "{_OUTPARAM_}";
-
     private final CallableStatement callableStatement;
 
     public LoggingCallableStatement(CallableStatement callableStatement, LoggingConnection loggingConnection, String sql)
@@ -41,11 +40,25 @@ public class LoggingCallableStatement extends LoggingPreparedStatement implement
     }
 
 
+    // todo: can easily convert below into cache (will do so iff demand requires it)
+    private String generatePlaceholderName(int sqlType) {
+        JDBCType jdbcType = JDBCType.valueOf(sqlType);
+        return generatePlaceholderName(jdbcType.getName());
+    }
+    private String generatePlaceholderName(SQLType sqlType) {
+        return generatePlaceholderName(sqlType.getName());
+    }
+    private String generatePlaceholderName(String typeName) {
+        return"{_OUT_" + typeName + "_}";
+    }
+
+
+
     /** @inheritDoc */
     @Override
     public void registerOutParameter(int parameterIndex, int sqlType) throws SQLException
     {
-        setCurrentParameter(parameterIndex, OUT_PLACEHOLDER);
+        setCurrentParameter(parameterIndex, generatePlaceholderName(sqlType));
         callableStatement.registerOutParameter(parameterIndex, sqlType);
     }
 
@@ -53,7 +66,7 @@ public class LoggingCallableStatement extends LoggingPreparedStatement implement
     @Override
     public void registerOutParameter(int parameterIndex, int sqlType, int scale) throws SQLException
     {
-        setCurrentParameter(parameterIndex, OUT_PLACEHOLDER);
+        setCurrentParameter(parameterIndex, generatePlaceholderName(sqlType));
         callableStatement.registerOutParameter(parameterIndex, sqlType, scale);
     }
 
@@ -230,7 +243,7 @@ public class LoggingCallableStatement extends LoggingPreparedStatement implement
     @Override
     public void registerOutParameter(int parameterIndex, int sqlType, String typeName) throws SQLException
     {
-        setCurrentParameter(parameterIndex, OUT_PLACEHOLDER);
+        setCurrentParameter(parameterIndex, generatePlaceholderName(sqlType));
         callableStatement.registerOutParameter(parameterIndex, sqlType, typeName);
     }
 
@@ -854,7 +867,7 @@ public class LoggingCallableStatement extends LoggingPreparedStatement implement
     @Override
     public void registerOutParameter(int parameterIndex, SQLType sqlType) throws SQLException
     {
-        setCurrentParameter(parameterIndex, OUT_PLACEHOLDER);
+        setCurrentParameter(parameterIndex, generatePlaceholderName(sqlType));
         callableStatement.registerOutParameter(parameterIndex, sqlType);
     }
 
@@ -862,7 +875,7 @@ public class LoggingCallableStatement extends LoggingPreparedStatement implement
     @Override
     public void registerOutParameter(int parameterIndex, SQLType sqlType, int scale) throws SQLException
     {
-        setCurrentParameter(parameterIndex, OUT_PLACEHOLDER);
+        setCurrentParameter(parameterIndex, generatePlaceholderName(sqlType));
         callableStatement.registerOutParameter(parameterIndex, sqlType, scale);
     }
 
@@ -870,7 +883,7 @@ public class LoggingCallableStatement extends LoggingPreparedStatement implement
     @Override
     public void registerOutParameter(int parameterIndex, SQLType sqlType, String typeName) throws SQLException
     {
-        setCurrentParameter(parameterIndex, OUT_PLACEHOLDER);
+        setCurrentParameter(parameterIndex, generatePlaceholderName(sqlType));
         callableStatement.registerOutParameter(parameterIndex, sqlType, typeName);
     }
 
