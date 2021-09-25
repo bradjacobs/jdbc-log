@@ -1,5 +1,6 @@
 package com.github.bradjacobs.logging.jdbc;
 
+import com.github.bradjacobs.logging.jdbc.listeners.LoggingListener;
 import org.testng.annotations.Test;
 
 import java.util.Collections;

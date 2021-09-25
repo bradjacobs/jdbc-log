@@ -1,5 +1,6 @@
 package com.github.bradjacobs.logging.jdbc;
 
+import com.github.bradjacobs.logging.jdbc.listeners.LoggingListener;
 import com.github.bradjacobs.logging.jdbc.listeners.SystemOutLogListener;
 import com.github.bradjacobs.logging.jdbc.param.ParamRendererSelector;
 import com.github.bradjacobs.logging.jdbc.param.RendererDefinitions;

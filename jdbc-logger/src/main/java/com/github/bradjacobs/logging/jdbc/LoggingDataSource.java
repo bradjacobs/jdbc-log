@@ -1,5 +1,7 @@
 package com.github.bradjacobs.logging.jdbc;
 
+import com.github.bradjacobs.logging.jdbc.listeners.LoggingListener;
+
 import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -23,7 +25,7 @@ public class LoggingDataSource implements DataSource
      * @param dataSource dataSource
      * @param loggingListener loggingListener
      */
-    public LoggingDataSource(DataSource dataSource, LoggingListener ... loggingListener)
+    public LoggingDataSource(DataSource dataSource, LoggingListener... loggingListener)
     {
         this(dataSource, LoggingConnectionCreator.builder().withLogListener(loggingListener).build());
     }

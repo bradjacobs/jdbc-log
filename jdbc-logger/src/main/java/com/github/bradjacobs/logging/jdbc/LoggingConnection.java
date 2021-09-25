@@ -1,5 +1,6 @@
 package com.github.bradjacobs.logging.jdbc;
 
+import com.github.bradjacobs.logging.jdbc.listeners.LoggingListener;
 import com.github.bradjacobs.logging.jdbc.param.TagFiller;
 
 import java.sql.Array;

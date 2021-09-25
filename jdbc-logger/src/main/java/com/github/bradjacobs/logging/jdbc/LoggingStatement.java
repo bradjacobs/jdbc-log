@@ -1,6 +1,7 @@
 package com.github.bradjacobs.logging.jdbc;
 
-import javax.sql.DataSource;
+import com.github.bradjacobs.logging.jdbc.listeners.LoggingListener;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;

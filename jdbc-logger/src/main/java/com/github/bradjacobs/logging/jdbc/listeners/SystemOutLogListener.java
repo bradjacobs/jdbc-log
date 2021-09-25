@@ -1,7 +1,5 @@
 package com.github.bradjacobs.logging.jdbc.listeners;
 
-import com.github.bradjacobs.logging.jdbc.LoggingListener;
-
 /**
  * Simple example of a log listener implementation
  *   It's highly recommended using 'real' logger (slf4j, log4j, etc.)

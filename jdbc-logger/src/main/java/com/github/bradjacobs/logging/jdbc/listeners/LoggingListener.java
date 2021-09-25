@@ -1,4 +1,4 @@
-package com.github.bradjacobs.logging.jdbc;
+package com.github.bradjacobs.logging.jdbc.listeners;
 
 public interface LoggingListener
 {

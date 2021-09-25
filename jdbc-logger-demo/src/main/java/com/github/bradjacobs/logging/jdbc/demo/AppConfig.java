@@ -1,8 +1,7 @@
 package com.github.bradjacobs.logging.jdbc.demo;
 
-import com.github.bradjacobs.logging.jdbc.LoggingConnectionCreator;
 import com.github.bradjacobs.logging.jdbc.LoggingDataSource;
-import com.github.bradjacobs.logging.jdbc.LoggingListener;
+import com.github.bradjacobs.logging.jdbc.listeners.LoggingListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +13,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 @Configuration
 public class AppConfig

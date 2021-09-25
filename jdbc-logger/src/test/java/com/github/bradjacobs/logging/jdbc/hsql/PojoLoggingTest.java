@@ -1,7 +1,7 @@
 package com.github.bradjacobs.logging.jdbc.hsql;
 
 import com.github.bradjacobs.logging.jdbc.LoggingConnectionCreator;
-import com.github.bradjacobs.logging.jdbc.LoggingListener;
+import com.github.bradjacobs.logging.jdbc.listeners.LoggingListener;
 import com.github.bradjacobs.logging.jdbc.listeners.SystemOutLogListener;
 import org.apache.commons.io.IOUtils;
 import org.hsqldb.jdbc.JDBCClob;
