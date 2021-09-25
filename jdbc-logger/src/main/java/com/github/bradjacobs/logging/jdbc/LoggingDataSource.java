@@ -23,11 +23,11 @@ public class LoggingDataSource implements DataSource
     /**
      *
      * @param dataSource dataSource
-     * @param loggingListener loggingListener
+     * @param loggingListeners loggingListeners
      */
-    public LoggingDataSource(DataSource dataSource, LoggingListener... loggingListener)
+    public LoggingDataSource(DataSource dataSource, LoggingListener... loggingListeners)
     {
-        this(dataSource, LoggingConnectionCreator.builder().withLogListener(loggingListener).build());
+        this(dataSource, LoggingConnectionCreator.buildDefault(loggingListeners));
     }
 
 

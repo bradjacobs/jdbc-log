@@ -90,6 +90,10 @@ public class LoggingConnectionCreator
     // Builder
     ///////////////////////////////////////////////////////////////////////////
 
+    public static LoggingConnectionCreator buildDefault(LoggingListener ... logListeners) {
+        return builder().withLogListener(logListeners).build();
+    }
+
     public static Builder builder() {
         return new Builder(null);  // this will be set to 'default' timezone
     }
