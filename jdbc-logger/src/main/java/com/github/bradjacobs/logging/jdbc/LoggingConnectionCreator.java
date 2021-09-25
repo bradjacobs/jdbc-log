@@ -109,7 +109,7 @@ public class LoggingConnectionCreator
         private static final SqlParamRendererGenerator paramRendererGenerator = new SqlParamRendererGenerator();
 
         private static final String TAG = "?";
-        private static final ZoneId DEFAULT_ZONE = ZoneId.of("UTC");
+        private static final ZoneId DEFAULT_ZONE = RendererDefinitionsFactory.DEFAULT_ZONE;
         private static final LoggingListener DEFAULT_LOGGING_LISTENER = new SystemOutLogListener(); // used only if no listeners are provided.
 
         // note: force the zoneId to get set first (on constructor)
