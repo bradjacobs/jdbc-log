@@ -276,6 +276,43 @@ public class TagFillerTest
         assertEquals(result, expectedSql, "mismatch of expected replace tag result");
     }
 
+    /**
+     * Do NOT want a Double to show up like 1.2E-7
+     *   (honestly a personal petpeeve)
+     */
+    @Test
+    public void testDoubleNoScientificNotation() throws Exception
+    {
+        String sql = "select * from myTable where id = ? AND myDouble > ?";
+        Map<Integer, Object> paramMap = new HashMap<>();
+        paramMap.put(1, 1);
+        paramMap.put(2, 0.00000012d);
+        String expectedSql = "select * from myTable where id = 1 AND myDouble > 0.00000012";
+
+        TagFiller tagFiller = createTestTagFiller();
+
+        String result = tagFiller.replace(sql, paramMap);
+        assertNotNull(result);
+        assertEquals(result, expectedSql, "mismatch of expected replace tag result");
+    }
+
+    @Test
+    public void testDoubleNoFractionalPart() throws Exception
+    {
+        String sql = "select * from myTable where id = ? AND myDouble > ?";
+        Map<Integer, Object> paramMap = new HashMap<>();
+        paramMap.put(1, 1);
+        paramMap.put(2, 123d);
+        String expectedSql = "select * from myTable where id = 1 AND myDouble > 123.0";
+
+        TagFiller tagFiller = createTestTagFiller();
+
+        String result = tagFiller.replace(sql, paramMap);
+        assertNotNull(result);
+        assertEquals(result, expectedSql, "mismatch of expected replace tag result");
+    }
+
+
 
 
     /////////////////////////////////////////////////////////

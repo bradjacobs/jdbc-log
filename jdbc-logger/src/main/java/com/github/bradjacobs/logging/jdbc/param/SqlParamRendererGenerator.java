@@ -3,6 +3,7 @@ package com.github.bradjacobs.logging.jdbc.param;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -74,13 +75,23 @@ public class SqlParamRendererGenerator
     }
 
 
+    /**
+     * Create renderer for number parameters.
+     * @return renderer
+     */
+    public SqlParamRenderer<Number> createNumberParamRenderer()
+    {
+        return new NumberParamRenderer();
+    }
+
+
 
     ///////////////////////////////////////////////////////////////////////////
     //  Class declarations ...
 
 
     /**
-     * Simple default.  'toString' on the object.  Typically used for numbers.
+     * Simple default.  'toString' on the object.
      */
     private static class BasicParamRenderer implements SqlParamRenderer<Object> {
         @Override
@@ -101,6 +112,32 @@ public class SqlParamRendererGenerator
                 value = StringUtils.replace(value, "'", "''");
             }
             sb.append('\'').append(value).append('\'');
+        }
+    }
+
+    /**
+     * Number values like Double/Float will _not_ show up in scientific notiation by default.
+     */
+    private static class NumberParamRenderer implements SqlParamRenderer<Number> {
+
+        private final boolean allowScientificNotation;
+
+        public NumberParamRenderer() {
+            this(false);
+        }
+        public NumberParamRenderer(boolean allowScientificNotation) {
+            this.allowScientificNotation = allowScientificNotation;
+        }
+
+        @Override
+        public void appendParamValue(Number value, StringBuilder sb) {
+            String numberString = value.toString();
+
+            if (! allowScientificNotation && numberString.contains("E")) {
+                numberString = BigDecimal.valueOf(value.doubleValue()).toPlainString();
+            }
+
+            sb.append(numberString);
         }
     }
 
@@ -186,5 +223,4 @@ public class SqlParamRendererGenerator
             sb.append(value.getTime());
         }
     }
-
 }

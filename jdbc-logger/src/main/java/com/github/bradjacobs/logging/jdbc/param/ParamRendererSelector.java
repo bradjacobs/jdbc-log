@@ -40,6 +40,9 @@ public class ParamRendererSelector
         if (objValue instanceof String) {
             rendererDefinitions.getStringRenderer().appendParamValue((String)objValue, sb);
         }
+        else if (objValue instanceof Number) {
+            rendererDefinitions.getNumberRenderer().appendParamValue((Number)objValue, sb);
+        }
         else if (objValue instanceof Boolean) {
             rendererDefinitions.getBooleanRenderer().appendParamValue((Boolean)objValue, sb);
         }

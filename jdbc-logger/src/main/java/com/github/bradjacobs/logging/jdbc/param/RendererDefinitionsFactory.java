@@ -54,6 +54,7 @@ public class RendererDefinitionsFactory
         // initially set with basic defaults
         SqlParamRenderer<Object> defaultRenderer = paramRendererGenerator.createBasicParamRenderer();
         SqlParamRenderer<String> stringRenderer = paramRendererGenerator.createStringParamRenderer();
+        SqlParamRenderer<Number> numberRenderer = paramRendererGenerator.createNumberParamRenderer();
         SqlParamRenderer<Boolean> booleanRenderer = paramRendererGenerator.createBooleanParamRenderer();
         SqlParamRenderer<Date> timestampRenderer = paramRendererGenerator.createDateStringParamRenderer(DEFAULT_TIMESTAMP_PATTERN, zoneId);
         SqlParamRenderer<Date> dateRenderer = paramRendererGenerator.createDateStringParamRenderer(DEFAULT_DATE_PATTERN, zoneId);
@@ -96,6 +97,7 @@ public class RendererDefinitionsFactory
 
         rendererDefinitions.setDefaultRenderer(defaultRenderer);
         rendererDefinitions.setStringRenderer(stringRenderer);
+        rendererDefinitions.setNumberRenderer(numberRenderer);
         rendererDefinitions.setBooleanRenderer(booleanRenderer);
         rendererDefinitions.setTimestampRenderer(timestampRenderer);
         rendererDefinitions.setDateRenderer(dateRenderer);

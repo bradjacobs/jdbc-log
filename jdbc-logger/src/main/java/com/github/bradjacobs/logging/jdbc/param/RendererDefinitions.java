@@ -7,6 +7,7 @@ public class RendererDefinitions
     private SqlParamRenderer<Object> defaultRenderer = null;
     private SqlParamRenderer<Boolean> booleanRenderer = null;
     private SqlParamRenderer<String> stringRenderer = null;
+    private SqlParamRenderer<Number> numberRenderer = null;
     private SqlParamRenderer<Date> timestampRenderer = null;
     private SqlParamRenderer<Date> dateRenderer = null;
     private SqlParamRenderer<Date> timeRenderer = null;
@@ -43,6 +44,14 @@ public class RendererDefinitions
         this.stringRenderer = stringRenderer;
     }
 
+    public SqlParamRenderer<Number> getNumberRenderer() {
+        return numberRenderer;
+    }
+
+    public void setNumberRenderer(SqlParamRenderer<Number> numberRenderer) {
+        this.numberRenderer = numberRenderer;
+    }
+
     public SqlParamRenderer<Date> getTimestampRenderer() {
         return timestampRenderer;
     }
@@ -70,8 +79,9 @@ public class RendererDefinitions
     public boolean hasNullRenderers()
     {
         return (defaultRenderer == null || booleanRenderer == null ||
-                stringRenderer == null || timestampRenderer == null ||
-                dateRenderer == null || timeRenderer == null);
+                stringRenderer == null || numberRenderer == null ||
+                timestampRenderer == null || dateRenderer == null ||
+                timeRenderer == null);
     }
 
 
@@ -89,6 +99,9 @@ public class RendererDefinitions
         }
         if (other.getStringRenderer() != null) {
             this.setStringRenderer(other.getStringRenderer());
+        }
+        if (other.getNumberRenderer() != null) {
+            this.setNumberRenderer(other.getNumberRenderer());
         }
         if (other.getTimestampRenderer() != null) {
             this.setTimestampRenderer(other.getTimestampRenderer());
