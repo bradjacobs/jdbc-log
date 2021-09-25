@@ -35,10 +35,10 @@ public class LoggingConnection implements Connection
 
     /**
      * Logging Connection constructor.
-     *   Use LoggingConnectionCreator to make instance
+     *   NOTE: Please Use LoggingConnectionCreator to make instance
      * @param targetConnection original jdbc targetConnection
      */
-    public LoggingConnection(Connection targetConnection, boolean streamLogging, TagFiller tagFiller, List<LoggingListener> loggingListeners)
+    LoggingConnection(Connection targetConnection, boolean streamLogging, TagFiller tagFiller, List<LoggingListener> loggingListeners)
     {
         if (targetConnection == null) {
             throw new IllegalArgumentException("Must provide a targetConnection");

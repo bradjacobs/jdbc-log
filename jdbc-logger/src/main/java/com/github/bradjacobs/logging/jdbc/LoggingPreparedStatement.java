@@ -124,9 +124,6 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
 
 
 
-
-
-
     /** @inheritDoc */
     @Override
     public void clearParameters() throws SQLException
@@ -142,7 +139,6 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         addLogBatch();
         preparedStatement.addBatch();
     }
-
 
     /** @inheritDoc */
     @Override
@@ -176,7 +172,6 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         return preparedStatement.executeLargeUpdate();
     }
 
-
     /** @inheritDoc */
     @Override
     public ResultSetMetaData getMetaData() throws SQLException
@@ -190,7 +185,6 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     {
         return preparedStatement.getParameterMetaData();
     }
-
 
     /** @inheritDoc */
     @Override

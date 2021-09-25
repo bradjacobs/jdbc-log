@@ -139,5 +139,4 @@ public class LoggingDataSource implements DataSource
             throw new IllegalArgumentException("Must provide a loggingConnectionCreator");
         }
     }
-
 }
