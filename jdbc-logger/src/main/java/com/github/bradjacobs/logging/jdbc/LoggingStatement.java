@@ -14,6 +14,29 @@ import java.util.List;
  */
 public class LoggingStatement implements Statement
 {
+    private final Statement statement;
+    protected final SqlStatementTracker sqlTracker;
+    protected final List<LoggingListener> loggingListeners;
+    protected final LoggingConnection loggingConnection;
+
+    public LoggingStatement(Statement statement, LoggingConnection loggingConnection) {
+        this(statement, loggingConnection, null);
+    }
+
+    protected LoggingStatement(Statement statement, LoggingConnection loggingConnection, String sql) {
+        validateParams(statement, loggingConnection);
+        this.statement = statement;
+        this.loggingConnection = loggingConnection;
+        this.loggingListeners = loggingConnection.loggingListeners;
+
+        if (sql != null) {
+            this.sqlTracker = new SqlStatementTracker(sql, loggingConnection.tagFiller, loggingConnection.isStreamLoggingEnabled);
+        }
+        else {
+            this.sqlTracker = new SqlStatementTracker();
+        }
+    }
+
     protected void setAndLogCurrent(String sql) {
         sqlTracker.setSql(sql);
         logCurrent();
@@ -35,6 +58,7 @@ public class LoggingStatement implements Statement
     protected void logCurrent() {
         log( sqlTracker.generateSql() );
     }
+
     protected void logCurrentBatch() {
         List<String> batchSqlList = sqlTracker.generateBatchSql();
         if (batchSqlList != null && batchSqlList.size() > 0) {
@@ -43,7 +67,6 @@ public class LoggingStatement implements Statement
             }
         }
     }
-
 
     protected void log(String sql) {
 
@@ -55,35 +78,6 @@ public class LoggingStatement implements Statement
             }
         }
     }
-
-
-    private final Statement statement;
-    protected final SqlStatementTracker sqlTracker;
-    protected final List<LoggingListener> loggingListeners;
-    protected final LoggingConnection loggingConnection;
-
-
-    public LoggingStatement(Statement statement, LoggingConnection loggingConnection)
-    {
-        this(statement, loggingConnection, null);
-    }
-
-
-    protected LoggingStatement(Statement statement, LoggingConnection loggingConnection, String sql)
-    {
-        validateParams(statement, loggingConnection);
-        this.statement = statement;
-        this.loggingConnection = loggingConnection;
-        this.loggingListeners = loggingConnection.loggingListeners;
-
-        if (sql != null) {
-            this.sqlTracker = new SqlStatementTracker(sql, loggingConnection.tagFiller, loggingConnection.isStreamLoggingEnabled);
-        }
-        else {
-            this.sqlTracker = new SqlStatementTracker();
-        }
-    }
-
 
 
     /** @inheritDoc */

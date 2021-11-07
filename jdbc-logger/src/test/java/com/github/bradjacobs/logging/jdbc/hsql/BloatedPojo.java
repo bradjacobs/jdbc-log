@@ -18,8 +18,6 @@ public class BloatedPojo
     private InputStream streamValue;
 
 
-
-
     public BloatedPojo()
     {
     }
@@ -63,7 +61,6 @@ public class BloatedPojo
     {
         this.doubleValue = doubleValue;
     }
-
 
     public java.sql.Date getSqlDateValue()
     {

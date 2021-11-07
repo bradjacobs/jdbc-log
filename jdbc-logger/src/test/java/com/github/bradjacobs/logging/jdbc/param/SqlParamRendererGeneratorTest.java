@@ -186,14 +186,10 @@ public class SqlParamRendererGeneratorTest
         paramRendererGenerator.createPrefixSuffixParamRenderer(null, "PREFIX", "SUFFIX");
     }
 
-
-
     private <T> String getRenderedString(SqlParamRenderer<T> renderer, T d) {
         assertNotNull(renderer, "expected non-null renderer object");
         StringBuilder sb = new StringBuilder();
         renderer.appendParamValue(d, sb);
         return sb.toString();
     }
-
-
 }

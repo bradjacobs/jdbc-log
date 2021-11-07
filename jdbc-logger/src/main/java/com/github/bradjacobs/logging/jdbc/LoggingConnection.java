@@ -65,8 +65,6 @@ public class LoggingConnection implements Connection
     }
 
 
-
-
     /** @inheritDoc */
     @Override
     public Statement createStatement() throws SQLException
@@ -87,7 +85,6 @@ public class LoggingConnection implements Connection
     {
         return logWrap(targetConnection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability));
     }
-
 
     /** @inheritDoc */
     @Override
@@ -449,5 +446,4 @@ public class LoggingConnection implements Connection
     {
         return targetConnection.isWrapperFor(iface);
     }
-
 }

@@ -102,20 +102,17 @@ public class PojoDAO
     public boolean batchinsertPojo(List<BloatedPojo> pojos) throws SQLException
     {
         conn.setAutoCommit(false);
-
         PreparedStatement pstmt = null;
 
         try {
             pstmt = conn.prepareStatement(PREPARED_STMT_INSERT_SQL);
 
-            for (BloatedPojo pojo : pojos)
-            {
+            for (BloatedPojo pojo : pojos) {
                 initializeBloatedPojoPreparedStatement(pstmt, pojo);
                 pstmt.addBatch();
             }
 
             pstmt.executeBatch();
-
             conn.commit();
         }
         catch (SQLException e) {
@@ -132,7 +129,6 @@ public class PojoDAO
 
     /**
      * Insert a pojo into the database
-     *
      * @return
      */
     public boolean insertPojo(BloatedPojo pojo) {
@@ -193,17 +189,14 @@ public class PojoDAO
                // pstmt = conn.prepareCall("{call EXT_SAMPLE_PROC(?,?)}");
                 pstmt = conn.prepareCall("CALL EXT_SAMPLE_PROC(?,?)");
 
-
                 pstmt.setInt(1, input);
-
                 pstmt.registerOutParameter(2, Types.BOOLEAN);
 
                 pstmt.executeUpdate();
 
                 //read the OUT parameter now
                 Boolean result = pstmt.getBoolean(2);
-
-                System.out.println("RESULT: " + result);
+                //System.out.println("RESULT: " + result);
             }
             catch (SQLException e) {
                 throw new RuntimeException("Unable to call stored proc " + e.getMessage(), e);
@@ -242,7 +235,6 @@ public class PojoDAO
 
     /**
      * Get a pojo by unique ID
-     *
      * @param id
      * @return
      */
@@ -279,7 +271,6 @@ public class PojoDAO
 
         return pojo;
     }
-
 
     private List<BloatedPojo> convertToPojos(ResultSet rs) throws SQLException
     {

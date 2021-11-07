@@ -21,7 +21,7 @@ public class LoggingDataSource implements DataSource
     private final LoggingConnectionCreator loggingConnectionCreator;
 
     /**
-     * Convenience constructor, wrappers datasource and will log SQL statements to logger (debug level)
+     * Constructor (convenience), wraps datasource and will log SQL statements to logger (debug level)
      * @param dataSource dataSource
      * @param logger logger
      */

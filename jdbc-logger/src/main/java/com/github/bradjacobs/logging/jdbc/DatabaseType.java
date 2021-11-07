@@ -20,7 +20,6 @@ public enum DatabaseType
 
 
 
-
     /**
      * Attempt to identify db type via string
      * @param dbName can be database product name, jdbc connection url, driver name, other, etc.
@@ -46,5 +45,4 @@ public enum DatabaseType
         else if (dbName.contains("SYBASE")) { return SYBASE; }
         else { return UNKNOWN; }
     }
-
 }

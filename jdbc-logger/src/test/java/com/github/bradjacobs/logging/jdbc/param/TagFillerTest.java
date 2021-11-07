@@ -31,8 +31,6 @@ public class TagFillerTest
         assertEquals(result, expectedSql, "mismatch of expected replace tag result");
     }
 
-
-
     /**
      * Can't replace if no data to use to replace with
      */
@@ -68,7 +66,6 @@ public class TagFillerTest
         assertEquals(result, expectedSql, "mismatch of expected replace tag result");
     }
 
-
     /**
      *  if a value is 'missing' then the original ? tag should remain in the final result
      */
@@ -91,11 +88,8 @@ public class TagFillerTest
         assertEquals(result, expectedSql, "mismatch of expected replace tag result");
     }
 
-
-
-
     /**
-     * test w/ one of the params literally is getting set to null
+     * test w/ one of the params literally getting set to null
      */
     @Test
     public void testWithNull() throws Exception
@@ -109,7 +103,6 @@ public class TagFillerTest
         assertNotNull(result);
         assertEquals(result, expectedSql, "mismatch of expected replace tag result");
     }
-
 
     @Test(expectedExceptions = { IllegalArgumentException.class },
         expectedExceptionsMessageRegExp = "Must provide a tag parameter.")
@@ -127,7 +120,6 @@ public class TagFillerTest
     public void testMissingRenSeletor() throws Exception {
         TagFiller tagFiller = new TagFiller(null);
     }
-
 
 
     /**
@@ -162,10 +154,6 @@ public class TagFillerTest
         assertEquals(result, expectedSql, "mismatch of expected replace tag result");
     }
 
-
-    /**
-     *
-     */
     @Test
     public void testRenderTimestamp() throws Exception
     {
@@ -207,7 +195,6 @@ public class TagFillerTest
         assertEquals(result, expectedSql, "mismatch of expected replace tag result");
     }
 
-
     @Test
     public void testRenderTime() throws Exception
     {
@@ -230,7 +217,6 @@ public class TagFillerTest
     }
 
 
-
     // Test to see if can configure such that a java.sql.Date will render like a timestamp
     @Test
     public void testOverrideDateRender() throws Exception
@@ -244,7 +230,6 @@ public class TagFillerTest
         ParamRendererSelector rendererSelector = new ParamRendererSelector(rendereDefinitions);
         TagFiller tagFiller = new TagFiller(rendererSelector);
 
-
         String expectedTimeStringGmt = "'2018-09-27 02:07:11'";
         java.sql.Date sqlDate = new java.sql.Date(timeLong);
 
@@ -257,7 +242,6 @@ public class TagFillerTest
         assertNotNull(result);
         assertEquals(result, expectedSql, "mismatch of expected replace tag result");
     }
-
 
 
     // Check String renderer when the string value contains a literal '  within
@@ -278,7 +262,7 @@ public class TagFillerTest
 
     /**
      * Do NOT want a Double to show up like 1.2E-7
-     *   (honestly a personal petpeeve)
+     *   (honestly a personal pet peeve)
      */
     @Test
     public void testDoubleNoScientificNotation() throws Exception
@@ -313,8 +297,6 @@ public class TagFillerTest
     }
 
 
-
-
     /////////////////////////////////////////////////////////
 
 
@@ -324,5 +306,4 @@ public class TagFillerTest
         ParamRendererSelector rendererSelector = new ParamRendererSelector(rendereDefinitions);
         return new TagFiller(rendererSelector);
     }
-
 }
