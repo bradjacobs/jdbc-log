@@ -56,24 +56,31 @@ public class LoggingDataSource implements DataSource
 
     /** @inheritDoc */
     @Override
-    public Connection getConnection() throws SQLException
-    {
+    public Connection getConnection() throws SQLException {
         Connection innerConnection = dataSource.getConnection();
-        return loggingConnectionCreator.create(innerConnection);
+        return createConnection(innerConnection);
     }
 
     /** @inheritDoc */
     @Override
-    public Connection getConnection(String username, String password) throws SQLException
-    {
+    public Connection getConnection(String username, String password) throws SQLException {
         Connection innerConnection = dataSource.getConnection(username, password);
-        if (enabled) {
-            return loggingConnectionCreator.create(innerConnection);
-        }
-        else {
+        return createConnection(innerConnection);
+    }
+
+    /**
+     * Creates a new LoggingConnection.
+     *   if 'disabled', then will just get back the passed in connection.
+     * @param innerConnection connection
+     * @return loggingConnection.
+     */
+    private Connection createConnection(Connection innerConnection) {
+        if (!enabled) {
             return innerConnection;
         }
+        return loggingConnectionCreator.create(innerConnection);
     }
+
 
     /**
      *  Returns if Sql Connection Logging is enabled.
