@@ -116,7 +116,7 @@ public class SqlParamRendererGenerator
     }
 
     /**
-     * Number values like Double/Float will _not_ show up in scientific notiation by default.
+     * Number values like Double/Float will _not_ show up in scientific notation by default.
      */
     private static class NumberParamRenderer implements SqlParamRenderer<Number> {
 
@@ -151,7 +151,6 @@ public class SqlParamRendererGenerator
         }
     }
 
-
     private static class PrefixSuffixParamRenderer<T> implements SqlParamRenderer<T>
     {
         private final SqlParamRenderer<T> innerRenderer;
@@ -180,7 +179,6 @@ public class SqlParamRendererGenerator
             }
         }
     }
-
 
     private static class ChronoStringParamRenderer implements SqlParamRenderer<Date>
     {
@@ -211,7 +209,6 @@ public class SqlParamRendererGenerator
             sb.append('\'');
         }
     }
-
 
     /**
      * Render any date/time/timestamp as UTC/Epoch value
