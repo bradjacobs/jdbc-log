@@ -1,6 +1,7 @@
 package com.github.bradjacobs.logging.jdbc;
 
 import com.github.bradjacobs.logging.jdbc.listeners.LoggingListener;
+import com.github.bradjacobs.logging.jdbc.listeners.Slf4jLoggingListener;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -19,9 +20,17 @@ public class LoggingDataSource implements DataSource
     private final DataSource dataSource;
     private final LoggingConnectionCreator loggingConnectionCreator;
 
+    /**
+     * Convenience constructor, wrappers datasource and will log SQL statements to logger (debug level)
+     * @param dataSource dataSource
+     * @param logger logger
+     */
+    public LoggingDataSource(DataSource dataSource, org.slf4j.Logger logger) {
+        this(dataSource, new Slf4jLoggingListener(logger));
+    }
 
     /**
-     *
+     * Constructor wraps existing dataSource and will log SQL statements to the listeners.
      * @param dataSource dataSource
      * @param loggingListeners loggingListeners
      */
