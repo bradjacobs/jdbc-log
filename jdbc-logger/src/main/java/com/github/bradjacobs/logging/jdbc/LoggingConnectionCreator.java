@@ -26,9 +26,7 @@ import java.util.List;
  */
 public class LoggingConnectionCreator
 {
-    private boolean loggingEnabled = true;  // flag for enabling/disabling
-
-    private final boolean streamLogging;
+    private final boolean clobReaderLogging;
     private final TagFiller tagFiller;
     private final List<LoggingListener> loggingListeners;
 
@@ -36,7 +34,7 @@ public class LoggingConnectionCreator
 
     LoggingConnectionCreator(Builder builder)
     {
-        this.streamLogging = builder.streamLogging;
+        this.clobReaderLogging = builder.clobReaderLogging;
         this.tagFiller = builder.tagFiller;
         this.loggingListeners = Collections.unmodifiableList(builder.loggingListeners);
     }
@@ -51,39 +49,13 @@ public class LoggingConnectionCreator
      * @param targetConnection the original connection to be wrapped/decorated with LoggingConnection.
      * @return loggingConnection
      */
-    public Connection getConnection(Connection targetConnection) {
+    public Connection create(Connection targetConnection) {
         if (targetConnection == null) {
             throw new IllegalArgumentException("Connection cannot be null.");
         }
 
-        if (this.loggingEnabled) {
-            return new LoggingConnection(targetConnection, streamLogging, tagFiller, loggingListeners);
-        }
-        else {
-            return targetConnection;
-        }
+        return new LoggingConnection(targetConnection, clobReaderLogging, tagFiller, loggingListeners);
     }
-
-
-    /**
-     * If true, getConnection will return a "LoggingConnection",
-     * If false, getConnection will pass back the original connection given.
-     * @return true if sql Logging enabled
-     */
-    public boolean isLoggingEnabled()
-    {
-        return loggingEnabled;
-    }
-
-    /**
-     * Enable/Disable logging
-     * @param loggingEnabled loggingEnabled
-     */
-    public void setLoggingEnabled(boolean loggingEnabled)
-    {
-        this.loggingEnabled = loggingEnabled;
-    }
-
 
 
     ///////////////////////////////////////////////////////////////////////////
@@ -123,7 +95,7 @@ public class LoggingConnectionCreator
         private DatabaseType dbType = null;
         private final List<LoggingListener> loggingListeners = new ArrayList<>();
         private final RendererDefinitions overrideRendererDefinitions = new RendererDefinitions();
-        private boolean streamLogging = Boolean.FALSE;
+        private boolean clobReaderLogging = Boolean.FALSE;
 
         // assigned during 'build'
         private TagFiller tagFiller;
@@ -172,12 +144,12 @@ public class LoggingConnectionCreator
         }
 
         /**
-         * Enables ability to log Text Clob/Reader/InputStream values
+         * Enables ability to log Text Clob/Reader/InputStream parameter values
          *    WARNING: could significantly impact performance if enabled!
-         * @param streamLoggingEnabled  (default: FALSE)
+         * @param clobReaderLogging  (default: FALSE)
          */
-        public Builder setStreamLoggingEnabled(boolean streamLoggingEnabled) {
-            this.streamLogging = streamLoggingEnabled;
+        public Builder setClobReaderLogging(boolean clobReaderLogging) {
+            this.clobReaderLogging = clobReaderLogging;
             return this;
         }
 

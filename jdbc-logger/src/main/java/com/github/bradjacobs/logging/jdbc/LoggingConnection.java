@@ -28,7 +28,7 @@ public class LoggingConnection implements Connection
 {
     private final Connection targetConnection;
 
-    protected final boolean isStreamLoggingEnabled;
+    protected final boolean clobReaderLoggingEnabled;
     protected final List<LoggingListener> loggingListeners;
     protected final TagFiller tagFiller;
 
@@ -38,14 +38,14 @@ public class LoggingConnection implements Connection
      *   NOTE: Please Use LoggingConnectionCreator to make instance
      * @param targetConnection original jdbc targetConnection
      */
-    LoggingConnection(Connection targetConnection, boolean streamLogging, TagFiller tagFiller, List<LoggingListener> loggingListeners)
+    LoggingConnection(Connection targetConnection, boolean clobReaderLogging, TagFiller tagFiller, List<LoggingListener> loggingListeners)
     {
         if (targetConnection == null) {
             throw new IllegalArgumentException("Must provide a targetConnection");
         }
 
         this.targetConnection = targetConnection;
-        this.isStreamLoggingEnabled = streamLogging;
+        this.clobReaderLoggingEnabled = clobReaderLogging;
         this.tagFiller = tagFiller;
         this.loggingListeners = Collections.unmodifiableList(loggingListeners);
     }

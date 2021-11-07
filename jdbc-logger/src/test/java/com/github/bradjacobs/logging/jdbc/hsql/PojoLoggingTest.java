@@ -52,10 +52,10 @@ public class PojoLoggingTest
             LoggingConnectionCreator.builder()
                 .withLogListener(captureLoggingListener)
                 .withLogListener(new SystemOutLogListener())
-                .setStreamLoggingEnabled(true)
+                .setClobReaderLogging(true)
                 .build();
 
-        dbcon = loggingConnectionCreator.getConnection(innerConn);
+        dbcon = loggingConnectionCreator.create(innerConn);
         dao = new PojoDAO(dbcon);
         dao.createTable();
         dao.createStoredProc();

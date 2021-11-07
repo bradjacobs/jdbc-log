@@ -19,6 +19,7 @@ public class LoggingDataSource implements DataSource
 {
     private final DataSource dataSource;
     private final LoggingConnectionCreator loggingConnectionCreator;
+    private boolean enabled = true;
 
     /**
      * Constructor (convenience), wraps datasource and will log SQL statements to logger (debug level)
@@ -58,7 +59,7 @@ public class LoggingDataSource implements DataSource
     public Connection getConnection() throws SQLException
     {
         Connection innerConnection = dataSource.getConnection();
-        return loggingConnectionCreator.getConnection(innerConnection);
+        return loggingConnectionCreator.create(innerConnection);
     }
 
     /** @inheritDoc */
@@ -66,26 +67,29 @@ public class LoggingDataSource implements DataSource
     public Connection getConnection(String username, String password) throws SQLException
     {
         Connection innerConnection = dataSource.getConnection(username, password);
-        return loggingConnectionCreator.getConnection(innerConnection);
+        if (enabled) {
+            return loggingConnectionCreator.create(innerConnection);
+        }
+        else {
+            return innerConnection;
+        }
     }
 
     /**
-     * Check if LoggingConnection is enabled.
-     *  a 'false' means logging disabled and calls to 'getConnection'
+     *  Returns if Sql Connection Logging is enabled.
+     *  A 'false' means logging disabled and calls to 'getConnection'
      *  will return the original Connection instead of a LoggingConnection
      * @return isEnabled.
      */
-    public boolean isLoggingEnabled()
-    {
-        return loggingConnectionCreator.isLoggingEnabled();
+    public boolean isEnabled() {
+        return enabled;
     }
 
     /**
-     * Enables logging
+     * Enables SQL logging
      */
-    public void setLoggingEnabled(boolean loggingEnabled)
-    {
-        this.loggingConnectionCreator.setLoggingEnabled(loggingEnabled);
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
 

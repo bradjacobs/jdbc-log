@@ -17,7 +17,7 @@ class SqlStatementTracker
 
 
     private final TagFiller tagFiller;
-    private final boolean streamLoggingEnabled;
+    private final boolean clobReaderLoggingEnabled;
 
 
     public SqlStatementTracker()
@@ -25,16 +25,16 @@ class SqlStatementTracker
         this("", null, false);
     }
 
-    public SqlStatementTracker(String sql, TagFiller tagFiller, boolean streamLoggingEnabled)
+    public SqlStatementTracker(String sql, TagFiller tagFiller, boolean clobReaderLoggingEnabled)
     {
         this.sql = sql;
         this.tagFiller = tagFiller;
-        this.streamLoggingEnabled = streamLoggingEnabled;
+        this.clobReaderLoggingEnabled = clobReaderLoggingEnabled;
     }
 
 
-    public boolean isStreamLoggingEnabled() {
-        return streamLoggingEnabled;
+    public boolean isClobReaderLoggingEnabled() {
+        return clobReaderLoggingEnabled;
     }
 
     public void setSql(String sql)

@@ -56,8 +56,8 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
      * Returns true to log a 'real' string value whenever a Clob/Reader/Stream is used.
      * @return true to log clobs & text streams
      */
-    protected boolean isStreamLoggingEnabled() {
-        return sqlTracker.isStreamLoggingEnabled();
+    protected boolean isClobReaderLoggingEnabled() {
+        return sqlTracker.isClobReaderLoggingEnabled();
     }
 
 
@@ -82,7 +82,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     protected Reader setCurrentReaderParameter(int index, Reader reader) {
         String strValue = null;
         if (reader != null) {
-            if (isStreamLoggingEnabled()) {
+            if (isClobReaderLoggingEnabled()) {
                 strValue = extractString(reader);
                 reader = new StringReader(strValue);
             }
@@ -106,7 +106,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     protected InputStream setCurrentStreamParameter(int index, InputStream inputStream) {
         String strValue = null;
         if (inputStream != null) {
-            if (isStreamLoggingEnabled()) {
+            if (isClobReaderLoggingEnabled()) {
                 strValue = extractString(inputStream);
                 inputStream = new ByteArrayInputStream(strValue.getBytes(StandardCharsets.UTF_8));
             }
@@ -547,7 +547,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     public void setSQLXML(int parameterIndex, SQLXML xmlObject) throws SQLException
     {
         //  Note: this is a bit of a guess b/c many drivers don't support it
-        if (isStreamLoggingEnabled()) {
+        if (isClobReaderLoggingEnabled()) {
             String sqlXmlString = null;
             if (xmlObject != null) {
                 try {

@@ -30,7 +30,7 @@ public class LoggingStatement implements Statement
         this.loggingListeners = loggingConnection.loggingListeners;
 
         if (sql != null) {
-            this.sqlTracker = new SqlStatementTracker(sql, loggingConnection.tagFiller, loggingConnection.isStreamLoggingEnabled);
+            this.sqlTracker = new SqlStatementTracker(sql, loggingConnection.tagFiller, loggingConnection.clobReaderLoggingEnabled);
         }
         else {
             this.sqlTracker = new SqlStatementTracker();

@@ -113,6 +113,6 @@ public class LoggingConnectionCreatorTest
             expectedExceptionsMessageRegExp = EXPECTED_MISSING_CONNECTION_MSG)
     public void testMissingConnection() throws Exception {
         LoggingConnectionCreator loggingConnectionCreator = LoggingConnectionCreator.builder().build();
-        loggingConnectionCreator.getConnection(null);
+        loggingConnectionCreator.create(null);
     }
 }
