@@ -42,7 +42,7 @@ public class LoggingDataSource implements DataSource
 
 
     /**
-     * Custom constructor that can in custom config
+     * Constructor to use any customized loggingConnectionCreator.
      * @param dataSource dateSource
      * @param loggingConnectionCreator loggingConnectionCreator
      */
@@ -149,8 +149,8 @@ public class LoggingDataSource implements DataSource
         return dataSource.isWrapperFor(iface);
     }
 
-
-    private void validateParams(DataSource dataSource, LoggingConnectionCreator loggingConnectionCreator) throws IllegalArgumentException
+    private void validateParams(DataSource dataSource, LoggingConnectionCreator loggingConnectionCreator)
+            throws IllegalArgumentException
     {
         if (dataSource == null) {
             throw new IllegalArgumentException("Must provide a dateSource");

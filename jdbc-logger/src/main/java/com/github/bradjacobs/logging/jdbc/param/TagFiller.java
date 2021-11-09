@@ -23,6 +23,16 @@ public class TagFiller
     }
 
 
+    /**
+     * Replaces the tags in the source SQL string with the given values in the paramMap
+     * Example:
+     *     source: select * from tbl where id = ? AND name = ?
+     *     paramMap: {{1,1}, {2,"Bob"}}
+     *     output: select * from tbl where id = 1 AND name = 'Bob'
+     * @param source sql string with tabs
+     * @param paramMap parameter values
+     * @return the 'filled in' SQL string.
+     */
     public String replace(String source, Map<Integer, Object> paramMap)
     {
         if (source == null) {

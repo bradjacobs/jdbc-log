@@ -1,5 +1,5 @@
 
-package com.github.bradjacobs.logging.jdbc.hsql;
+package com.github.bradjacobs.logging.jdbc.hsql.objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,9 +61,24 @@ public class PojoDAO
         " END";
 
 
-    public PojoDAO(Connection conn)
-    {
+    public PojoDAO(Connection conn) {
         this.conn = conn;
+    }
+
+    public void init() {
+        createTable();
+        createStoredProc();
+    }
+
+    public void close() {
+        dropStoredProc();
+        dropTable();
+        try {
+            this.conn.close();
+        }
+        catch (SQLException e) {
+            /* ignore */
+        }
     }
 
     public boolean createTable() {
@@ -180,7 +195,12 @@ public class PojoDAO
     }
 
 
-    public void callStoredProcedure(Integer input)
+    /**
+     * Calls stored procedure
+     * @param input  stored proc input value
+     * @return return the "OUT value" from the stored procedure.
+     */
+    public Boolean callStoredProcedure(Integer input)
     {
         if (conn != null) {
             CallableStatement pstmt = null;
@@ -196,7 +216,7 @@ public class PojoDAO
 
                 //read the OUT parameter now
                 Boolean result = pstmt.getBoolean(2);
-                //System.out.println("RESULT: " + result);
+                return result;
             }
             catch (SQLException e) {
                 throw new RuntimeException("Unable to call stored proc " + e.getMessage(), e);
@@ -205,6 +225,7 @@ public class PojoDAO
                 closeQuietly(pstmt);
             }
         }
+        return null;
     }
 
 

@@ -98,7 +98,7 @@ public class LoggingConnectionCreator
         private boolean clobReaderLogging = Boolean.FALSE;
 
         // assigned during 'build'
-        private TagFiller tagFiller;
+        private TagFiller tagFiller = null;
 
 
         /**
@@ -218,5 +218,4 @@ public class LoggingConnectionCreator
             return new LoggingConnectionCreator(this);
         }
     }
-
 }

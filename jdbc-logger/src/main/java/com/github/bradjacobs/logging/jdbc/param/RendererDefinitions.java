@@ -13,13 +13,6 @@ public class RendererDefinitions
     private SqlParamRenderer<Date> timeRenderer = null;
 
 
-    // dev note:  the following article was persuasion to avoid trying to use a "Class"
-    //   as a key in some kind fo map lookup:  (might only apply to older Java versions but cannot say w/ certainty)
-    //   http://frankkieviet.blogspot.com/2006/10/classloader-leaks-dreaded-permgen-space.html
-    //   https://stackoverflow.com/questions/2625546/is-using-the-class-instance-as-a-map-key-a-best-practice
-
-
-
     public SqlParamRenderer<Object> getDefaultRenderer() {
         return defaultRenderer;
     }
@@ -113,5 +106,4 @@ public class RendererDefinitions
             this.setTimestampRenderer(other.getTimeRenderer());
         }
     }
-
 }
