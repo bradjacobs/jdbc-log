@@ -53,15 +53,6 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
 
 
     /**
-     * Returns true to log a 'real' string value whenever a Clob/Reader/Stream is used.
-     * @return true to log clobs & text streams
-     */
-    protected boolean isClobReaderLoggingEnabled() {
-        return sqlTracker.isClobReaderLoggingEnabled();
-    }
-
-
-    /**
      * Adds the parameter value to the tracker, which is later used to generate teh SQL string.
      * @param index parameter index
      * @param value parameter value.

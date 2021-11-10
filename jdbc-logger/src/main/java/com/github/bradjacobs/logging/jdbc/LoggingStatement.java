@@ -15,9 +15,10 @@ import java.util.List;
 public class LoggingStatement implements Statement
 {
     private final Statement statement;
+    private final List<LoggingListener> loggingListeners;
+    private final LoggingConnection loggingConnection;
+    private final boolean clobReaderLoggingEnabled;
     protected final SqlStatementTracker sqlTracker;
-    protected final List<LoggingListener> loggingListeners;
-    protected final LoggingConnection loggingConnection;
 
     public LoggingStatement(Statement statement, LoggingConnection loggingConnection) {
         this(statement, loggingConnection, null);
@@ -30,12 +31,24 @@ public class LoggingStatement implements Statement
         this.loggingListeners = loggingConnection.loggingListeners;
 
         if (sql != null) {
-            this.sqlTracker = new SqlStatementTracker(sql, loggingConnection.tagFiller, loggingConnection.clobReaderLoggingEnabled);
+            this.sqlTracker = new SqlStatementTracker(sql, loggingConnection.tagFiller);
+            this.clobReaderLoggingEnabled = loggingConnection.clobReaderLoggingEnabled;
         }
         else {
             this.sqlTracker = new SqlStatementTracker();
+            this.clobReaderLoggingEnabled = false;
         }
     }
+
+    /**
+     * Returns true to log a 'real' string value whenever a Clob/Reader/Stream is used.
+     * @return true to log clobs & text streams
+     */
+    protected boolean isClobReaderLoggingEnabled() {
+        return clobReaderLoggingEnabled;
+    }
+
+
 
     protected void setAndLogCurrent(String sql) {
         sqlTracker.setSql(sql);

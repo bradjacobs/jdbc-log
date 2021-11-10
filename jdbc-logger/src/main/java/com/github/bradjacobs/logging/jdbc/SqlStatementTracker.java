@@ -15,26 +15,18 @@ class SqlStatementTracker
     private List<BatchItem> batchItems = null;
     private Map<Integer, Object> paramMap = null;
 
-
     private final TagFiller tagFiller;
-    private final boolean clobReaderLoggingEnabled;
 
 
     public SqlStatementTracker()
     {
-        this("", null, false);
+        this("", null);
     }
 
-    public SqlStatementTracker(String sql, TagFiller tagFiller, boolean clobReaderLoggingEnabled)
+    public SqlStatementTracker(String sql, TagFiller tagFiller)
     {
         this.sql = sql;
         this.tagFiller = tagFiller;
-        this.clobReaderLoggingEnabled = clobReaderLoggingEnabled;
-    }
-
-
-    public boolean isClobReaderLoggingEnabled() {
-        return clobReaderLoggingEnabled;
     }
 
     public void setSql(String sql)
@@ -62,7 +54,6 @@ class SqlStatementTracker
             this.batchItems.clear();
         }
     }
-
 
     public String generateSql() {
         if (tagFiller == null) {
@@ -120,5 +111,4 @@ class SqlStatementTracker
             return tagFiller.replace(this.sql, this.paramMap);
         }
     }
-
 }
