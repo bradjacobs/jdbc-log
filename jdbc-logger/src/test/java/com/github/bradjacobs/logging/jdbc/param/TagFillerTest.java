@@ -17,6 +17,9 @@ import static org.testng.Assert.assertNull;
 
 public class TagFillerTest
 {
+    private static final TagFiller tagFiller = new TagFiller(new ParamRendererSelector());
+
+
     // test default case.   Numbers get filled + the string param gets quoted.
     @Test
     public void testDefaultMultiValues() throws Exception
@@ -27,8 +30,6 @@ public class TagFillerTest
         paramMap.put(2, "Rufus");
         paramMap.put(3, 200);
         String expectedSql = "select * from myTable where id = 1 AND name = 'Rufus' AND status > 200";
-
-        TagFiller tagFiller = createTestTagFiller();
 
         String result = tagFiller.replace(sql, paramMap);
         assertNotNull(result);
@@ -42,7 +43,6 @@ public class TagFillerTest
     public void testMissingValueParamMap() throws Exception
     {
         String sql = "select * from myTable where id = ? AND name = ?";
-        TagFiller tagFiller = createTestTagFiller();
 
         String result = tagFiller.replace(sql, null);
         assertNotNull(result);
@@ -62,8 +62,6 @@ public class TagFillerTest
         String sql = "select * from myTable where isOk = ?";
         Map<Integer, Object> paramMap = Collections.singletonMap(1, true);
         String expectedSql = sql.replace("?", "1");
-
-        TagFiller tagFiller = createTestTagFiller();
 
         String result = tagFiller.replace(sql, paramMap);
         assertNotNull(result);
@@ -85,8 +83,6 @@ public class TagFillerTest
         // note first ? is expected to remain
         String expectedSql = "select * from myTable where id = ? AND name = 'Rufus' AND status > 200";
 
-        TagFiller tagFiller = createTestTagFiller();
-
         String result = tagFiller.replace(sql, paramMap);
         assertNotNull(result);
         assertEquals(result, expectedSql, "mismatch of expected replace tag result");
@@ -102,7 +98,6 @@ public class TagFillerTest
         Map<Integer,Object> paramMap = Collections.singletonMap(1, null);
         String expectedSql = "update table set field1 = null";
 
-        TagFiller tagFiller = createTestTagFiller();
         String result = tagFiller.replace(sql, paramMap);
         assertNotNull(result);
         assertEquals(result, expectedSql, "mismatch of expected replace tag result");
@@ -133,7 +128,6 @@ public class TagFillerTest
     public void testMissingSqlSource() throws Exception
     {
         String sql = null;
-        TagFiller tagFiller = createTestTagFiller();
         String result = tagFiller.replace(sql, Collections.singletonMap(1, 10));
         assertNull(result);
     }
@@ -151,8 +145,6 @@ public class TagFillerTest
         paramMap.put(2, "Rufus");
         String expectedSql = "select * from myTable where id = 1 AND name = 'Rufus' AND status > ? AND val = ?";
 
-        TagFiller tagFiller = createTestTagFiller();
-
         String result = tagFiller.replace(sql, paramMap);
         assertNotNull(result);
         assertEquals(result, expectedSql, "mismatch of expected replace tag result");
@@ -168,8 +160,6 @@ public class TagFillerTest
 
         String sql = "select * from myTable where updated = ?";
         String expectedSql = sql.replace("?", expectedTimeStringGmt);
-
-        TagFiller tagFiller = createTestTagFiller();
 
         String result = tagFiller.replace(sql, paramMap);
         assertNotNull(result);
@@ -192,8 +182,6 @@ public class TagFillerTest
         String sql = "select * from myTable where date = ?";
         String expectedSql = sql.replace("?", expectedTimeStringGmt);
 
-        TagFiller tagFiller = createTestTagFiller();
-
         String result = tagFiller.replace(sql, paramMap);
         assertNotNull(result);
         assertEquals(result, expectedSql, "mismatch of expected replace tag result");
@@ -212,8 +200,6 @@ public class TagFillerTest
 
         String sql = "select * from myTable where time = ?";
         String expectedSql = sql.replace("?", expectedTimeStringGmt);
-
-        TagFiller tagFiller = createTestTagFiller();
 
         String result = tagFiller.replace(sql, paramMap);
         assertNotNull(result);
@@ -234,7 +220,7 @@ public class TagFillerTest
         overrideMap.put(ParamType.DATE, new ChronoStringParamRenderer("yyyy-MM-dd HH:mm:ss", zoneId));
 
         ParamRendererSelector rendererSelector = new ParamRendererSelector(dbType, zoneId, overrideMap);
-        TagFiller tagFiller = new TagFiller(rendererSelector);
+        TagFiller customTagFiller = new TagFiller(rendererSelector);
 
         String expectedTimeStringGmt = "'2018-09-27 02:07:11'";
         java.sql.Date sqlDate = new java.sql.Date(timeLong);
@@ -244,7 +230,7 @@ public class TagFillerTest
         String sql = "select * from myTable where date = ?";
         String expectedSql = sql.replace("?", expectedTimeStringGmt);
 
-        String result = tagFiller.replace(sql, paramMap);
+        String result = customTagFiller.replace(sql, paramMap);
         assertNotNull(result);
         assertEquals(result, expectedSql, "mismatch of expected replace tag result");
     }
@@ -258,8 +244,6 @@ public class TagFillerTest
         Map<Integer, Object> paramMap = new HashMap<>();
         paramMap.put(1, "Scott's");
         String expectedSql = "select * from myTable where name = 'Scott''s'";
-
-        TagFiller tagFiller = createTestTagFiller();
 
         String result = tagFiller.replace(sql, paramMap);
         assertNotNull(result);
@@ -279,8 +263,6 @@ public class TagFillerTest
         paramMap.put(2, 0.00000012d);
         String expectedSql = "select * from myTable where id = 1 AND myDouble > 0.00000012";
 
-        TagFiller tagFiller = createTestTagFiller();
-
         String result = tagFiller.replace(sql, paramMap);
         assertNotNull(result);
         assertEquals(result, expectedSql, "mismatch of expected replace tag result");
@@ -295,20 +277,8 @@ public class TagFillerTest
         paramMap.put(2, 123d);
         String expectedSql = "select * from myTable where id = 1 AND myDouble > 123.0";
 
-        TagFiller tagFiller = createTestTagFiller();
-
         String result = tagFiller.replace(sql, paramMap);
         assertNotNull(result);
         assertEquals(result, expectedSql, "mismatch of expected replace tag result");
-    }
-
-
-    /////////////////////////////////////////////////////////
-
-
-    private TagFiller createTestTagFiller()
-    {
-        ParamRendererSelector rendererSelector = new ParamRendererSelector();
-        return new TagFiller(rendererSelector);
     }
 }
