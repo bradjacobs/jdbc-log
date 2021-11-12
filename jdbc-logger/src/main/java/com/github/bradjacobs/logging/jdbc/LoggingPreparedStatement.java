@@ -221,7 +221,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setBinaryStream(int parameterIndex, InputStream x) throws SQLException
     {
-        setCurrentParameter(parameterIndex, BINARY_STREAM_VALUE_PLACEHOLDER);
+        setCurrentParameter(parameterIndex, (x != null ?  BINARY_STREAM_VALUE_PLACEHOLDER : null));
         preparedStatement.setBinaryStream(parameterIndex, x);
     }
 
@@ -229,7 +229,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setBinaryStream(int parameterIndex, InputStream x, int length) throws SQLException
     {
-        setCurrentParameter(parameterIndex, BINARY_STREAM_VALUE_PLACEHOLDER);
+        setCurrentParameter(parameterIndex, (x != null ?  BINARY_STREAM_VALUE_PLACEHOLDER : null));
         preparedStatement.setBinaryStream(parameterIndex, x, length);
     }
 
@@ -237,7 +237,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setBinaryStream(int parameterIndex, InputStream x, long length) throws SQLException
     {
-        setCurrentParameter(parameterIndex, BINARY_STREAM_VALUE_PLACEHOLDER);
+        setCurrentParameter(parameterIndex, (x != null ?  BINARY_STREAM_VALUE_PLACEHOLDER : null));
         preparedStatement.setBinaryStream(parameterIndex, x, length);
     }
 
@@ -245,7 +245,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setBlob(int parameterIndex, Blob x) throws SQLException
     {
-        setCurrentParameter(parameterIndex, BLOB_VALUE_PLACEHOLDER);
+        setCurrentParameter(parameterIndex, (x != null ?  BLOB_VALUE_PLACEHOLDER : null));
         preparedStatement.setBlob(parameterIndex, x);
     }
 
@@ -253,7 +253,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setBlob(int parameterIndex, InputStream inputStream) throws SQLException
     {
-        setCurrentParameter(parameterIndex, BLOB_VALUE_PLACEHOLDER);
+        setCurrentParameter(parameterIndex, (inputStream != null ?  BLOB_VALUE_PLACEHOLDER : null));
         preparedStatement.setBlob(parameterIndex, inputStream);
     }
 
@@ -261,7 +261,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setBlob(int parameterIndex, InputStream inputStream, long length) throws SQLException
     {
-        setCurrentParameter(parameterIndex, BLOB_VALUE_PLACEHOLDER);
+        setCurrentParameter(parameterIndex, (inputStream != null ?  BLOB_VALUE_PLACEHOLDER : null));
         preparedStatement.setBlob(parameterIndex, inputStream, length);
     }
 
@@ -285,7 +285,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     public void setBytes(int parameterIndex, byte[] x) throws SQLException
     {
-        setCurrentParameter(parameterIndex, BYTES_VALUE_PLACEHOLDER);
+        setCurrentParameter(parameterIndex, (x != null ? BYTES_VALUE_PLACEHOLDER : null));
         preparedStatement.setBytes(parameterIndex, x);
     }
 
@@ -538,9 +538,9 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     public void setSQLXML(int parameterIndex, SQLXML xmlObject) throws SQLException
     {
         //  Note: this is a bit of a guess b/c many drivers don't support it
-        if (isClobReaderLoggingEnabled()) {
-            String sqlXmlString = null;
-            if (xmlObject != null) {
+        String sqlXmlString = null;
+        if (xmlObject != null) {
+            if (isClobReaderLoggingEnabled()) {
                 try {
                     sqlXmlString = xmlObject.getString();
                 }
@@ -549,11 +549,11 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
                     throw new SQLException("Error attempting to get string value from SQLXML for Logging: " + e.getMessage(), e);
                 }
             }
-            setCurrentParameter(parameterIndex, sqlXmlString);
+            else {
+                sqlXmlString = TEXT_CLOB_VALUE_PLACEHOLDER;
+            }
         }
-        else {
-            setCurrentParameter(parameterIndex, TEXT_CLOB_VALUE_PLACEHOLDER);
-        }
+        setCurrentParameter(parameterIndex, sqlXmlString);
         preparedStatement.setSQLXML(parameterIndex, xmlObject);
     }
 
