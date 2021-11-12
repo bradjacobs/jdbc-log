@@ -2,12 +2,13 @@ package com.github.bradjacobs.logging.jdbc;
 
 import com.github.bradjacobs.logging.jdbc.listeners.LoggingListener;
 import com.github.bradjacobs.logging.jdbc.listeners.SystemOutLogListener;
+import com.github.bradjacobs.logging.jdbc.param.ParamRendererFactory;
 import com.github.bradjacobs.logging.jdbc.param.ParamRendererSelector;
-import com.github.bradjacobs.logging.jdbc.param.RendererDefinitions;
-import com.github.bradjacobs.logging.jdbc.param.RendererDefinitionsFactory;
+import com.github.bradjacobs.logging.jdbc.param.ParamType;
 import com.github.bradjacobs.logging.jdbc.param.SqlParamRenderer;
-import com.github.bradjacobs.logging.jdbc.param.SqlParamRendererGenerator;
 import com.github.bradjacobs.logging.jdbc.param.TagFiller;
+import com.github.bradjacobs.logging.jdbc.param.renderer.ChronoNumericParamRenderer;
+import com.github.bradjacobs.logging.jdbc.param.renderer.ChronoStringParamRenderer;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
@@ -17,7 +18,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * LoggingConnectionCreator makes a LoggingConnection that decorates an existing connection
@@ -82,10 +85,8 @@ public class LoggingConnectionCreator
 
     public static class Builder
     {
-        private static final SqlParamRendererGenerator paramRendererGenerator = new SqlParamRendererGenerator();
-
         private static final String TAG = "?";
-        private static final ZoneId DEFAULT_ZONE = RendererDefinitionsFactory.DEFAULT_ZONE;
+        private static final ZoneId DEFAULT_ZONE = ParamRendererFactory.DEFAULT_ZONE;
         private static final LoggingListener DEFAULT_LOGGING_LISTENER = new SystemOutLogListener(); // used only if no listeners are provided.
 
         // note: force the zoneId to get set first (on constructor)
@@ -94,8 +95,8 @@ public class LoggingConnectionCreator
 
         private DatabaseType dbType = null;
         private final List<LoggingListener> loggingListeners = new ArrayList<>();
-        private final RendererDefinitions overrideRendererDefinitions = new RendererDefinitions();
         private boolean clobReaderLogging = Boolean.FALSE;
+        private Map<ParamType<Date>, SqlParamRenderer<Date>> datetimeOverrideMap = new HashMap<>();
 
         // assigned during 'build'
         private TagFiller tagFiller = null;
@@ -159,7 +160,10 @@ public class LoggingConnectionCreator
          * @see java.time.format.DateTimeFormatter
          */
         public Builder withTimestampOnlyCustomPattern(String pattern) {
-            overrideRendererDefinitions.setTimestampRenderer(paramRendererGenerator.createDateStringParamRenderer(pattern, zoneId));
+            return withTimestampOnlyRenderer(new ChronoStringParamRenderer(pattern, zoneId));
+        }
+        protected Builder withTimestampOnlyRenderer(SqlParamRenderer<Date> renderer) {
+            this.datetimeOverrideMap.put(ParamType.TIMESTAMP, renderer);
             return this;
         }
 
@@ -169,7 +173,10 @@ public class LoggingConnectionCreator
          * @see java.time.format.DateTimeFormatter
          */
         public Builder withDateOnlyCustomPattern(String pattern) {
-            overrideRendererDefinitions.setDateRenderer(paramRendererGenerator.createDateStringParamRenderer(pattern, zoneId));
+            return withDateOnlyRenderer(new ChronoStringParamRenderer(pattern, zoneId));
+        }
+        protected Builder withDateOnlyRenderer(SqlParamRenderer<Date> renderer) {
+            this.datetimeOverrideMap.put(ParamType.DATE, renderer);
             return this;
         }
 
@@ -179,7 +186,10 @@ public class LoggingConnectionCreator
          * @see java.time.format.DateTimeFormatter
          */
         public Builder withTimeOnlyCustomPattern(String pattern) {
-            overrideRendererDefinitions.setTimeRenderer(paramRendererGenerator.createDateStringParamRenderer(pattern, zoneId));
+            return withTimeOnlyRenderer(new ChronoStringParamRenderer(pattern, zoneId));
+        }
+        protected Builder withTimeOnlyRenderer(SqlParamRenderer<Date> renderer) {
+            this.datetimeOverrideMap.put(ParamType.TIME, renderer);
             return this;
         }
 
@@ -187,7 +197,7 @@ public class LoggingConnectionCreator
          * Enable all timestamp/date/time instances to rendered as numeric (unix/epoch time)
          */
         public Builder withChronoDefaultNumerics() {
-            return withChronoParamRenderer(paramRendererGenerator.createDateNumericParamRenderer());
+            return withChronoParamRenderer(new ChronoNumericParamRenderer());
         }
 
         /**
@@ -195,24 +205,18 @@ public class LoggingConnectionCreator
          * @param paramRenderer paramRenderer
          */
         public Builder withChronoParamRenderer(SqlParamRenderer<Date> paramRenderer) {
-            overrideRendererDefinitions.setTimestampRenderer(paramRenderer);
-            overrideRendererDefinitions.setDateRenderer(paramRenderer);
-            overrideRendererDefinitions.setTimeRenderer(paramRenderer);
+            withTimestampOnlyRenderer(paramRenderer);
+            withDateOnlyRenderer(paramRenderer);
+            withTimeOnlyRenderer(paramRenderer);
             return this;
         }
-
 
         public LoggingConnectionCreator build() {
             if (this.loggingListeners.isEmpty()) {
                 loggingListeners.add(DEFAULT_LOGGING_LISTENER);  // must have at least 1 listener
             }
 
-            // create initial definitions w/ default values
-            RendererDefinitions rendererDefinitions = RendererDefinitionsFactory.createDefaultDefinitions(dbType, this.zoneId);
-
-            // add any overrides to replace defaults (if applicable)
-            rendererDefinitions.mergeIn(this.overrideRendererDefinitions);
-            ParamRendererSelector rendererSelector = new ParamRendererSelector(rendererDefinitions);
+            ParamRendererSelector rendererSelector = new ParamRendererSelector(dbType, zoneId, datetimeOverrideMap);
 
             this.tagFiller = new TagFiller(TAG, rendererSelector);
             return new LoggingConnectionCreator(this);

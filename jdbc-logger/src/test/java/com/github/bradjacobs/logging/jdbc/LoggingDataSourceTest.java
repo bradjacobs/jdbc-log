@@ -22,7 +22,6 @@ public class LoggingDataSourceTest
 
 
 
-
     // exception handling unittests ....
 
     @Test(expectedExceptions = { IllegalArgumentException.class },

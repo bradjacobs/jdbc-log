@@ -1,9 +1,13 @@
 package com.github.bradjacobs.logging.jdbc.param;
 
+import com.github.bradjacobs.logging.jdbc.DatabaseType;
+import com.github.bradjacobs.logging.jdbc.param.renderer.ChronoStringParamRenderer;
 import org.testng.annotations.Test;
 
 import java.sql.Timestamp;
+import java.time.ZoneId;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -224,10 +228,12 @@ public class TagFillerTest
         // NOTE: this value is: Thursday, September 27, 2018 2:07:11 AM  __GMT__
         long timeLong = 1538014031000L;
 
-        RendererDefinitions rendereDefinitions = RendererDefinitionsFactory.createDefaultDefinitions(null);
-        rendereDefinitions.setDateRenderer( rendereDefinitions.getTimestampRenderer() );
+        DatabaseType dbType = null;
+        ZoneId zoneId = null;
+        Map<ParamType<Date>, SqlParamRenderer<Date>> overrideMap = new HashMap<>();
+        overrideMap.put(ParamType.DATE, new ChronoStringParamRenderer("yyyy-MM-dd HH:mm:ss", zoneId));
 
-        ParamRendererSelector rendererSelector = new ParamRendererSelector(rendereDefinitions);
+        ParamRendererSelector rendererSelector = new ParamRendererSelector(dbType, zoneId, overrideMap);
         TagFiller tagFiller = new TagFiller(rendererSelector);
 
         String expectedTimeStringGmt = "'2018-09-27 02:07:11'";
@@ -302,8 +308,7 @@ public class TagFillerTest
 
     private TagFiller createTestTagFiller()
     {
-        RendererDefinitions rendereDefinitions = RendererDefinitionsFactory.createDefaultDefinitions(null);
-        ParamRendererSelector rendererSelector = new ParamRendererSelector(rendereDefinitions);
+        ParamRendererSelector rendererSelector = new ParamRendererSelector();
         return new TagFiller(rendererSelector);
     }
 }
