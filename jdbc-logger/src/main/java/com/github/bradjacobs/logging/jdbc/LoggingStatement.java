@@ -28,11 +28,11 @@ public class LoggingStatement implements Statement
         validateParams(statement, loggingConnection);
         this.statement = statement;
         this.loggingConnection = loggingConnection;
-        this.loggingListeners = loggingConnection.loggingListeners;
+        this.loggingListeners = loggingConnection.getLoggingListeners();
 
         if (sql != null) {
-            this.sqlTracker = new SqlStatementTracker(sql, loggingConnection.tagFiller);
-            this.clobReaderLoggingEnabled = loggingConnection.clobReaderLoggingEnabled;
+            this.sqlTracker = new SqlStatementTracker(sql, loggingConnection.getTagFiller());
+            this.clobReaderLoggingEnabled = loggingConnection.isClobReaderLoggingEnabled();
         }
         else {
             this.sqlTracker = new SqlStatementTracker();
@@ -86,7 +86,7 @@ public class LoggingStatement implements Statement
         if (this.loggingListeners != null) {
             for (LoggingListener loggingListener : loggingListeners) {
 
-                // todo: TBD to try/catch this or not
+                // NOTE: TBD to try/catch this or not
                 loggingListener.log(sql);
             }
         }

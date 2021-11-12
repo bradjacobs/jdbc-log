@@ -28,9 +28,9 @@ public class LoggingConnection implements Connection
 {
     private final Connection targetConnection;
 
-    protected final boolean clobReaderLoggingEnabled;
-    protected final List<LoggingListener> loggingListeners;
-    protected final TagFiller tagFiller;
+    private final boolean clobReaderLoggingEnabled;
+    private final List<LoggingListener> loggingListeners;
+    private final TagFiller tagFiller;
 
 
     /**
@@ -50,6 +50,17 @@ public class LoggingConnection implements Connection
         this.loggingListeners = Collections.unmodifiableList(loggingListeners);
     }
 
+    public boolean isClobReaderLoggingEnabled() {
+        return clobReaderLoggingEnabled;
+    }
+
+    public List<LoggingListener> getLoggingListeners() {
+        return loggingListeners;
+    }
+
+    public TagFiller getTagFiller() {
+        return tagFiller;
+    }
 
     private Statement logWrap(Statement statement)
     {
