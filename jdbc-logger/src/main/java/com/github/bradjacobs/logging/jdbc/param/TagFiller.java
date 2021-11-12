@@ -29,7 +29,7 @@ public class TagFiller
      *     source: select * from tbl where id = ? AND name = ?
      *     paramMap: {{1,1}, {2,"Bob"}}
      *     output: select * from tbl where id = 1 AND name = 'Bob'
-     * @param source sql string with tabs
+     * @param source sql string with tags/question marks
      * @param paramMap parameter values
      * @return the 'filled in' SQL string.
      */
