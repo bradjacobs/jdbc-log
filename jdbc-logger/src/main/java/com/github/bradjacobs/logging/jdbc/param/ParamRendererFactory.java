@@ -95,29 +95,31 @@ public class ParamRendererFactory
      * private enum for trickery to allow the generic type safety and to avoid weird casts.
      */
     private enum InternalTypeEnum {
-
         String {
             @Override
+            @SuppressWarnings("unchecked")
             SqlParamRenderer<String> make(DatabaseType dbType, ZoneId zoneId) {
                 return new StringParamRenderer();
             }
         },
         Boolean {
             @Override
+            @SuppressWarnings("unchecked")
             SqlParamRenderer<Boolean> make(DatabaseType dbType, ZoneId zoneId) {
                 return new BooleanParamRenderer();
             }
         },
         Number {
             @Override
+            @SuppressWarnings("unchecked")
             SqlParamRenderer<Number> make(DatabaseType dbType, ZoneId zoneId) {
                 return new NumberParamRenderer();
             }
         },
         Date {
             @Override
+            @SuppressWarnings("unchecked")
             SqlParamRenderer<Date> make(DatabaseType dbType, ZoneId zoneId) {
-
                 if (DatabaseType.ORACLE.equals(dbType)) {
                     // NOTE:  currently shows a full date/time (like timestamp)
                     //     argument could be made that this should only show 'date' portion, but error on the side of showing more info
@@ -128,8 +130,8 @@ public class ParamRendererFactory
         },
         Time {
             @Override
+            @SuppressWarnings("unchecked")
             SqlParamRenderer<Date> make(DatabaseType dbType, ZoneId zoneId) {
-
                 if (DatabaseType.ORACLE.equals(dbType)) {
                     // NOTE: oracle really doesn't have 'time' so just assign the same as 'timestamp'
                     return new PrefixSuffixParamRenderer<>(TimeStamp.make(null, zoneId), ORACLE_TODATE_PREFIX, ORACLE_DATETIME_SUFFIX);
@@ -139,8 +141,8 @@ public class ParamRendererFactory
         },
         TimeStamp {
             @Override
+            @SuppressWarnings("unchecked")
             SqlParamRenderer<Date> make(DatabaseType dbType, ZoneId zoneId) {
-
                 if (DatabaseType.ORACLE.equals(dbType)) {
                     //  NOTE: it is possible to have alternate w/ fractional second precision, but this is the 'default'
                     return new PrefixSuffixParamRenderer<>(TimeStamp.make(null, zoneId), ORACLE_TOTIMESTAMP_PREFIX, ORACLE_DATETIME_SUFFIX);
@@ -150,6 +152,7 @@ public class ParamRendererFactory
         },
         Default {
             @Override
+            @SuppressWarnings("unchecked")
             SqlParamRenderer<Object> make(DatabaseType dbType, ZoneId zoneId) {
                 return new BasicParamRenderer();
             }
@@ -157,5 +160,4 @@ public class ParamRendererFactory
 
         abstract <T> SqlParamRenderer<T> make(DatabaseType dbType, ZoneId zoneId);
     }
-
 }
