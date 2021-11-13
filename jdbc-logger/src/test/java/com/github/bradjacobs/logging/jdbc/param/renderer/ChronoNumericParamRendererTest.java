@@ -1,8 +1,5 @@
-package com.github.bradjacobs.logging.jdbc.param.rendener;
+package com.github.bradjacobs.logging.jdbc.param.renderer;
 
-import com.github.bradjacobs.logging.jdbc.param.SqlParamRenderer;
-import com.github.bradjacobs.logging.jdbc.param.renderer.ChronoNumericParamRenderer;
-import com.github.bradjacobs.logging.jdbc.param.renderer.ChronoStringParamRenderer;
 import org.testng.annotations.Test;
 
 import java.util.Date;

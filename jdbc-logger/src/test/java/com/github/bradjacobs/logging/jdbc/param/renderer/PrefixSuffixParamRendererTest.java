@@ -1,8 +1,6 @@
-package com.github.bradjacobs.logging.jdbc.param.rendener;
+package com.github.bradjacobs.logging.jdbc.param.renderer;
 
 import com.github.bradjacobs.logging.jdbc.param.SqlParamRenderer;
-import com.github.bradjacobs.logging.jdbc.param.renderer.BasicParamRenderer;
-import com.github.bradjacobs.logging.jdbc.param.renderer.PrefixSuffixParamRenderer;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.*;

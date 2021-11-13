@@ -1,4 +1,4 @@
-package com.github.bradjacobs.logging.jdbc.param.rendener;
+package com.github.bradjacobs.logging.jdbc.param.renderer;
 
 import com.github.bradjacobs.logging.jdbc.param.SqlParamRenderer;
 
