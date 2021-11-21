@@ -61,6 +61,13 @@ public class PojoDAO
         " END";
 
 
+    public String getSelectAllObjectsSQL() {
+        return STMT_SELECT_ALL_SQL;
+    }
+    public String getSelectByIdSQL(int id) {
+        return PREPARED_STMT_SELECT_BY_ID_SQL.replace("?", String.valueOf(id));
+    }
+
     public PojoDAO(Connection conn) {
         this.conn = conn;
     }
@@ -136,6 +143,30 @@ public class PojoDAO
         finally {
             conn.setAutoCommit(true);
             closeQuietly(pstmt);
+        }
+
+        return true;
+    }
+
+    public boolean batchexecuteSqlStatements(List<String> sqlStatements) throws SQLException
+    {
+        conn.setAutoCommit(false);
+        Statement statement = null;
+        try {
+            statement = conn.createStatement();
+
+            for (String sqlStatement : sqlStatements) {
+                statement.addBatch(sqlStatement);
+            }
+            statement.executeBatch();
+            conn.commit();
+        }
+        catch (SQLException e) {
+            throw new RuntimeException("Unable to insert batch into the table", e);
+        }
+        finally {
+            conn.setAutoCommit(true);
+            closeQuietly(statement);
         }
 
         return true;

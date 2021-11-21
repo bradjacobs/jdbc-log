@@ -20,6 +20,10 @@ public class CaptureLoggingListener implements LoggingListener {
         return sqlStatementList;
     }
 
+    public List<String> getSqlStatements() {
+        return this.sqlStatementList;
+    }
+
     public List<String> getSqlStatementStartingWith(String prefix) {
         List<String> resultList = new ArrayList<>();
         String lowerPrefix = prefix.toLowerCase();

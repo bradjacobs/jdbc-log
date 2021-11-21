@@ -3,10 +3,12 @@ package com.github.bradjacobs.logging.jdbc.hsql;
 import com.github.bradjacobs.logging.jdbc.hsql.objects.BloatedPojo;
 import com.github.bradjacobs.logging.jdbc.hsql.objects.CaptureLoggingListener;
 import com.github.bradjacobs.logging.jdbc.hsql.objects.PojoDAO;
+import com.sun.tools.javac.util.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -130,5 +132,35 @@ public class BasicPojoLoggingTest extends AbstractPojoLoggingTest
         String sqlStatement = sqlStatements.get(0);
         assertEquals(sqlStatement.toLowerCase(), "select * from pojos");
     }
+
+    @Test
+    public void testStatementQueryWithBatch() throws SQLException {
+
+        BloatedPojo inputPojo1 = createTestPojo(
+                null,
+                "Bob",
+                30,
+                0d,
+                1538014031000L,
+                1538014031000L,
+                "MY__TEST__CLOB",
+                null);
+
+        assertTrue(dao.insertPojo(inputPojo1), "Unable to insert pojo1");
+
+        // execute 3 sql statements via batch.
+        // only the 2nd one would do anything
+        String sql1 = dao.getSelectByIdSQL(882);
+        String sql2 = dao.getSelectAllObjectsSQL();
+        String sql3 = dao.getSelectByIdSQL(1022);
+        List<String> sqlStatements = Arrays.asList(sql1, sql2, sql3);
+
+        dao.batchexecuteSqlStatements(sqlStatements);
+        List<String> sqlStatementResults = this.captureLoggingListener.getSqlStatements();
+        List<String> lastThreeSqlStatements = sqlStatementResults.subList(sqlStatementResults.size() - 3, sqlStatementResults.size());
+
+        assertEquals(lastThreeSqlStatements, sqlStatements);
+    }
+
 
 }

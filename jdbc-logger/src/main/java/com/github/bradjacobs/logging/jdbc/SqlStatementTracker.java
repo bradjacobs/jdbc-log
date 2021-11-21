@@ -86,7 +86,6 @@ class SqlStatementTracker
             this.paramMap.clear();
     }
 
-
     /**
      * Represents each entry when 'batch' is used.
      */
@@ -98,9 +97,14 @@ class SqlStatementTracker
         public BatchItem(String sql, Map<Integer, Object> paramMap, TagFiller tagFiller)
         {
             this.sql = sql;
-            // batchItem makes its own copy of the params, so they don't get side-effected/modified.
-            this.paramMap = new HashMap<>(paramMap);
             this.tagFiller = tagFiller;
+            if (tagFiller != null && paramMap != null) {
+                // batchItem makes its own copy of the params, so they don't get side-effected/modified.
+                this.paramMap = new HashMap<>(paramMap);
+            }
+            else {
+                this.paramMap = null;
+            }
         }
 
         public String generateSqlString()

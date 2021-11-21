@@ -96,7 +96,7 @@ public class LoggingConnectionCreator
         private DatabaseType dbType = null;
         private final List<LoggingListener> loggingListeners = new ArrayList<>();
         private boolean clobReaderLogging = Boolean.FALSE;
-        private Map<ParamType<Date>, SqlParamRenderer<Date>> datetimeOverrideMap = new HashMap<>();
+        private final Map<ParamType<Date>, SqlParamRenderer<Date>> datetimeOverrideMap = new HashMap<>();
 
         // assigned during 'build'
         private TagFiller tagFiller = null;
