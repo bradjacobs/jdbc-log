@@ -153,9 +153,10 @@ public class PojoLoggingTest extends AbstractPojoLoggingTest
         dao.insertPojos(batchA, true);
         dao.insertPojos(batchB, true);
         dao.insertPojos(batchC, true);
-        List<BloatedPojo> queriedPojosTwo = dao.getAllPojos();
+        List<BloatedPojo> queriedPojos = dao.getAllPojos();
 
         List<String> sqlStatementResults = this.captureLoggingListener.getSqlStatementStartingWith("INSERT");
         assertEquals(sqlStatementResults.size(), 9);
+        assertEquals(queriedPojos.size(), 9);
     }
 }
