@@ -70,11 +70,33 @@ public class StoredProcLoggingTest extends AbstractPojoLoggingTest
         Object outParam = dao.callStoredProcedure(1);
 
         List<String> callSqlStatements = this.captureLoggingListener.getSqlStatementStartingWith("CALL");
-        assertEquals(callSqlStatements.size(), 1, "expected exactly 2 'CALL' sql statements");
+        assertEquals(callSqlStatements.size(), 1, "mismatch count of 'CALL' sql statements");
         assertEquals(callSqlStatements.get(0), "CALL EXT_SAMPLE_PROC(1,'{_OUT_BOOLEAN_}')");
 
         // confirm that the stored proc worked as expected.
         assertNotNull(outParam);
         assertEquals(Boolean.TRUE, outParam);
+    }
+
+    @Test
+    public void testCallStoredProcAsBatch()  throws Exception
+    {
+        long timeValue = 1538014031000L;    // '2018-09-27'
+        BloatedPojo inputPojo1 = createTestPojo(
+            null,
+            "Rob",
+            30,
+            0d,
+            timeValue,
+            timeValue,
+            "MY__TEST__CLOB",
+            null);
+
+        List<Integer> inputList = Arrays.asList(1,2,3);
+        dao.callStoredProcedureBatch(inputList);
+
+        List<String> callSqlStatements = this.captureLoggingListener.getSqlStatementStartingWith("CALL");
+        assertEquals(callSqlStatements.size(), 3, "mismatch count of 'CALL' sql statements");
+        assertEquals(callSqlStatements.get(0), "CALL EXT_SAMPLE_PROC(1,'{_OUT_BOOLEAN_}')");
     }
 }

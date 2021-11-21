@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.JDBCType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -144,7 +145,6 @@ public class PojoDAO
             conn.setAutoCommit(true);
             closeQuietly(pstmt);
         }
-
         return true;
     }
 
@@ -168,7 +168,6 @@ public class PojoDAO
             conn.setAutoCommit(true);
             closeQuietly(statement);
         }
-
         return true;
     }
 
@@ -234,26 +233,57 @@ public class PojoDAO
     public Boolean callStoredProcedure(Integer input)
     {
         if (conn != null) {
-            CallableStatement pstmt = null;
+            CallableStatement callableStatement = null;
 
             try {
-               // pstmt = conn.prepareCall("{call EXT_SAMPLE_PROC(?,?)}");
-                pstmt = conn.prepareCall("CALL EXT_SAMPLE_PROC(?,?)");
+                callableStatement = conn.prepareCall("CALL EXT_SAMPLE_PROC(?,?)");
 
-                pstmt.setInt(1, input);
-                pstmt.registerOutParameter(2, Types.BOOLEAN);
+                callableStatement.setInt(1, input);
+                callableStatement.registerOutParameter(2, Types.BOOLEAN);
+                //callableStatement.registerOutParameter(2, JDBCType.BOOLEAN);
 
-                pstmt.executeUpdate();
+                int executeUpdateResponse = callableStatement.executeUpdate();
 
                 //read the OUT parameter now
-                Boolean result = pstmt.getBoolean(2);
+                Boolean result = callableStatement.getBoolean(2);
                 return result;
             }
             catch (SQLException e) {
                 throw new RuntimeException("Unable to call stored proc " + e.getMessage(), e);
             }
             finally {
-                closeQuietly(pstmt);
+                closeQuietly(callableStatement);
+            }
+        }
+        return null;
+    }
+
+    public Boolean callStoredProcedureBatch(List<Integer> inputList) throws SQLException {
+        if (conn != null) {
+            CallableStatement callableStatement = null;
+            conn.setAutoCommit(false);
+
+            try {
+                callableStatement = conn.prepareCall("CALL EXT_SAMPLE_PROC(?,?)");
+
+                for (Integer intValue : inputList) {
+                    callableStatement.setInt(1, intValue);
+                    callableStatement.registerOutParameter(2, Types.BOOLEAN);
+                    callableStatement.addBatch();
+                }
+
+                int[] batchResponseValues = callableStatement.executeBatch();
+                for (int batchResponseValue : batchResponseValues) {
+                    if (batchResponseValue != Statement.SUCCESS_NO_INFO) {
+                        throw new RuntimeException("unexpected result code: " + batchResponseValue);
+                    }
+                }
+            }
+            catch (SQLException e) {
+                throw new RuntimeException("Unable to call stored proc " + e.getMessage(), e);
+            }
+            finally {
+                closeQuietly(callableStatement);
             }
         }
         return null;

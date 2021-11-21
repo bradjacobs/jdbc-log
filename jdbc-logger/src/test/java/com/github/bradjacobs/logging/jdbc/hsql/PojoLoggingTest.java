@@ -3,19 +3,19 @@ package com.github.bradjacobs.logging.jdbc.hsql;
 import com.github.bradjacobs.logging.jdbc.hsql.objects.BloatedPojo;
 import com.github.bradjacobs.logging.jdbc.hsql.objects.CaptureLoggingListener;
 import com.github.bradjacobs.logging.jdbc.hsql.objects.PojoDAO;
-import com.sun.tools.javac.util.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.testng.Assert.*;
 
 
-public class BasicPojoLoggingTest extends AbstractPojoLoggingTest
+public class PojoLoggingTest extends AbstractPojoLoggingTest
 {
     private PojoDAO dao = null;
     private CaptureLoggingListener captureLoggingListener = null;
@@ -83,7 +83,6 @@ public class BasicPojoLoggingTest extends AbstractPojoLoggingTest
                 pojo2ClobString,
                 pojo2StreamString);
 
-
         if (useBatch)
         {
             dao.batchinsertPojo(Arrays.asList(inputPojo1, inputPojo2));
@@ -136,16 +135,7 @@ public class BasicPojoLoggingTest extends AbstractPojoLoggingTest
     @Test
     public void testStatementQueryWithBatch() throws SQLException {
 
-        BloatedPojo inputPojo1 = createTestPojo(
-                null,
-                "Bob",
-                30,
-                0d,
-                1538014031000L,
-                1538014031000L,
-                "MY__TEST__CLOB",
-                null);
-
+        BloatedPojo inputPojo1 = createDummyPojo("Bob");
         assertTrue(dao.insertPojo(inputPojo1), "Unable to insert pojo1");
 
         // execute 3 sql statements via batch.
@@ -162,5 +152,38 @@ public class BasicPojoLoggingTest extends AbstractPojoLoggingTest
         assertEquals(lastThreeSqlStatements, sqlStatements);
     }
 
+    @Test
+    public void testMultiplePreparedStatementBatches() throws SQLException {
 
+        List<BloatedPojo> batchA = new ArrayList<>();
+        List<BloatedPojo> batchB = new ArrayList<>();
+        List<BloatedPojo> batchC = new ArrayList<>();
+
+        for (int i = 0; i < 3; i++) {
+            batchA.add(createDummyPojo("Batch_A_" + i));
+            batchB.add(createDummyPojo("Batch_B_" + i));
+            batchC.add(createDummyPojo("Batch_C_" + i));
+        }
+
+        dao.batchinsertPojo(batchA);
+        dao.batchinsertPojo(batchB);
+        dao.batchinsertPojo(batchC);
+        List<BloatedPojo> queriedPojosTwo = dao.getAllPojos();
+
+        List<String> sqlStatementResults = this.captureLoggingListener.getSqlStatementStartingWith("INSERT");
+        assertEquals(sqlStatementResults.size(), 9);
+    }
+
+    private BloatedPojo createDummyPojo(String name) {
+        return createTestPojo(
+                null,
+                name,
+                30,
+                0d,
+                1538014031000L,
+                1538014031000L,
+                "MY__TEST__CLOB",
+                null);
+
+    }
 }
