@@ -65,8 +65,7 @@ public class StoredProcLoggingTest extends AbstractPojoLoggingTest
             "MY__TEST__CLOB_2",
             pojo2StreamString);
 
-        dao.batchinsertPojo(Arrays.asList(inputPojo1, inputPojo2));
-
+        dao.insertPojos(Arrays.asList(inputPojo1, inputPojo2), true);
         Object outParam = dao.callStoredProcedure(1);
 
         List<String> callSqlStatements = this.captureLoggingListener.getSqlStatementStartingWith("CALL");
@@ -81,17 +80,7 @@ public class StoredProcLoggingTest extends AbstractPojoLoggingTest
     @Test
     public void testCallStoredProcAsBatch()  throws Exception
     {
-        long timeValue = 1538014031000L;    // '2018-09-27'
-        BloatedPojo inputPojo1 = createTestPojo(
-            null,
-            "Rob",
-            30,
-            0d,
-            timeValue,
-            timeValue,
-            "MY__TEST__CLOB",
-            null);
-
+        BloatedPojo inputPojo1 = createDummyPojo("Fredo");
         List<Integer> inputList = Arrays.asList(1,2,3);
         dao.callStoredProcedureBatch(inputList);
 

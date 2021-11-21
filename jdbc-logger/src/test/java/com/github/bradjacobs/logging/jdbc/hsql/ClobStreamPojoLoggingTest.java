@@ -79,15 +79,7 @@ public class ClobStreamPojoLoggingTest extends AbstractPojoLoggingTest
             pojo2ClobString,
             pojo2StreamString);
 
-
-        if (useBatch)
-        {
-            dao.batchinsertPojo(Arrays.asList(inputPojo1, inputPojo2));
-        }
-        else {
-            assertTrue(dao.insertPojo(inputPojo1), "Unable to insert pojo1");
-            assertTrue(dao.insertPojo(inputPojo2), "Unable to insert pojo2");
-        }
+        dao.insertPojos(Arrays.asList(inputPojo1, inputPojo2), useBatch);
 
         List<String> insertSqlStatements = this.captureLoggingListener.getSqlStatementStartingWith("INSERT");
         assertEquals(insertSqlStatements.size(), 2, "expected exactly 2 'INSERT' sql statements");

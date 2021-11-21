@@ -66,6 +66,19 @@ abstract public class AbstractPojoLoggingTest
         return pojo;
     }
 
+    protected BloatedPojo createDummyPojo(String name) {
+        return createTestPojo(
+                null,
+                name,
+                30,
+                0d,
+                1538014031000L,
+                1538014031000L,
+                "MY__TEST__CLOB",
+                null);
+    }
+
+
 
     protected void assertPojoEqual(BloatedPojo actualPojo, BloatedPojo expectedPojo)
     {

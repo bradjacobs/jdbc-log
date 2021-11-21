@@ -28,7 +28,6 @@ public class PojoLoggingTest extends AbstractPojoLoggingTest
      */
     @BeforeMethod
     public void setup() throws Exception {
-
         captureLoggingListener = new CaptureLoggingListener();
         dao = initializePojoDao(captureLoggingListener, false);
     }
@@ -43,19 +42,16 @@ public class PojoLoggingTest extends AbstractPojoLoggingTest
 
 
     @Test
-    public void addRetrievePojosNoBatch() throws Exception
-    {
+    public void addRetrievePojosNoBatch() throws Exception {
         addRetrievePojos(false);
     }
 
     @Test
-    public void addRetrievePojosWithBatch() throws Exception
-    {
+    public void addRetrievePojosWithBatch() throws Exception {
         addRetrievePojos(true);
     }
 
-    private void addRetrievePojos(boolean useBatch) throws Exception
-    {
+    private void addRetrievePojos(boolean useBatch) throws Exception {
         long timeValue = 1538014031000L;    // '2018-09-27'
 
         String pojo1ClobString = "MY__TEST__CLOB";
@@ -83,18 +79,10 @@ public class PojoLoggingTest extends AbstractPojoLoggingTest
                 pojo2ClobString,
                 pojo2StreamString);
 
-        if (useBatch)
-        {
-            dao.batchinsertPojo(Arrays.asList(inputPojo1, inputPojo2));
-        }
-        else {
-            assertTrue(dao.insertPojo(inputPojo1), "Unable to insert pojo1");
-            assertTrue(dao.insertPojo(inputPojo2), "Unable to insert pojo2");
-        }
+        dao.insertPojos(Arrays.asList(inputPojo1, inputPojo2), useBatch);
 
         List<String> insertSqlStatements = this.captureLoggingListener.getSqlStatementStartingWith("INSERT");
         assertEquals(insertSqlStatements.size(), 2, "expected exactly 2 'INSERT' sql statements");
-
 
         String sql1 = insertSqlStatements.get(0);
         String sql2 = insertSqlStatements.get(1);
@@ -103,8 +91,6 @@ public class PojoLoggingTest extends AbstractPojoLoggingTest
         assertTrue(sql2.contains(CLOB_PARAM_PLACEHOLDER), "Logged SQL missing expected substring: " + CLOB_PARAM_PLACEHOLDER);
         assertFalse(sql1.contains(pojo1ClobString), "Logged SQL should NOT contain substring: " + pojo1ClobString);
         assertFalse(sql2.contains(pojo2ClobString), "Logged SQL should NOT contain substring: " + pojo1ClobString);
-
-
 
         List<BloatedPojo> pojos = dao.getAllPojos();
 
@@ -119,9 +105,8 @@ public class PojoLoggingTest extends AbstractPojoLoggingTest
         assertPojoEqual(dao.getPojoById(retrievedPojo2.getId()), retrievedPojo2);
     }
 
-
     @Test
-    public void testQueryEmptyTable() {
+    public void testQueryEmptyTable() throws SQLException {
         List<BloatedPojo> pojos = dao.getAllPojos();
         assertEquals(pojos.size(), 0, "wrong number of pojos");
 
@@ -136,7 +121,7 @@ public class PojoLoggingTest extends AbstractPojoLoggingTest
     public void testStatementQueryWithBatch() throws SQLException {
 
         BloatedPojo inputPojo1 = createDummyPojo("Bob");
-        assertTrue(dao.insertPojo(inputPojo1), "Unable to insert pojo1");
+        dao.insertPojo(inputPojo1, true);
 
         // execute 3 sql statements via batch.
         // only the 2nd one would do anything
@@ -165,25 +150,12 @@ public class PojoLoggingTest extends AbstractPojoLoggingTest
             batchC.add(createDummyPojo("Batch_C_" + i));
         }
 
-        dao.batchinsertPojo(batchA);
-        dao.batchinsertPojo(batchB);
-        dao.batchinsertPojo(batchC);
+        dao.insertPojos(batchA, true);
+        dao.insertPojos(batchB, true);
+        dao.insertPojos(batchC, true);
         List<BloatedPojo> queriedPojosTwo = dao.getAllPojos();
 
         List<String> sqlStatementResults = this.captureLoggingListener.getSqlStatementStartingWith("INSERT");
         assertEquals(sqlStatementResults.size(), 9);
-    }
-
-    private BloatedPojo createDummyPojo(String name) {
-        return createTestPojo(
-                null,
-                name,
-                30,
-                0d,
-                1538014031000L,
-                1538014031000L,
-                "MY__TEST__CLOB",
-                null);
-
     }
 }
