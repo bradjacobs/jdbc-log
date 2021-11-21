@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.event.Level;
 
 /**
- * Simple implemenation of Logging Listener for SLF4J
+ * Simple implementation of Logging Listener for SLF4J
  */
 public class Slf4jLoggingListener implements LoggingListener
 {

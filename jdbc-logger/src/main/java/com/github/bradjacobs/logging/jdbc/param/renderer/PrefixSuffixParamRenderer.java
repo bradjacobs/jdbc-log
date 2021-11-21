@@ -14,7 +14,6 @@ public class PrefixSuffixParamRenderer<T> implements SqlParamRenderer<T>
      * @param renderer the original param renderer
      * @param prefix string value to prepend
      * @param suffix string value to append.
-     * @return renderer
      */
     public PrefixSuffixParamRenderer(SqlParamRenderer<T> renderer, String prefix, String suffix)
     {

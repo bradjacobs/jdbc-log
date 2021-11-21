@@ -19,7 +19,7 @@ public class ParamRendererFactory
     private static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd";
     private static final String DEFAULT_TIME_PATTERN = "HH:mm:ss";
 
-    // oracle-specific date string constants..
+    // oracle-specific date string constants
     private static final String ORACLE_TOTIMESTAMP_PREFIX = "TO_TIMESTAMP(";
     private static final String ORACLE_TODATE_PREFIX = "TO_DATE(";
     private static final String ORACLE_DATETIME_SUFFIX = ", 'YYYY-MM-DD HH24:MI:SS')";
