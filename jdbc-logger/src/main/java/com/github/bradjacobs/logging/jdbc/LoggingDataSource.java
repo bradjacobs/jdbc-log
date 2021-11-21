@@ -102,50 +102,43 @@ public class LoggingDataSource implements DataSource
 
     /** @inheritDoc */
     @Override
-    public PrintWriter getLogWriter() throws SQLException
-    {
+    public PrintWriter getLogWriter() throws SQLException {
         return dataSource.getLogWriter();
     }
 
     /** @inheritDoc */
     @Override
-    public void setLogWriter(PrintWriter out) throws SQLException
-    {
+    public void setLogWriter(PrintWriter out) throws SQLException {
         dataSource.setLogWriter(out);
     }
 
     /** @inheritDoc */
     @Override
-    public void setLoginTimeout(int seconds) throws SQLException
-    {
+    public void setLoginTimeout(int seconds) throws SQLException {
         dataSource.setLoginTimeout(seconds);
     }
 
     /** @inheritDoc */
     @Override
-    public int getLoginTimeout() throws SQLException
-    {
+    public int getLoginTimeout() throws SQLException {
         return dataSource.getLoginTimeout();
     }
 
     /** @inheritDoc */
     @Override
-    public Logger getParentLogger() throws SQLFeatureNotSupportedException
-    {
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
         return dataSource.getParentLogger();
     }
     
     /** @inheritDoc */
     @Override
-    public <T> T unwrap(Class<T> iface) throws SQLException
-    {
+    public <T> T unwrap(Class<T> iface) throws SQLException {
         return dataSource.unwrap(iface);
     }
 
     /** @inheritDoc */
     @Override
-    public boolean isWrapperFor(Class<?> iface) throws SQLException
-    {
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return dataSource.isWrapperFor(iface);
     }
 

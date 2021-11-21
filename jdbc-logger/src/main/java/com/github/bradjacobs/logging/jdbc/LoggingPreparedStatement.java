@@ -35,14 +35,6 @@ import java.util.Calendar;
  */
 public class LoggingPreparedStatement extends LoggingStatement implements PreparedStatement
 {
-    private final PreparedStatement preparedStatement;
-
-    public LoggingPreparedStatement(PreparedStatement preparedStatement, LoggingConnection loggingConnection, String sql)
-    {
-        super(preparedStatement, loggingConnection, sql);
-        this.preparedStatement = preparedStatement;
-    }
-
     // "PLACEHOLDERS" for certain parameters,
     //     b/c logging blobs and streams is typically not very useful.
     private static final String BINARY_STREAM_VALUE_PLACEHOLDER = "{_BINARYSTREAM_}";
@@ -51,6 +43,13 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     private static final String BYTES_VALUE_PLACEHOLDER = "{_BYTES_}";
     private static final String TEXT_CLOB_VALUE_PLACEHOLDER = "{_CLOB_}";
 
+    private final PreparedStatement preparedStatement;
+
+    public LoggingPreparedStatement(PreparedStatement preparedStatement, LoggingConnection loggingConnection, String sql)
+    {
+        super(preparedStatement, loggingConnection, sql);
+        this.preparedStatement = preparedStatement;
+    }
 
     /**
      * Adds the parameter value to the tracker, which is later used to generate teh SQL string.
@@ -114,209 +113,182 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     }
 
 
-
     /** @inheritDoc */
     @Override
-    public void clearParameters() throws SQLException
-    {
+    public void clearParameters() throws SQLException {
         clearLogParameters();
         preparedStatement.clearParameters();
     }
 
     /** @inheritDoc */
     @Override
-    public void addBatch() throws SQLException
-    {
+    public void addBatch() throws SQLException {
         addLogBatch();
         preparedStatement.addBatch();
     }
 
     /** @inheritDoc */
     @Override
-    public boolean execute() throws SQLException
-    {
+    public boolean execute() throws SQLException {
         logCurrent();
         return preparedStatement.execute();
     }
 
     /** @inheritDoc */
     @Override
-    public ResultSet executeQuery() throws SQLException
-    {
+    public ResultSet executeQuery() throws SQLException {
         logCurrent();
         return preparedStatement.executeQuery();
     }
 
     /** @inheritDoc */
     @Override
-    public int executeUpdate() throws SQLException
-    {
+    public int executeUpdate() throws SQLException {
         logCurrent();
         return preparedStatement.executeUpdate();
     }
 
     /** @inheritDoc */
     @Override
-    public long executeLargeUpdate() throws SQLException
-    {
+    public long executeLargeUpdate() throws SQLException {
         logCurrent();
         return preparedStatement.executeLargeUpdate();
     }
 
     /** @inheritDoc */
     @Override
-    public ResultSetMetaData getMetaData() throws SQLException
-    {
+    public ResultSetMetaData getMetaData() throws SQLException {
         return preparedStatement.getMetaData();
     }
 
     /** @inheritDoc */
     @Override
-    public ParameterMetaData getParameterMetaData() throws SQLException
-    {
+    public ParameterMetaData getParameterMetaData() throws SQLException {
         return preparedStatement.getParameterMetaData();
     }
 
     /** @inheritDoc */
     @Override
-    public void setArray(int parameterIndex, Array x) throws SQLException
-    {
+    public void setArray(int parameterIndex, Array x) throws SQLException {
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setArray(parameterIndex, x);
     }
 
     /** @inheritDoc */
     @Override
-    public void setAsciiStream(int parameterIndex, InputStream x) throws SQLException
-    {
+    public void setAsciiStream(int parameterIndex, InputStream x) throws SQLException {
         x = setCurrentStreamParameter(parameterIndex, x);
         preparedStatement.setAsciiStream(parameterIndex, x);
     }
 
     /** @inheritDoc */
     @Override
-    public void setAsciiStream(int parameterIndex, InputStream x, int length) throws SQLException
-    {
+    public void setAsciiStream(int parameterIndex, InputStream x, int length) throws SQLException {
         x = setCurrentStreamParameter(parameterIndex, x);
         preparedStatement.setAsciiStream(parameterIndex, x, length);
     }
 
     /** @inheritDoc */
     @Override
-    public void setAsciiStream(int parameterIndex, InputStream x, long length) throws SQLException
-    {
+    public void setAsciiStream(int parameterIndex, InputStream x, long length) throws SQLException {
         x = setCurrentStreamParameter(parameterIndex, x);
         preparedStatement.setAsciiStream(parameterIndex, x, length);
     }
 
     /** @inheritDoc */
     @Override
-    public void setBigDecimal(int parameterIndex, BigDecimal x) throws SQLException
-    {
+    public void setBigDecimal(int parameterIndex, BigDecimal x) throws SQLException {
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setBigDecimal(parameterIndex, x);
     }
 
     /** @inheritDoc */
     @Override
-    public void setBinaryStream(int parameterIndex, InputStream x) throws SQLException
-    {
-        setCurrentParameter(parameterIndex, (x != null ?  BINARY_STREAM_VALUE_PLACEHOLDER : null));
+    public void setBinaryStream(int parameterIndex, InputStream x) throws SQLException {
+        setCurrentParameter(parameterIndex, (x != null ? BINARY_STREAM_VALUE_PLACEHOLDER : null));
         preparedStatement.setBinaryStream(parameterIndex, x);
     }
 
     /** @inheritDoc */
     @Override
-    public void setBinaryStream(int parameterIndex, InputStream x, int length) throws SQLException
-    {
-        setCurrentParameter(parameterIndex, (x != null ?  BINARY_STREAM_VALUE_PLACEHOLDER : null));
+    public void setBinaryStream(int parameterIndex, InputStream x, int length) throws SQLException {
+        setCurrentParameter(parameterIndex, (x != null ? BINARY_STREAM_VALUE_PLACEHOLDER : null));
         preparedStatement.setBinaryStream(parameterIndex, x, length);
     }
 
     /** @inheritDoc */
     @Override
-    public void setBinaryStream(int parameterIndex, InputStream x, long length) throws SQLException
-    {
-        setCurrentParameter(parameterIndex, (x != null ?  BINARY_STREAM_VALUE_PLACEHOLDER : null));
+    public void setBinaryStream(int parameterIndex, InputStream x, long length) throws SQLException {
+        setCurrentParameter(parameterIndex, (x != null ? BINARY_STREAM_VALUE_PLACEHOLDER : null));
         preparedStatement.setBinaryStream(parameterIndex, x, length);
     }
 
     /** @inheritDoc */
     @Override
-    public void setBlob(int parameterIndex, Blob x) throws SQLException
-    {
-        setCurrentParameter(parameterIndex, (x != null ?  BLOB_VALUE_PLACEHOLDER : null));
+    public void setBlob(int parameterIndex, Blob x) throws SQLException {
+        setCurrentParameter(parameterIndex, (x != null ? BLOB_VALUE_PLACEHOLDER : null));
         preparedStatement.setBlob(parameterIndex, x);
     }
 
     /** @inheritDoc */
     @Override
-    public void setBlob(int parameterIndex, InputStream inputStream) throws SQLException
-    {
-        setCurrentParameter(parameterIndex, (inputStream != null ?  BLOB_VALUE_PLACEHOLDER : null));
+    public void setBlob(int parameterIndex, InputStream inputStream) throws SQLException {
+        setCurrentParameter(parameterIndex, (inputStream != null ? BLOB_VALUE_PLACEHOLDER : null));
         preparedStatement.setBlob(parameterIndex, inputStream);
     }
 
     /** @inheritDoc */
     @Override
-    public void setBlob(int parameterIndex, InputStream inputStream, long length) throws SQLException
-    {
-        setCurrentParameter(parameterIndex, (inputStream != null ?  BLOB_VALUE_PLACEHOLDER : null));
+    public void setBlob(int parameterIndex, InputStream inputStream, long length) throws SQLException {
+        setCurrentParameter(parameterIndex, (inputStream != null ? BLOB_VALUE_PLACEHOLDER : null));
         preparedStatement.setBlob(parameterIndex, inputStream, length);
     }
 
     /** @inheritDoc */
     @Override
-    public void setBoolean(int parameterIndex, boolean x) throws SQLException
-    {
+    public void setBoolean(int parameterIndex, boolean x) throws SQLException {
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setBoolean(parameterIndex, x);
     }
 
     /** @inheritDoc */
     @Override
-    public void setByte(int parameterIndex, byte x) throws SQLException
-    {
+    public void setByte(int parameterIndex, byte x) throws SQLException {
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setByte(parameterIndex, x);
     }
 
     /** @inheritDoc */
     @Override
-    public void setBytes(int parameterIndex, byte[] x) throws SQLException
-    {
+    public void setBytes(int parameterIndex, byte[] x) throws SQLException {
         setCurrentParameter(parameterIndex, (x != null ? BYTES_VALUE_PLACEHOLDER : null));
         preparedStatement.setBytes(parameterIndex, x);
     }
 
     /** @inheritDoc */
     @Override
-    public void setCharacterStream(int parameterIndex, Reader reader) throws SQLException
-    {
+    public void setCharacterStream(int parameterIndex, Reader reader) throws SQLException {
         reader = setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setCharacterStream(parameterIndex, reader);
     }
 
     /** @inheritDoc */
     @Override
-    public void setCharacterStream(int parameterIndex, Reader reader, int length) throws SQLException
-    {
+    public void setCharacterStream(int parameterIndex, Reader reader, int length) throws SQLException {
         reader = setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setCharacterStream(parameterIndex, reader, length);
     }
 
     /** @inheritDoc */
     @Override
-    public void setCharacterStream(int parameterIndex, Reader reader, long length) throws SQLException
-    {
+    public void setCharacterStream(int parameterIndex, Reader reader, long length) throws SQLException {
         reader = setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setCharacterStream(parameterIndex, reader, length);
     }
 
     /** @inheritDoc */
     @Override
-    public void setClob(int parameterIndex, Clob x) throws SQLException
-    {
+    public void setClob(int parameterIndex, Clob x) throws SQLException {
         // note: it's possible the driver might not even allow setting a 'null' here, but still check nonetheless.
         if (x != null) {
             Reader innerReader = setCurrentReaderParameter(parameterIndex, x.getCharacterStream());
@@ -330,80 +302,70 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
 
     /** @inheritDoc */
     @Override
-    public void setClob(int parameterIndex, Reader reader) throws SQLException
-    {
+    public void setClob(int parameterIndex, Reader reader) throws SQLException {
         reader = setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setClob(parameterIndex, reader);
     }
 
     /** @inheritDoc */
     @Override
-    public void setClob(int parameterIndex, Reader reader, long length) throws SQLException
-    {
+    public void setClob(int parameterIndex, Reader reader, long length) throws SQLException {
         reader = setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setClob(parameterIndex, reader, length);
     }
 
     /** @inheritDoc */
     @Override
-    public void setDouble(int parameterIndex, double x) throws SQLException
-    {
+    public void setDouble(int parameterIndex, double x) throws SQLException {
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setDouble(parameterIndex, x);
     }
 
     /** @inheritDoc */
     @Override
-    public void setDate(int parameterIndex, Date x) throws SQLException
-    {
+    public void setDate(int parameterIndex, Date x) throws SQLException {
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setDate(parameterIndex, x);
     }
 
     /** @inheritDoc */
     @Override
-    public void setDate(int parameterIndex, Date x, Calendar cal) throws SQLException
-    {
+    public void setDate(int parameterIndex, Date x, Calendar cal) throws SQLException {
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setDate(parameterIndex, x, cal);
     }
 
     /** @inheritDoc */
     @Override
-    public void setInt(int parameterIndex, int x) throws SQLException
-    {
+    public void setInt(int parameterIndex, int x) throws SQLException {
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setInt(parameterIndex, x);
     }
 
     /** @inheritDoc */
     @Override
-    public void setFloat(int parameterIndex, float x) throws SQLException
-    {
+    public void setFloat(int parameterIndex, float x) throws SQLException {
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setFloat(parameterIndex, x);
     }
 
     /** @inheritDoc */
     @Override
-    public void setLong(int parameterIndex, long x) throws SQLException
-    {
+    public void setLong(int parameterIndex, long x) throws SQLException {
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setLong(parameterIndex, x);
     }
 
     /** @inheritDoc */
     @Override
-    public void setNCharacterStream(int parameterIndex, Reader reader) throws SQLException
-    {
+    public void setNCharacterStream(int parameterIndex, Reader reader) throws SQLException {
         reader = setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setNCharacterStream(parameterIndex, reader);
     }
 
     /** @inheritDoc */
     @Override
-    public void setNClob(int parameterIndex, NClob x) throws SQLException
-    {
+    public void setNClob(int parameterIndex, NClob x) throws SQLException {
         if (x != null) {
             Reader innerReader = setCurrentReaderParameter(parameterIndex, x.getCharacterStream());
             preparedStatement.setNClob(parameterIndex, innerReader);
@@ -416,127 +378,111 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
 
     /** @inheritDoc */
     @Override
-    public void setNClob(int parameterIndex, Reader reader) throws SQLException
-    {
+    public void setNClob(int parameterIndex, Reader reader) throws SQLException {
         reader = setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setNClob(parameterIndex, reader);
     }
 
     /** @inheritDoc */
     @Override
-    public void setNCharacterStream(int parameterIndex, Reader reader, long length) throws SQLException
-    {
+    public void setNCharacterStream(int parameterIndex, Reader reader, long length) throws SQLException {
         reader = setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setNCharacterStream(parameterIndex, reader, length);
     }
 
     /** @inheritDoc */
     @Override
-    public void setNClob(int parameterIndex, Reader reader, long length) throws SQLException
-    {
+    public void setNClob(int parameterIndex, Reader reader, long length) throws SQLException {
         reader = setCurrentReaderParameter(parameterIndex, reader);
         preparedStatement.setNClob(parameterIndex, reader, length);
     }
 
     /** @inheritDoc */
     @Override
-    public void setNString(int parameterIndex, String value) throws SQLException
-    {
+    public void setNString(int parameterIndex, String value) throws SQLException {
         setCurrentParameter(parameterIndex, value);
         preparedStatement.setNString(parameterIndex, value);
     }
 
     /** @inheritDoc */
     @Override
-    public void setNull(int parameterIndex, int sqlType) throws SQLException
-    {
+    public void setNull(int parameterIndex, int sqlType) throws SQLException {
         setCurrentParameter(parameterIndex, null);
         preparedStatement.setNull(parameterIndex, sqlType);
     }
 
     /** @inheritDoc */
     @Override
-    public void setNull(int parameterIndex, int sqlType, String typeName) throws SQLException
-    {
+    public void setNull(int parameterIndex, int sqlType, String typeName) throws SQLException {
         setCurrentParameter(parameterIndex, null);
         preparedStatement.setNull(parameterIndex, sqlType, typeName);
     }
 
     /** @inheritDoc */
     @Override
-    public void setObject(int parameterIndex, Object x) throws SQLException
-    {
+    public void setObject(int parameterIndex, Object x) throws SQLException {
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setObject(parameterIndex, x);
     }
 
     /** @inheritDoc */
     @Override
-    public void setObject(int parameterIndex, Object x, int targetSqlType) throws SQLException
-    {
+    public void setObject(int parameterIndex, Object x, int targetSqlType) throws SQLException {
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setObject(parameterIndex, x, targetSqlType);
     }
 
     /** @inheritDoc */
     @Override
-    public void setObject(int parameterIndex, Object x, SQLType targetSqlType) throws SQLException
-    {
+    public void setObject(int parameterIndex, Object x, SQLType targetSqlType) throws SQLException {
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setObject(parameterIndex, x, targetSqlType);
     }
 
     /** @inheritDoc */
     @Override
-    public void setObject(int parameterIndex, Object x, int targetSqlType, int scaleOrLength) throws SQLException
-    {
+    public void setObject(int parameterIndex, Object x, int targetSqlType, int scaleOrLength) throws SQLException {
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setObject(parameterIndex, x, targetSqlType, scaleOrLength);
     }
 
     /** @inheritDoc */
     @Override
-    public void setObject(int parameterIndex, Object x, SQLType targetSqlType, int scaleOrLength) throws SQLException
-    {
+    public void setObject(int parameterIndex, Object x, SQLType targetSqlType, int scaleOrLength) throws SQLException {
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setObject(parameterIndex, x, targetSqlType, scaleOrLength);
     }
 
     /** @inheritDoc */
     @Override
-    public void setRef(int parameterIndex, Ref x) throws SQLException
-    {
+    public void setRef(int parameterIndex, Ref x) throws SQLException {
         // NOTE: no implementation here.  (revisit IFF there's a need)
         preparedStatement.setRef(parameterIndex, x);
     }
 
     /** @inheritDoc */
     @Override
-    public void setRowId(int parameterIndex, RowId x) throws SQLException
-    {
+    public void setRowId(int parameterIndex, RowId x) throws SQLException {
         preparedStatement.setRowId(parameterIndex, x);
     }
 
     /** @inheritDoc */
     @Override
-    public void setShort(int parameterIndex, short x) throws SQLException
-    {
+    public void setShort(int parameterIndex, short x) throws SQLException {
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setShort(parameterIndex, x);
     }
 
     /** @inheritDoc */
     @Override
-    public void setString(int parameterIndex, String x) throws SQLException
-    {
+    public void setString(int parameterIndex, String x) throws SQLException {
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setString(parameterIndex, x);
     }
 
     /** @inheritDoc */
     @Override
-    public void setSQLXML(int parameterIndex, SQLXML xmlObject) throws SQLException
-    {
+    public void setSQLXML(int parameterIndex, SQLXML xmlObject) throws SQLException {
         //  Note: this is a bit of a guess b/c many drivers don't support it
         String sqlXmlString = null;
         if (xmlObject != null) {
@@ -559,32 +505,28 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
 
     /** @inheritDoc */
     @Override
-    public void setTime(int parameterIndex, Time x) throws SQLException
-    {
+    public void setTime(int parameterIndex, Time x) throws SQLException {
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setTime(parameterIndex, x);
     }
 
     /** @inheritDoc */
     @Override
-    public void setTime(int parameterIndex, Time x, Calendar cal) throws SQLException
-    {
+    public void setTime(int parameterIndex, Time x, Calendar cal) throws SQLException {
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setTime(parameterIndex, x, cal);
     }
 
     /** @inheritDoc */
     @Override
-    public void setTimestamp(int parameterIndex, Timestamp x) throws SQLException
-    {
+    public void setTimestamp(int parameterIndex, Timestamp x) throws SQLException {
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setTimestamp(parameterIndex, x);
     }
 
     /** @inheritDoc */
     @Override
-    public void setTimestamp(int parameterIndex, Timestamp x, Calendar cal) throws SQLException
-    {
+    public void setTimestamp(int parameterIndex, Timestamp x, Calendar cal) throws SQLException {
         setCurrentParameter(parameterIndex, x);
         preparedStatement.setTimestamp(parameterIndex, x, cal);
     }
@@ -592,24 +534,20 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     /** @inheritDoc */
     @Override
     @Deprecated
-    public void setUnicodeStream(int parameterIndex, InputStream x, int length) throws SQLException
-    {
+    public void setUnicodeStream(int parameterIndex, InputStream x, int length) throws SQLException {
         setCurrentParameter(parameterIndex, UNICODE_STREAM_PLACEHOLDER);
         preparedStatement.setUnicodeStream(parameterIndex, x, length);
     }
 
     /** @inheritDoc */
     @Override
-    public void setURL(int parameterIndex, URL x) throws SQLException
-    {
+    public void setURL(int parameterIndex, URL x) throws SQLException {
         setCurrentParameter(parameterIndex, (x != null ? x.toString() : null) );
         preparedStatement.setURL(parameterIndex, x);
     }
 
 
-
-    protected String extractString(Reader reader)
-    {
+    protected String extractString(Reader reader) {
         if (reader == null) {
             return null;
         }
@@ -624,8 +562,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         }
     }
 
-    protected String extractString(InputStream inputStream)
-    {
+    protected String extractString(InputStream inputStream) {
         if (inputStream == null) {
             return null;
         }
@@ -640,11 +577,8 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         }
     }
 
-
-    private void closeQuietly(Closeable closeable)
-    {
-        if (closeable != null)
-        {
+    private void closeQuietly(Closeable closeable) {
+        if (closeable != null) {
             try {
                 closeable.close();
             }
