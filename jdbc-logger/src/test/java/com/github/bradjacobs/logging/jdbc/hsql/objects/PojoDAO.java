@@ -337,7 +337,6 @@ public class PojoDAO
     private List<BloatedPojo> convertToPojos(ResultSet rs) throws SQLException
     {
         List<BloatedPojo> resultList = new ArrayList<>();
-
         while (rs.next()) {
             BloatedPojo pojo = new BloatedPojo();
             pojo.setId(rs.getInt("id"));
@@ -350,7 +349,6 @@ public class PojoDAO
             pojo.setStreamValue(rs.getAsciiStream("streamValue"));
             resultList.add(pojo);
         }
-
         return resultList;
     }
 

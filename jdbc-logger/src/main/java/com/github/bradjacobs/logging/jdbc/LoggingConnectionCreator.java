@@ -56,7 +56,6 @@ public class LoggingConnectionCreator
         if (targetConnection == null) {
             throw new IllegalArgumentException("Connection cannot be null.");
         }
-
         return new LoggingConnection(targetConnection, clobReaderLogging, tagFiller, loggingListeners);
     }
 
@@ -82,7 +81,6 @@ public class LoggingConnectionCreator
         return new Builder(zoneId);
     }
 
-
     public static class Builder
     {
         private static final String TAG = "?";
@@ -101,7 +99,6 @@ public class LoggingConnectionCreator
         // assigned during 'build'
         private TagFiller tagFiller = null;
 
-
         /**
          * LoggingSqlConfig.Builder constructor
          *   Can optionally supply a custom timezone (used any Date/Timestamp string value formatting.)
@@ -115,7 +112,6 @@ public class LoggingConnectionCreator
             this.zoneId = zoneId;
         }
 
-
         /**
          * Any string value that can help identify which type of database is used.  (MySQL, HSQL, PostGres, etc.)
          *   Could be JDBC url, driver class name, hardcoded string.
@@ -127,7 +123,6 @@ public class LoggingConnectionCreator
             this.dbType = DatabaseType.identifyDatabaseType(dbTypeIdentifier);
             return this;
         }
-
 
         public Builder withLogListener(LoggingListener ... logListeners) {
             if (logListeners == null || logListeners.length == 0) {

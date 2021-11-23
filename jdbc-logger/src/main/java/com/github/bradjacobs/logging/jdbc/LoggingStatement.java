@@ -49,7 +49,6 @@ public class LoggingStatement implements Statement
     }
 
 
-
     protected void setAndLogCurrent(String sql) {
         sqlTracker.setSql(sql);
         logCurrent();

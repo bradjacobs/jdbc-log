@@ -11,20 +11,17 @@ import java.util.Map;
 class SqlStatementTracker
 {
     private String sql;
+    private final TagFiller tagFiller;
 
     private List<BatchItem> batchItems = null;
     private Map<Integer, Object> paramMap = null;
-
-    private final TagFiller tagFiller;
-
 
     public SqlStatementTracker()
     {
         this("", null);
     }
 
-    public SqlStatementTracker(String sql, TagFiller tagFiller)
-    {
+    public SqlStatementTracker(String sql, TagFiller tagFiller) {
         this.sql = sql;
         this.tagFiller = tagFiller;
     }
@@ -34,22 +31,19 @@ class SqlStatementTracker
         this.sql = sql;
     }
 
-    public void addBatch(String sql)
-    {
+    public void addBatch(String sql) {
         this.sql = sql;
         addBatch();
     }
 
-    public void addBatch()
-    {
+    public void addBatch() {
         if (this.batchItems == null) {
             this.batchItems = new ArrayList<>();
         }
         this.batchItems.add(new BatchItem(sql, this.paramMap, this.tagFiller ));
     }
 
-    public void clearBatch()
-    {
+    public void clearBatch() {
         if (batchItems != null) {
             this.batchItems.clear();
         }
@@ -73,7 +67,6 @@ class SqlStatementTracker
         return sqlList;
     }
 
-
     public void setParameter(int index, Object parameter) {
         if (this.paramMap == null) {
             this.paramMap = new HashMap<>();
@@ -94,8 +87,7 @@ class SqlStatementTracker
         private final Map<Integer, Object> paramMap;
         private final TagFiller tagFiller;
 
-        public BatchItem(String sql, Map<Integer, Object> paramMap, TagFiller tagFiller)
-        {
+        public BatchItem(String sql, Map<Integer, Object> paramMap, TagFiller tagFiller) {
             this.sql = sql;
             this.tagFiller = tagFiller;
             if (tagFiller != null && paramMap != null) {
@@ -107,8 +99,7 @@ class SqlStatementTracker
             }
         }
 
-        public String generateSqlString()
-        {
+        public String generateSqlString() {
             if (tagFiller == null) {
                 return sql;
             }

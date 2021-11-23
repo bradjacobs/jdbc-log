@@ -32,7 +32,6 @@ public class LoggingConnection implements Connection
     private final List<LoggingListener> loggingListeners;
     private final TagFiller tagFiller;
 
-
     /**
      * Logging Connection constructor.
      *   NOTE: Please Use LoggingConnectionCreator to make instance
@@ -62,16 +61,15 @@ public class LoggingConnection implements Connection
         return tagFiller;
     }
 
-    private Statement logWrap(Statement statement)
-    {
+    private Statement logWrap(Statement statement) {
         return new LoggingStatement(statement, this);
     }
-    private PreparedStatement logWrap(PreparedStatement preparedStatement, String sql)
-    {
+
+    private PreparedStatement logWrap(PreparedStatement preparedStatement, String sql) {
         return new LoggingPreparedStatement(preparedStatement, this, sql);
     }
-    private CallableStatement logWrap(CallableStatement callableStatement, String sql)
-    {
+
+    private CallableStatement logWrap(CallableStatement callableStatement, String sql) {
         return new LoggingCallableStatement(callableStatement, this, sql);
     }
 
