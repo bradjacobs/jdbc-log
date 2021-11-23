@@ -35,24 +35,20 @@ public class LoggingDataSource implements DataSource
      * @param dataSource dataSource
      * @param loggingListeners loggingListeners
      */
-    public LoggingDataSource(DataSource dataSource, LoggingListener... loggingListeners)
-    {
+    public LoggingDataSource(DataSource dataSource, LoggingListener... loggingListeners) {
         this(dataSource, LoggingConnectionCreator.buildDefault(loggingListeners));
     }
-
 
     /**
      * Constructor to use any customized loggingConnectionCreator.
      * @param dataSource dateSource
      * @param loggingConnectionCreator loggingConnectionCreator
      */
-    public LoggingDataSource(DataSource dataSource, LoggingConnectionCreator loggingConnectionCreator)
-    {
+    public LoggingDataSource(DataSource dataSource, LoggingConnectionCreator loggingConnectionCreator) {
         validateParams(dataSource, loggingConnectionCreator);
         this.dataSource = dataSource;
         this.loggingConnectionCreator = loggingConnectionCreator;
     }
-
 
     /** @inheritDoc */
     @Override
@@ -81,7 +77,6 @@ public class LoggingDataSource implements DataSource
         return loggingConnectionCreator.create(innerConnection);
     }
 
-
     /**
      *  Returns if Sql Connection Logging is enabled.
      *  A 'false' means logging disabled and calls to 'getConnection'
@@ -98,7 +93,6 @@ public class LoggingDataSource implements DataSource
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
-
 
     /** @inheritDoc */
     @Override
