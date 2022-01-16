@@ -1,6 +1,9 @@
 package com.github.bradjacobs.logging.jdbc;
 
 
+/**
+ * @deprecated
+ */
 public enum DatabaseType
 {
     DB2,
