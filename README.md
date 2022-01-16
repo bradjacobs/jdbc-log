@@ -30,7 +30,12 @@ binding parameter [8] as [BIGINT] - [1]
 ```
 # Usage Examples
 
-## Example #1 - Inject Into SpringBoot
+## Example #1 - Simplest Logging DataSource
+```
+DataSource dataSource = new LoggingDataSource(__ORIGINAL_DATA_SOURCE__, __YOUR_LOGGER_HERE__);
+```
+
+## Example #2 - Inject Into SpringBoot
 ```java
 @Configuration
 public class AppConfig {
@@ -47,7 +52,7 @@ public class AppConfig {
     }
 }
 ```
-## Example 2 - Build with Raw Connection
+## Example 3 - Build with Raw Connection
 ```
 Connection innerConn = DriverManager.getConnection("jdbc:hsqldb:mem:sampleDB", "SA", "");
 
@@ -58,7 +63,7 @@ LoggingConnectionCreator loggingConnectionCreator =
 
 Connection dbConnection = loggingConnectionCreator.create(innerConn);
 ```
-## Example 3 - Custom Data Source
+## Example 4 - Custom Data Source
 ```
 public DataSource getLoggingDataSource(DataSource originalDataSource) {
     LoggingConnectionCreator loggingConnectionCreator = LoggingConnectionCreator.builder()
@@ -79,9 +84,10 @@ public class CustomLoggingListener implements LoggingListener {
 # Additional Notes
 ## Known Issues
 1. The SQL statement is logged immediately **BEFORE** the SQL is actually executed (so it gets logged even if there was a SQL Exception)
-2. SQL param logging NOT supported when setting CallableStatements by parameter _Name_
+2. SQL param logging NOT supported when setting CallableStatements parameter by _Name_
 3. All dates are logged using the UTC timezone by default.
 4. Project still needs javadocs and Readme updates.
+5. Still making code tweaks sporadically.
 ## Testing
 ### What WAS Tested
 1. Most 'happy path' cases,
@@ -90,6 +96,5 @@ public class CustomLoggingListener implements LoggingListener {
 1. Non-HsqlDb drivers
 2. No Load/Performance testing was conducted. 
 3. This does NOT check for any Sql-Injection vulnerabilities (i.e. Log4J)
-4. Minimal testing with custom datetime formatting.
 ## Other
 1. Take a look at the nested Demo project and unittests for other usages
