@@ -77,14 +77,17 @@ public class CustomLoggingListener implements LoggingListener {
 }
 ```
 # Additional Notes
+## Known Issues
+1. SQL param logging NOT supported when setting CallableStatements by parameter _Name_
+2. Project still needs javadocs and Readme updates.
 ## Testing
 ### What WAS Tested
 1. Most 'happy path' cases,
-2. Most testing was only done with "hsqldb"
+2. Testing with "HSQLDB" driver
 ### What WAS NOT Tested
-1. Many of the JDBC drivers (they 'should' all acts the same)  Famous last words
+1. Non-HsqlDb drivers
 2. No Load/Performance testing was conducted. 
 3. This does NOT check for any Sql-Injection vulnerabilities (i.e. Log4J)
-4. Minimal testing with custom datatime formatting.
+4. Minimal testing with custom datetime formatting.
 ## Other
 1. Take a look at the nested Demo project and unittests for other usages

@@ -422,7 +422,6 @@ public class LoggingStatement implements Statement
         return statement.isWrapperFor(iface);
     }
 
-
     private void validateParams(Statement statement, LoggingConnection loggingConnection) throws IllegalArgumentException {
         if (statement == null) {
             throw new IllegalArgumentException("Must provide a statement");

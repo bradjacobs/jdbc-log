@@ -5,7 +5,7 @@ import com.github.bradjacobs.logging.jdbc.param.SqlParamRenderer;
 import java.math.BigDecimal;
 
 /**
- * Number values like Double/Float will _not_ show up in scientific notation by default.
+ * By Default, Number values like Double/Float will _NOT_ show up in scientific notation.
  */
 public class NumberParamRenderer implements SqlParamRenderer<Number> {
 

@@ -19,7 +19,6 @@ public enum DatabaseType
     UNKNOWN;
 
 
-
     /**
      * Attempt to identify db type via string
      * @param dbName can be database product name, jdbc connection url, driver name, other, etc.
