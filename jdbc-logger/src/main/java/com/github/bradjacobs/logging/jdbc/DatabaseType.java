@@ -2,7 +2,7 @@ package com.github.bradjacobs.logging.jdbc;
 
 
 /**
- * @deprecated
+ * TODO: this class will (probably) get removed.
  */
 public enum DatabaseType
 {
