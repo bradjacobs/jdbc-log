@@ -199,7 +199,7 @@ public class LoggingConnectionCreator
         }
 
         /**
-         * Apply ParamRender for all the timestamp/date/time types
+         * Apply ParamRenderer for all the timestamp/date/time types
          * @param paramRenderer paramRenderer
          */
         public Builder withChronoParamRenderer(SqlParamRenderer<Date> paramRenderer) {
