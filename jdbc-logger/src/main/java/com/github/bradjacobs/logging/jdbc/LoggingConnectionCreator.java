@@ -1,7 +1,7 @@
 package com.github.bradjacobs.logging.jdbc;
 
 import com.github.bradjacobs.logging.jdbc.listeners.LoggingListener;
-import com.github.bradjacobs.logging.jdbc.listeners.SystemOutLogListener;
+import com.github.bradjacobs.logging.jdbc.listeners.Slf4jLoggingListener;
 import com.github.bradjacobs.logging.jdbc.param.ParamRendererFactory;
 import com.github.bradjacobs.logging.jdbc.param.ParamRendererSelector;
 import com.github.bradjacobs.logging.jdbc.param.ParamType;
@@ -85,7 +85,6 @@ public class LoggingConnectionCreator
     {
         private static final String TAG = "?";
         private static final ZoneId DEFAULT_ZONE = ParamRendererFactory.DEFAULT_ZONE;
-        private static final LoggingListener DEFAULT_LOGGING_LISTENER = new SystemOutLogListener(); // used only if no listeners are provided.
 
         // note: force the zoneId to get set first (on constructor)
         //   otherwise possible bug when setting other fields.
@@ -110,6 +109,10 @@ public class LoggingConnectionCreator
                 zoneId = DEFAULT_ZONE;
             }
             this.zoneId = zoneId;
+        }
+
+        public Builder withLogger(org.slf4j.Logger logger) {
+            return withLogListener(new Slf4jLoggingListener(logger));
         }
 
         /**
@@ -208,7 +211,7 @@ public class LoggingConnectionCreator
 
         public LoggingConnectionCreator build() {
             if (this.loggingListeners.isEmpty()) {
-                loggingListeners.add(DEFAULT_LOGGING_LISTENER);  // must have at least 1 listener
+                throw new IllegalStateException("Must have At least 1 loggingListener specified.");
             }
 
             ParamRendererSelector rendererSelector = new ParamRendererSelector(dbType, zoneId, datetimeOverrideMap);

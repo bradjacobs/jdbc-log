@@ -13,5 +13,4 @@ abstract public class AbstractParamRendererTest
         renderer.appendParamValue(d, sb);
         return sb.toString();
     }
-
 }

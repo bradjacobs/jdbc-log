@@ -2,7 +2,7 @@ package com.github.bradjacobs.logging.jdbc.param.renderer;
 
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
 
 public class StringParamRendererTest extends AbstractParamRendererTest
 {

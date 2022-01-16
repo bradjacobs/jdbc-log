@@ -3,7 +3,7 @@ package com.github.bradjacobs.logging.jdbc.param.renderer;
 import com.github.bradjacobs.logging.jdbc.param.SqlParamRenderer;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
 
 public class PrefixSuffixParamRendererTest extends AbstractParamRendererTest
 {

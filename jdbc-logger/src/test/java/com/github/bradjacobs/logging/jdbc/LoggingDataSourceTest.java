@@ -7,8 +7,7 @@ import org.testng.annotations.Test;
 
 import javax.sql.DataSource;
 
-import static org.testng.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 public class LoggingDataSourceTest
 {

@@ -2,7 +2,6 @@ package com.github.bradjacobs.logging.jdbc.hsql.objects;
 
 import java.io.InputStream;
 import java.sql.Clob;
-import java.sql.Date;
 
 /**
  * Simple object that has different member variable types for testing.

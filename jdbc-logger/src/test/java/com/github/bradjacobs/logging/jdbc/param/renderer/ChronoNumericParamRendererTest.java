@@ -4,7 +4,7 @@ import org.testng.annotations.Test;
 
 import java.util.Date;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
 
 public class ChronoNumericParamRendererTest extends AbstractParamRendererTest
 {
@@ -20,5 +20,4 @@ public class ChronoNumericParamRendererTest extends AbstractParamRendererTest
 
         assertEquals( createRenderedString(renderer, sqlTime), expectedString, "mismatch expected date string");
     }
-
 }

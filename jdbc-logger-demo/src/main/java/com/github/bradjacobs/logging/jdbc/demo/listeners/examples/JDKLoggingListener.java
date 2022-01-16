@@ -1,5 +1,7 @@
-package com.github.bradjacobs.logging.jdbc.listeners;
+package com.github.bradjacobs.logging.jdbc.demo.listeners.examples;
 
+
+import com.github.bradjacobs.logging.jdbc.listeners.LoggingListener;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

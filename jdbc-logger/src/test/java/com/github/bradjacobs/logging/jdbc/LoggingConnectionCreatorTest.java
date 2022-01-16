@@ -1,12 +1,15 @@
 package com.github.bradjacobs.logging.jdbc;
 
 import com.github.bradjacobs.logging.jdbc.listeners.LoggingListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
 import java.util.List;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 
 public class LoggingConnectionCreatorTest
@@ -15,12 +18,14 @@ public class LoggingConnectionCreatorTest
     private static final String EXPECTED_INVALID_PATTERN_SUBSTRING_MSG = "Invalid DateFormat pattern:.*";
     private static final String EXPECTED_MISSING_CONNECTION_MSG = "Connection cannot be null.";
 
+    private static final Logger logger = LoggerFactory.getLogger(LoggingConnectionCreatorTest.class);
+
     // todo - more tests still needed  dbtype, enable/disable...etc
 
     @Test
     public void testSimple() throws Exception
     {
-        LoggingConnectionCreator.builder().build();
+        LoggingConnectionCreator.builder().withLogger(logger).build();
     }
 
     @Test
@@ -49,9 +54,8 @@ public class LoggingConnectionCreatorTest
     // technically 'legal', but won't actually affect anything
     @Test
     public void testNullChronoParamRenderer() throws Exception {
-        LoggingConnectionCreator.builder().withChronoParamRenderer(null).build();
+        LoggingConnectionCreator.builder().withLogger(logger).withChronoParamRenderer(null).build();
     }
-
 
     // *** ERROR CONDITION TESTS ***
     /////////////////////////////////
@@ -112,7 +116,7 @@ public class LoggingConnectionCreatorTest
     @Test(expectedExceptions = { IllegalArgumentException.class },
             expectedExceptionsMessageRegExp = EXPECTED_MISSING_CONNECTION_MSG)
     public void testMissingConnection() throws Exception {
-        LoggingConnectionCreator loggingConnectionCreator = LoggingConnectionCreator.builder().build();
+        LoggingConnectionCreator loggingConnectionCreator = LoggingConnectionCreator.builder().withLogger(logger).build();
         loggingConnectionCreator.create(null);
     }
 }

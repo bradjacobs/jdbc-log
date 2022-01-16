@@ -22,7 +22,6 @@ public class TagFiller
         this.rendererSelector = rendererSelector;
     }
 
-
     /**
      * Replaces the tags in the source SQL string with the given values in the paramMap
      * Example:
@@ -71,7 +70,6 @@ public class TagFiller
 
         return sb.toString();
     }
-
 
     private void validateParams(String tag, ParamRendererSelector rendererSelector) throws IllegalArgumentException
     {

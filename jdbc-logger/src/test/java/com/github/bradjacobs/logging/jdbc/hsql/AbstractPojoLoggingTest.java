@@ -8,14 +8,21 @@ import com.github.bradjacobs.logging.jdbc.listeners.SystemOutLogListener;
 import org.apache.commons.io.IOUtils;
 import org.hsqldb.jdbc.JDBCClob;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
 
 
 abstract public class AbstractPojoLoggingTest
