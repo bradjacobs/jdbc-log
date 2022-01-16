@@ -78,42 +78,6 @@ public class LoggingConnectionCreatorTest
     }
 
     @Test(expectedExceptions = { IllegalArgumentException.class },
-        expectedExceptionsMessageRegExp = EXPECTED_MISSING_PATTERN_MSG)
-    public void testNullPatternTimeStamp() throws Exception {
-        LoggingConnectionCreator.builder().withTimestampOnlyCustomPattern(null).build();
-    }
-
-    @Test(expectedExceptions = { IllegalArgumentException.class },
-        expectedExceptionsMessageRegExp = EXPECTED_MISSING_PATTERN_MSG)
-    public void testNullPatternDate() throws Exception {
-        LoggingConnectionCreator.builder().withDateOnlyCustomPattern(null).build();
-    }
-
-    @Test(expectedExceptions = { IllegalArgumentException.class },
-        expectedExceptionsMessageRegExp = EXPECTED_MISSING_PATTERN_MSG)
-    public void testNullPatternTime() throws Exception {
-        LoggingConnectionCreator.builder().withTimeOnlyCustomPattern(null).build();
-    }
-
-    @Test(expectedExceptions = { IllegalArgumentException.class },
-        expectedExceptionsMessageRegExp = EXPECTED_INVALID_PATTERN_SUBSTRING_MSG)
-    public void testInvalidPatternTimeStamp() throws Exception {
-        LoggingConnectionCreator.builder().withTimestampOnlyCustomPattern("YYYY_INVALID_pattern").build();
-    }
-
-    @Test(expectedExceptions = { IllegalArgumentException.class },
-        expectedExceptionsMessageRegExp = EXPECTED_INVALID_PATTERN_SUBSTRING_MSG)
-    public void testInvalidPatternDate() throws Exception {
-        LoggingConnectionCreator.builder().withDateOnlyCustomPattern("YYYY_INVALID_pattern").build();
-    }
-
-    @Test(expectedExceptions = { IllegalArgumentException.class },
-        expectedExceptionsMessageRegExp = EXPECTED_INVALID_PATTERN_SUBSTRING_MSG)
-    public void testInvalidPatternTime() throws Exception {
-        LoggingConnectionCreator.builder().withTimeOnlyCustomPattern("YYYY_INVALID_pattern").build();
-    }
-
-    @Test(expectedExceptions = { IllegalArgumentException.class },
             expectedExceptionsMessageRegExp = EXPECTED_MISSING_CONNECTION_MSG)
     public void testMissingConnection() throws Exception {
         LoggingConnectionCreator loggingConnectionCreator = LoggingConnectionCreator.builder().withLogger(logger).build();

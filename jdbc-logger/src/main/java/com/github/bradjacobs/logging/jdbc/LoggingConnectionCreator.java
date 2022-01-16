@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * LoggingConnectionCreator makes a LoggingConnection that decorates an existing connection
@@ -38,7 +39,7 @@ public class LoggingConnectionCreator
     LoggingConnectionCreator(Builder builder)
     {
         this.clobReaderLogging = builder.clobReaderLogging;
-        this.tagFiller = builder.tagFiller;
+        this.tagFiller = builder.buildTagFiller();
         this.loggingListeners = Collections.unmodifiableList(builder.loggingListeners);
     }
 
@@ -69,16 +70,7 @@ public class LoggingConnectionCreator
     }
 
     public static Builder builder() {
-        return new Builder(null);  // this will be set to 'default' timezone
-    }
-    public static Builder builder(String timeZone) {
-        if (StringUtils.isEmpty(timeZone)) {
-            return builder();
-        }
-        return builder(ZoneId.of(timeZone));
-    }
-    public static Builder builder(ZoneId zoneId) {
-        return new Builder(zoneId);
+        return new Builder();
     }
 
     public static class Builder
@@ -86,30 +78,16 @@ public class LoggingConnectionCreator
         private static final String TAG = "?";
         private static final ZoneId DEFAULT_ZONE = ParamRendererFactory.DEFAULT_ZONE;
 
-        // note: force the zoneId to get set first (on constructor)
-        //   otherwise possible bug when setting other fields.
-        private final ZoneId zoneId;
-
+        private ZoneId zoneId = DEFAULT_ZONE;
         private DatabaseType dbType = null;
         private final List<LoggingListener> loggingListeners = new ArrayList<>();
         private boolean clobReaderLogging = Boolean.FALSE;
         private final Map<ParamType<Date>, SqlParamRenderer<Date>> datetimeOverrideMap = new HashMap<>();
 
-        // assigned during 'build'
-        private TagFiller tagFiller = null;
-
         /**
          * LoggingSqlConfig.Builder constructor
-         *   Can optionally supply a custom timezone (used any Date/Timestamp string value formatting.)
-         *     (note: 'ZoneId.systemDefault' can be used for the current local timezone
-         * @param zoneId timeZone  (default: UTC)
          */
-        protected Builder(ZoneId zoneId) {
-            if (zoneId == null) {
-                zoneId = DEFAULT_ZONE;
-            }
-            this.zoneId = zoneId;
-        }
+        protected Builder() { }
 
         public Builder withLogger(org.slf4j.Logger logger) {
             return withLogListener(new Slf4jLoggingListener(logger));
@@ -121,6 +99,7 @@ public class LoggingConnectionCreator
          * The config will look for specific 'substrings' to determine database type.
          *   (i.e.  if contains 'mysql', must be a MySQL database)
          * @param dbTypeIdentifier string identifying database used.  If not set then 'general database defaults' will be selected.
+         * @deprecated
          */
         public Builder withDbTypeIdentifier(String dbTypeIdentifier) {
             this.dbType = DatabaseType.identifyDatabaseType(dbTypeIdentifier);
@@ -153,41 +132,18 @@ public class LoggingConnectionCreator
         }
 
         /**
-         * Custom date format string pattern for rendering java.sql.Timestamp as strings
-         * @param pattern date format pattern
-         * @see java.time.format.DateTimeFormatter
+         * Set explicit timeZone for use when generating DateTime strings
+         * @param timeZone timeZone string
          */
-        public Builder withTimestampOnlyCustomPattern(String pattern) {
-            return withTimestampOnlyRenderer(new ChronoStringParamRenderer(pattern, zoneId));
+        public Builder withTimeZone(String timeZone) {
+            return withTimeZone(ZoneId.of(timeZone));
         }
-        protected Builder withTimestampOnlyRenderer(SqlParamRenderer<Date> renderer) {
-            this.datetimeOverrideMap.put(ParamType.TIMESTAMP, renderer);
-            return this;
-        }
-
         /**
-         * Custom date format string pattern for rendering java.sql.Date as strings
-         * @param pattern date format pattern
-         * @see java.time.format.DateTimeFormatter
+         * Set explicit timeZone for use when generating DateTime strings
+         * @param zoneId the ZoneId
          */
-        public Builder withDateOnlyCustomPattern(String pattern) {
-            return withDateOnlyRenderer(new ChronoStringParamRenderer(pattern, zoneId));
-        }
-        protected Builder withDateOnlyRenderer(SqlParamRenderer<Date> renderer) {
-            this.datetimeOverrideMap.put(ParamType.DATE, renderer);
-            return this;
-        }
-
-        /**
-         * Custom date format string pattern for rendering java.sql.Time as strings
-         * @param pattern date format pattern
-         * @see java.time.format.DateTimeFormatter
-         */
-        public Builder withTimeOnlyCustomPattern(String pattern) {
-            return withTimeOnlyRenderer(new ChronoStringParamRenderer(pattern, zoneId));
-        }
-        protected Builder withTimeOnlyRenderer(SqlParamRenderer<Date> renderer) {
-            this.datetimeOverrideMap.put(ParamType.TIME, renderer);
+        public Builder withTimeZone(ZoneId zoneId) {
+            this.zoneId = zoneId;
             return this;
         }
 
@@ -199,7 +155,7 @@ public class LoggingConnectionCreator
         }
 
         /**
-         * Apply ParamRenderer for all the timestamp/date/time types
+         * Apply Custom ParamRenderer for all the timestamp/date/time types
          * @param paramRenderer paramRenderer
          */
         public Builder withChronoParamRenderer(SqlParamRenderer<Date> paramRenderer) {
@@ -209,15 +165,32 @@ public class LoggingConnectionCreator
             return this;
         }
 
+        protected Builder withTimestampOnlyRenderer(SqlParamRenderer<Date> renderer) {
+            this.datetimeOverrideMap.put(ParamType.TIMESTAMP, renderer);
+            return this;
+        }
+
+        protected Builder withDateOnlyRenderer(SqlParamRenderer<Date> renderer) {
+            this.datetimeOverrideMap.put(ParamType.DATE, renderer);
+            return this;
+        }
+
+        protected Builder withTimeOnlyRenderer(SqlParamRenderer<Date> renderer) {
+            this.datetimeOverrideMap.put(ParamType.TIME, renderer);
+            return this;
+        }
+
         public LoggingConnectionCreator build() {
             if (this.loggingListeners.isEmpty()) {
                 throw new IllegalStateException("Must have At least 1 loggingListener specified.");
             }
 
-            ParamRendererSelector rendererSelector = new ParamRendererSelector(dbType, zoneId, datetimeOverrideMap);
-
-            this.tagFiller = new TagFiller(TAG, rendererSelector);
             return new LoggingConnectionCreator(this);
+        }
+
+        protected TagFiller buildTagFiller() {
+            ParamRendererSelector rendererSelector = new ParamRendererSelector(dbType, zoneId, datetimeOverrideMap);
+            return new TagFiller(TAG, rendererSelector);
         }
     }
 }
