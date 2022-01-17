@@ -1,6 +1,6 @@
 package com.github.bradjacobs.logging.jdbc;
 
-import com.github.bradjacobs.logging.jdbc.param.TagFiller;
+import com.github.bradjacobs.logging.jdbc.param.SqlTagFiller;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,7 +11,7 @@ import java.util.Map;
 class SqlStatementTracker
 {
     private String sql;
-    private final TagFiller tagFiller;
+    private final SqlTagFiller sqlTagFiller;
 
     private List<BatchItem> batchItems = null;
     private Map<Integer, Object> paramMap = null;
@@ -21,9 +21,9 @@ class SqlStatementTracker
         this("", null);
     }
 
-    public SqlStatementTracker(String sql, TagFiller tagFiller) {
+    public SqlStatementTracker(String sql, SqlTagFiller sqlTagFiller) {
         this.sql = sql;
-        this.tagFiller = tagFiller;
+        this.sqlTagFiller = sqlTagFiller;
     }
 
     public void setSql(String sql)
@@ -40,7 +40,7 @@ class SqlStatementTracker
         if (this.batchItems == null) {
             this.batchItems = new ArrayList<>();
         }
-        this.batchItems.add(new BatchItem(sql, this.paramMap, this.tagFiller ));
+        this.batchItems.add(new BatchItem(sql, this.paramMap, this.sqlTagFiller));
     }
 
     public void clearBatch() {
@@ -50,10 +50,10 @@ class SqlStatementTracker
     }
 
     public String generateSql() {
-        if (tagFiller == null) {
+        if (sqlTagFiller == null) {
             return sql;
         }
-        return tagFiller.replace(this.sql, this.paramMap);
+        return sqlTagFiller.replace(this.sql, this.paramMap);
     }
 
     public List<String> generateBatchSql() {
@@ -85,12 +85,12 @@ class SqlStatementTracker
     protected static class BatchItem {
         private final String sql;
         private final Map<Integer, Object> paramMap;
-        private final TagFiller tagFiller;
+        private final SqlTagFiller sqlTagFiller;
 
-        public BatchItem(String sql, Map<Integer, Object> paramMap, TagFiller tagFiller) {
+        public BatchItem(String sql, Map<Integer, Object> paramMap, SqlTagFiller sqlTagFiller) {
             this.sql = sql;
-            this.tagFiller = tagFiller;
-            if (tagFiller != null && paramMap != null) {
+            this.sqlTagFiller = sqlTagFiller;
+            if (sqlTagFiller != null && paramMap != null) {
                 // batchItem makes its own copy of the params, so they don't get side-effected/modified.
                 this.paramMap = new HashMap<>(paramMap);
             }
@@ -100,10 +100,10 @@ class SqlStatementTracker
         }
 
         public String generateSqlString() {
-            if (tagFiller == null) {
+            if (sqlTagFiller == null) {
                 return sql;
             }
-            return tagFiller.replace(this.sql, this.paramMap);
+            return sqlTagFiller.replace(this.sql, this.paramMap);
         }
     }
 }

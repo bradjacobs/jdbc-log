@@ -3,23 +3,22 @@ package com.github.bradjacobs.logging.jdbc.param;
 
 import java.util.Map;
 
-public class TagFiller
+public class SqlTagFiller
 {
     private static final String DEFAULT_TAG = "?";
 
     private final String tag;
-    private final ParamRendererSelector rendererSelector;
+    private final ParamToStringConverter paramToStringConverter;
 
-    public TagFiller(ParamRendererSelector rendererSelector)
+    public SqlTagFiller(ParamToStringConverter paramToStringConverter)
     {
-        this(DEFAULT_TAG, rendererSelector);
+        this(DEFAULT_TAG, paramToStringConverter);
     }
 
-    public TagFiller(String tag, ParamRendererSelector rendererSelector)
+    public SqlTagFiller(String tag, ParamToStringConverter paramToStringConverter)
     {
-        validateParams(tag, rendererSelector);
         this.tag = tag;
-        this.rendererSelector = rendererSelector;
+        this.paramToStringConverter = paramToStringConverter;
     }
 
     /**
@@ -55,7 +54,7 @@ public class TagFiller
 
             // distinguish b/w having a null value for a given key vs there's a missing entry in the map
             if (paramMap.containsKey(tagNumber)) {
-                rendererSelector.appendParamValue(paramMap.get(tagNumber), sb);
+                sb.append( paramToStringConverter.convertToString(paramMap.get(tagNumber)) );
             }
             else {
                 // specific entry missing in param map, thus just leave existing tag
@@ -69,15 +68,5 @@ public class TagFiller
         sb.append(source.substring(lastIdx));
 
         return sb.toString();
-    }
-
-    private void validateParams(String tag, ParamRendererSelector rendererSelector) throws IllegalArgumentException
-    {
-        if (tag == null || tag.isEmpty()) {
-            throw new IllegalArgumentException("Must provide a tag parameter.");
-        }
-        if (rendererSelector == null) {
-            throw new IllegalArgumentException("Must provide a rendererSelector.");
-        }
     }
 }

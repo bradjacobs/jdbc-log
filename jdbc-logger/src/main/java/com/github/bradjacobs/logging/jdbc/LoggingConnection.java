@@ -1,23 +1,9 @@
 package com.github.bradjacobs.logging.jdbc;
 
 import com.github.bradjacobs.logging.jdbc.listeners.LoggingListener;
-import com.github.bradjacobs.logging.jdbc.param.TagFiller;
+import com.github.bradjacobs.logging.jdbc.param.SqlTagFiller;
 
-import java.sql.Array;
-import java.sql.Blob;
-import java.sql.CallableStatement;
-import java.sql.Clob;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.NClob;
-import java.sql.PreparedStatement;
-import java.sql.SQLClientInfoException;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.sql.SQLXML;
-import java.sql.Savepoint;
-import java.sql.Statement;
-import java.sql.Struct;
+import java.sql.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -30,14 +16,14 @@ public class LoggingConnection implements Connection
 
     private final boolean clobReaderLoggingEnabled;
     private final List<LoggingListener> loggingListeners;
-    private final TagFiller tagFiller;
+    private final SqlTagFiller sqlTagFiller;
 
     /**
      * Logging Connection constructor.
      *   NOTE: Please Use LoggingConnectionCreator to make instance
      * @param targetConnection original jdbc targetConnection
      */
-    LoggingConnection(Connection targetConnection, boolean clobReaderLogging, TagFiller tagFiller, List<LoggingListener> loggingListeners)
+    LoggingConnection(Connection targetConnection, boolean clobReaderLogging, SqlTagFiller sqlTagFiller, List<LoggingListener> loggingListeners)
     {
         if (targetConnection == null) {
             throw new IllegalArgumentException("Must provide a targetConnection");
@@ -45,7 +31,7 @@ public class LoggingConnection implements Connection
 
         this.targetConnection = targetConnection;
         this.clobReaderLoggingEnabled = clobReaderLogging;
-        this.tagFiller = tagFiller;
+        this.sqlTagFiller = sqlTagFiller;
         this.loggingListeners = Collections.unmodifiableList(loggingListeners);
     }
 
@@ -57,8 +43,8 @@ public class LoggingConnection implements Connection
         return loggingListeners;
     }
 
-    public TagFiller getTagFiller() {
-        return tagFiller;
+    public SqlTagFiller getSqlTagFiller() {
+        return sqlTagFiller;
     }
 
     private Statement logWrap(Statement statement) {

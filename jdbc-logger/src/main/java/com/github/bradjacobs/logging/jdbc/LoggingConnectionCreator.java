@@ -2,14 +2,8 @@ package com.github.bradjacobs.logging.jdbc;
 
 import com.github.bradjacobs.logging.jdbc.listeners.LoggingListener;
 import com.github.bradjacobs.logging.jdbc.listeners.Slf4jLoggingListener;
-import com.github.bradjacobs.logging.jdbc.param.ParamRendererFactory;
-import com.github.bradjacobs.logging.jdbc.param.ParamRendererSelector;
-import com.github.bradjacobs.logging.jdbc.param.ParamType;
-import com.github.bradjacobs.logging.jdbc.param.SqlParamRenderer;
-import com.github.bradjacobs.logging.jdbc.param.TagFiller;
-import com.github.bradjacobs.logging.jdbc.param.renderer.ChronoNumericParamRenderer;
-import com.github.bradjacobs.logging.jdbc.param.renderer.ChronoStringParamRenderer;
-import org.apache.commons.lang3.StringUtils;
+import com.github.bradjacobs.logging.jdbc.param.ParamToStringConverter;
+import com.github.bradjacobs.logging.jdbc.param.SqlTagFiller;
 
 import java.sql.Connection;
 import java.time.ZoneId;
@@ -17,11 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
 
 /**
  * LoggingConnectionCreator makes a LoggingConnection that decorates an existing connection
@@ -31,7 +21,7 @@ import java.util.TimeZone;
 public class LoggingConnectionCreator
 {
     private final boolean clobReaderLogging;
-    private final TagFiller tagFiller;
+    private final SqlTagFiller sqlTagFiller;
     private final List<LoggingListener> loggingListeners;
 
     private static final String MISSING_LOG_LISTENER_ERR_MSG = "Logging Listeners cannot be set to null or empty collection.";
@@ -39,7 +29,7 @@ public class LoggingConnectionCreator
     LoggingConnectionCreator(Builder builder)
     {
         this.clobReaderLogging = builder.clobReaderLogging;
-        this.tagFiller = builder.buildTagFiller();
+        this.sqlTagFiller = new SqlTagFiller(builder.paramToStringConverter);
         this.loggingListeners = Collections.unmodifiableList(builder.loggingListeners);
     }
 
@@ -57,7 +47,7 @@ public class LoggingConnectionCreator
         if (targetConnection == null) {
             throw new IllegalArgumentException("Connection cannot be null.");
         }
-        return new LoggingConnection(targetConnection, clobReaderLogging, tagFiller, loggingListeners);
+        return new LoggingConnection(targetConnection, clobReaderLogging, sqlTagFiller, loggingListeners);
     }
 
 
@@ -75,14 +65,12 @@ public class LoggingConnectionCreator
 
     public static class Builder
     {
-        private static final String TAG = "?";
-        private static final ZoneId DEFAULT_ZONE = ParamRendererFactory.DEFAULT_ZONE;
+        private static final ZoneId DEFAULT_ZONE = ParamToStringConverter.DEFAULT_ZONE;
 
-        private ZoneId zoneId = DEFAULT_ZONE;
         private DatabaseType dbType = null;
         private final List<LoggingListener> loggingListeners = new ArrayList<>();
         private boolean clobReaderLogging = Boolean.FALSE;
-        private final Map<ParamType<Date>, SqlParamRenderer<Date>> datetimeOverrideMap = new HashMap<>();
+        private ParamToStringConverter paramToStringConverter = new ParamToStringConverter();
 
         /**
          * LoggingSqlConfig.Builder constructor
@@ -103,6 +91,7 @@ public class LoggingConnectionCreator
          */
         public Builder withDbTypeIdentifier(String dbTypeIdentifier) {
             this.dbType = DatabaseType.identifyDatabaseType(dbTypeIdentifier);
+            paramToStringConverter.setDatabaseType(dbType);
             return this;
         }
 
@@ -143,7 +132,7 @@ public class LoggingConnectionCreator
          * @param zoneId the ZoneId
          */
         public Builder withTimeZone(ZoneId zoneId) {
-            this.zoneId = zoneId;
+            paramToStringConverter.setZoneId(zoneId);
             return this;
         }
 
@@ -151,32 +140,7 @@ public class LoggingConnectionCreator
          * Enable all timestamp/date/time instances to rendered as numeric (unix/epoch time)
          */
         public Builder withChronoDefaultNumerics() {
-            return withChronoParamRenderer(new ChronoNumericParamRenderer());
-        }
-
-        /**
-         * Apply Custom ParamRenderer for all the timestamp/date/time types
-         * @param paramRenderer paramRenderer
-         */
-        public Builder withChronoParamRenderer(SqlParamRenderer<Date> paramRenderer) {
-            withTimestampOnlyRenderer(paramRenderer);
-            withDateOnlyRenderer(paramRenderer);
-            withTimeOnlyRenderer(paramRenderer);
-            return this;
-        }
-
-        protected Builder withTimestampOnlyRenderer(SqlParamRenderer<Date> renderer) {
-            this.datetimeOverrideMap.put(ParamType.TIMESTAMP, renderer);
-            return this;
-        }
-
-        protected Builder withDateOnlyRenderer(SqlParamRenderer<Date> renderer) {
-            this.datetimeOverrideMap.put(ParamType.DATE, renderer);
-            return this;
-        }
-
-        protected Builder withTimeOnlyRenderer(SqlParamRenderer<Date> renderer) {
-            this.datetimeOverrideMap.put(ParamType.TIME, renderer);
+            this.paramToStringConverter.setRenderDatesAsEpochUtc(true);
             return this;
         }
 
@@ -186,11 +150,6 @@ public class LoggingConnectionCreator
             }
 
             return new LoggingConnectionCreator(this);
-        }
-
-        protected TagFiller buildTagFiller() {
-            ParamRendererSelector rendererSelector = new ParamRendererSelector(dbType, zoneId, datetimeOverrideMap);
-            return new TagFiller(TAG, rendererSelector);
         }
     }
 }

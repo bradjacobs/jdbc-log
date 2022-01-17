@@ -31,7 +31,7 @@ public class LoggingStatement implements Statement
         this.loggingListeners = loggingConnection.getLoggingListeners();
 
         if (sql != null) {
-            this.sqlTracker = new SqlStatementTracker(sql, loggingConnection.getTagFiller());
+            this.sqlTracker = new SqlStatementTracker(sql, loggingConnection.getSqlTagFiller());
             this.clobReaderLoggingEnabled = loggingConnection.isClobReaderLoggingEnabled();
         }
         else {

@@ -51,12 +51,6 @@ public class LoggingConnectionCreatorTest
     }
 
 
-    // technically 'legal', but won't actually affect anything
-    @Test
-    public void testNullChronoParamRenderer() throws Exception {
-        LoggingConnectionCreator.builder().withLogger(logger).withChronoParamRenderer(null).build();
-    }
-
     // *** ERROR CONDITION TESTS ***
     /////////////////////////////////
 
