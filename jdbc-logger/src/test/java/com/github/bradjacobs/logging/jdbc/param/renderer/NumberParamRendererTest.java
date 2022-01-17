@@ -28,14 +28,4 @@ public class NumberParamRendererTest extends AbstractParamRendererTest
         NumberParamRenderer renderer = new NumberParamRenderer();
         assertEquals( createRenderedString(renderer, inputValue), expectedString, "mismatch expected number string");
     }
-
-    @Test
-    public void testWithScientificNotation() throws Exception
-    {
-        Double inputValue = 0.00000012d;
-        String expectedString = "1.2E-7";
-
-        NumberParamRenderer renderer = new NumberParamRenderer(true);
-        assertEquals( createRenderedString(renderer, inputValue), expectedString, "mismatch expected number string");
-    }
 }
