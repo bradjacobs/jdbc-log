@@ -17,7 +17,6 @@ public class LoggingStatement implements Statement
     private final Statement statement;
     private final List<LoggingListener> loggingListeners;
     private final LoggingConnection loggingConnection;
-    private final boolean clobReaderLoggingEnabled;
     protected final SqlStatementTracker sqlTracker;
 
     public LoggingStatement(Statement statement, LoggingConnection loggingConnection) {
@@ -32,22 +31,11 @@ public class LoggingStatement implements Statement
 
         if (sql != null) {
             this.sqlTracker = new SqlStatementTracker(sql, loggingConnection.getSqlTagFiller());
-            this.clobReaderLoggingEnabled = loggingConnection.isClobReaderLoggingEnabled();
         }
         else {
             this.sqlTracker = new SqlStatementTracker();
-            this.clobReaderLoggingEnabled = false;
         }
     }
-
-    /**
-     * Returns true to log a 'real' string value whenever a Clob/Reader/Stream is used.
-     * @return true to log clobs & text streams
-     */
-    protected boolean isClobReaderLoggingEnabled() {
-        return clobReaderLoggingEnabled;
-    }
-
 
     protected void setAndLogCurrent(String sql) {
         sqlTracker.setSql(sql);

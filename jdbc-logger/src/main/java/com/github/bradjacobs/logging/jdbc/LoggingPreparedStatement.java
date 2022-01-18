@@ -29,11 +29,13 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     private static final String TEXT_CLOB_VALUE_PLACEHOLDER = "{_CLOB_}";
 
     private final PreparedStatement preparedStatement;
+    private final boolean clobReaderLoggingEnabled;
 
     public LoggingPreparedStatement(PreparedStatement preparedStatement, LoggingConnection loggingConnection, String sql)
     {
         super(preparedStatement, loggingConnection, sql);
         this.preparedStatement = preparedStatement;
+        this.clobReaderLoggingEnabled = loggingConnection.isClobReaderLoggingEnabled();
     }
 
     /**
@@ -57,7 +59,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     protected Reader setCurrentReaderParameter(int index, Reader reader) {
         String strValue = null;
         if (reader != null) {
-            if (isClobReaderLoggingEnabled()) {
+            if (clobReaderLoggingEnabled) {
                 strValue = extractString(reader);
                 reader = new StringReader(strValue);
             }
@@ -81,7 +83,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     protected InputStream setCurrentStreamParameter(int index, InputStream inputStream) {
         String strValue = null;
         if (inputStream != null) {
-            if (isClobReaderLoggingEnabled()) {
+            if (clobReaderLoggingEnabled) {
                 strValue = extractString(inputStream);
                 inputStream = new ByteArrayInputStream(strValue.getBytes(StandardCharsets.UTF_8));
             }
@@ -471,7 +473,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         //  Note: this is a bit of a guess b/c many drivers don't support it
         String sqlXmlString = null;
         if (xmlObject != null) {
-            if (isClobReaderLoggingEnabled()) {
+            if (clobReaderLoggingEnabled) {
                 try {
                     sqlXmlString = xmlObject.getString();
                 }
