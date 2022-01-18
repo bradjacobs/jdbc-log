@@ -479,6 +479,10 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
 
 
 
+    // TODO - find a new home for items below
+
+
+
     /**
      * For TEXT InputStream parameters, will attempt to log the "inner string value" IFF configured
      * Otherwise will log parameter with a placeholder value.
