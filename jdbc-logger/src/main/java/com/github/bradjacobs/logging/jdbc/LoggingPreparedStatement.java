@@ -33,13 +33,13 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     private static final String ARRAY_VALUE_PLACEHOLDER = "{_ARRAY_}";
 
     private final PreparedStatement preparedStatement;
-    private final boolean clobReaderLoggingEnabled;
+    private final boolean clobParamLoggingEnabled;
 
     public LoggingPreparedStatement(PreparedStatement preparedStatement, LoggingConnection loggingConnection, String sql)
     {
         super(preparedStatement, loggingConnection, sql);
         this.preparedStatement = preparedStatement;
-        this.clobReaderLoggingEnabled = loggingConnection.isClobReaderLoggingEnabled();
+        this.clobParamLoggingEnabled = loggingConnection.isClobParamLoggingEnabled();
     }
 
     /**
@@ -417,7 +417,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         //  Note: this is a bit of a guess b/c many drivers don't support it
         String sqlXmlString = null;
         if (xmlObject != null) {
-            if (clobReaderLoggingEnabled) {
+            if (clobParamLoggingEnabled) {
                 try {
                     sqlXmlString = xmlObject.getString();
                 }
@@ -495,7 +495,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     protected InputStream setCurrentStreamParameter(int index, InputStream inputStream) {
         String strValue = null;
         if (inputStream != null) {
-            if (clobReaderLoggingEnabled) {
+            if (clobParamLoggingEnabled) {
                 strValue = extractString(inputStream);
                 inputStream = new ByteArrayInputStream(strValue.getBytes(StandardCharsets.UTF_8));
             }
@@ -519,7 +519,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     protected Reader setCurrentReaderParameter(int index, Reader reader) {
         String strValue = null;
         if (reader != null) {
-            if (clobReaderLoggingEnabled) {
+            if (clobParamLoggingEnabled) {
                 strValue = extractString(reader);
                 reader = new StringReader(strValue);
             }
@@ -534,7 +534,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     protected String getClobString(Clob clob) throws SQLException {
         String clobString = null;
         if (clob != null) {
-            if (clobReaderLoggingEnabled) {
+            if (clobParamLoggingEnabled) {
                 long length = 0;
                 try {
                     length = clob.length();

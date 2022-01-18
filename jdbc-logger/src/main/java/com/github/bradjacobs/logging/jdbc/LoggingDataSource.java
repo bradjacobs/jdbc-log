@@ -1,7 +1,5 @@
 package com.github.bradjacobs.logging.jdbc;
 
-import com.github.bradjacobs.logging.jdbc.listeners.LoggingListener;
-import com.github.bradjacobs.logging.jdbc.listeners.Slf4jLoggingListener;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -18,7 +16,7 @@ import java.util.logging.Logger;
 public class LoggingDataSource implements DataSource
 {
     private final DataSource dataSource;
-    private final LoggingConnectionCreator loggingConnectionCreator;
+    private final DbLoggingBuilder dbLoggingBuilder;
     private boolean enabled = true;
 
     /**
@@ -27,27 +25,19 @@ public class LoggingDataSource implements DataSource
      * @param logger logger
      */
     public LoggingDataSource(DataSource dataSource, org.slf4j.Logger logger) {
-        this(dataSource, new Slf4jLoggingListener(logger));
+        this(dataSource, new DbLoggingBuilder().setLogger(logger));
     }
 
-    /**
-     * Constructor wraps existing dataSource and will log SQL statements to the listeners.
-     * @param dataSource dataSource
-     * @param loggingListeners loggingListeners
-     */
-    public LoggingDataSource(DataSource dataSource, LoggingListener... loggingListeners) {
-        this(dataSource, LoggingConnectionCreator.buildDefault(loggingListeners));
-    }
 
     /**
      * Constructor to use any customized loggingConnectionCreator.
      * @param dataSource dateSource
-     * @param loggingConnectionCreator loggingConnectionCreator
+     * @param dbLoggingBuilder loggingConnectionCreator
      */
-    public LoggingDataSource(DataSource dataSource, LoggingConnectionCreator loggingConnectionCreator) {
-        validateParams(dataSource, loggingConnectionCreator);
+    public LoggingDataSource(DataSource dataSource, DbLoggingBuilder dbLoggingBuilder) {
+        validateParams(dataSource, dbLoggingBuilder);
         this.dataSource = dataSource;
-        this.loggingConnectionCreator = loggingConnectionCreator;
+        this.dbLoggingBuilder = dbLoggingBuilder;
     }
 
     /** @inheritDoc */
@@ -74,7 +64,7 @@ public class LoggingDataSource implements DataSource
         if (!enabled) {
             return innerConnection;
         }
-        return loggingConnectionCreator.create(innerConnection);
+        return dbLoggingBuilder.createFrom(innerConnection);
     }
 
     /**
@@ -136,14 +126,15 @@ public class LoggingDataSource implements DataSource
         return dataSource.isWrapperFor(iface);
     }
 
-    private void validateParams(DataSource dataSource, LoggingConnectionCreator loggingConnectionCreator)
+
+    private void validateParams(DataSource dataSource, DbLoggingBuilder dbLoggingBuilder)
             throws IllegalArgumentException
     {
         if (dataSource == null) {
             throw new IllegalArgumentException("Must provide a dateSource");
         }
-        if (loggingConnectionCreator == null) {
-            throw new IllegalArgumentException("Must provide a loggingConnectionCreator");
+        if (dbLoggingBuilder == null) {
+            throw new IllegalArgumentException("Must provide a dbLoggingBuilder");
         }
     }
 }

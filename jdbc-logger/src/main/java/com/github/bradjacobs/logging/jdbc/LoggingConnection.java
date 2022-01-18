@@ -1,9 +1,25 @@
 package com.github.bradjacobs.logging.jdbc;
 
 import com.github.bradjacobs.logging.jdbc.listeners.LoggingListener;
+import com.github.bradjacobs.logging.jdbc.param.ParamStringConverterFactory;
+import com.github.bradjacobs.logging.jdbc.param.ParamToStringConverter;
 import com.github.bradjacobs.logging.jdbc.param.SqlTagFiller;
 
-import java.sql.*;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.CallableStatement;
+import java.sql.Clob;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.NClob;
+import java.sql.PreparedStatement;
+import java.sql.SQLClientInfoException;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.SQLXML;
+import java.sql.Savepoint;
+import java.sql.Statement;
+import java.sql.Struct;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -14,29 +30,30 @@ public class LoggingConnection implements Connection
 {
     private final Connection targetConnection;
 
-    private final boolean clobReaderLoggingEnabled;
+    private final boolean clobParamLoggingEnabled;
     private final List<LoggingListener> loggingListeners;
     private final SqlTagFiller sqlTagFiller;
 
-    /**
-     * Logging Connection constructor.
-     *   NOTE: Please Use LoggingConnectionCreator to make instance
-     * @param targetConnection original jdbc targetConnection
-     */
-    LoggingConnection(Connection targetConnection, boolean clobReaderLogging, SqlTagFiller sqlTagFiller, List<LoggingListener> loggingListeners)
-    {
+    // will allow a normal constructor (avoid builder) if want a single logger with all defaults
+    //   (reserve right change mind about this later!!)
+    public LoggingConnection(Connection targetConnection, org.slf4j.Logger logger) {
+        this(targetConnection, new DbLoggingBuilder().setLogger(logger));
+    }
+
+    LoggingConnection(Connection targetConnection, DbLoggingBuilder builder) {
         if (targetConnection == null) {
             throw new IllegalArgumentException("Must provide a targetConnection");
         }
-
         this.targetConnection = targetConnection;
-        this.clobReaderLoggingEnabled = clobReaderLogging;
-        this.sqlTagFiller = sqlTagFiller;
-        this.loggingListeners = Collections.unmodifiableList(loggingListeners);
+        this.loggingListeners = Collections.unmodifiableList(builder.loggingListeners);
+        this.clobParamLoggingEnabled = builder.clobParamLogging;
+
+        ParamToStringConverter paramToStringConverter = ParamStringConverterFactory.getParamConverter(builder.dbType, builder.zoneId);
+        this.sqlTagFiller = new SqlTagFiller(paramToStringConverter);
     }
 
-    public boolean isClobReaderLoggingEnabled() {
-        return clobReaderLoggingEnabled;
+    public boolean isClobParamLoggingEnabled() {
+        return clobParamLoggingEnabled;
     }
 
     public List<LoggingListener> getLoggingListeners() {

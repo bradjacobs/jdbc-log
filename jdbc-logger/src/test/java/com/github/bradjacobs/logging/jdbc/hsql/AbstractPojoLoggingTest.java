@@ -1,6 +1,6 @@
 package com.github.bradjacobs.logging.jdbc.hsql;
 
-import com.github.bradjacobs.logging.jdbc.LoggingConnectionCreator;
+import com.github.bradjacobs.logging.jdbc.DbLoggingBuilder;
 import com.github.bradjacobs.logging.jdbc.hsql.objects.BloatedPojo;
 import com.github.bradjacobs.logging.jdbc.hsql.objects.CaptureLoggingListener;
 import com.github.bradjacobs.logging.jdbc.hsql.objects.PojoDAO;
@@ -31,14 +31,12 @@ abstract public class AbstractPojoLoggingTest
     {
         Connection innerConn = DriverManager.getConnection("jdbc:hsqldb:mem:sampleDB", "SA", "");
 
-        LoggingConnectionCreator loggingConnectionCreator =
-                LoggingConnectionCreator.builder()
-                        .withLogListener(captureLoggingListener)
-                        .withLogListener(new SystemOutLogListener())
-                        .setClobReaderLogging(clobLoggingEnabled)
-                        .build();
+        DbLoggingBuilder dbLoggingBuilder =
+                DbLoggingBuilder.builder()
+                        .setLoggingListeners(captureLoggingListener, new SystemOutLogListener())
+                        .setClobParamLogging(clobLoggingEnabled);
 
-        Connection dbcon = loggingConnectionCreator.create(innerConn);
+        Connection dbcon = dbLoggingBuilder.createFrom(innerConn);
         PojoDAO pojoDao = new PojoDAO(dbcon);
         pojoDao.init();
         return pojoDao;

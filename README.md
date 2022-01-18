@@ -52,27 +52,23 @@ public class AppConfig {
     }
 }
 ```
-## Example 3 - Build with Raw Connection
+## Example 3 - Simplest Logging Connection
 ```
 Connection innerConn = DriverManager.getConnection("jdbc:hsqldb:mem:sampleDB", "SA", "");
-
-LoggingConnectionCreator loggingConnectionCreator =
-        LoggingConnectionCreator.builder()
-                .withLogger(__YOUR_LOGGER_HERE__)
-                .build();
-
-Connection dbConnection = loggingConnectionCreator.create(innerConn);
+Connection loggingConn = new LoggingConnection(innerConn, __YOUR_LOGGER_HERE__)
 ```
-## Example 4 - Custom Data Source
+## Example 4 - Custom Data Source Via Builder
 ```
-public DataSource getLoggingDataSource(DataSource originalDataSource) {
-    LoggingConnectionCreator loggingConnectionCreator = LoggingConnectionCreator.builder()
-            .withLogListener(new CustomLoggingListener())  // custome logging listener
-            .setClobReaderLogging(true)  // will attempt to log string values of CLOBs  (slow)
-            .build();
-
-    return new LoggingDataSource(originalDataSource, loggingConnectionCreator);
-}
+DbLoggingBuilder.builder()
+        // include 2 logging listeners
+        .setLoggingListeners(new Slf4jLoggingListener(logger), new CustomLoggingListener())
+        // attempt to log 'actual' string value for any CLOB objects
+        .setClobParamLogging(true)
+        // date string based on PST timezone (instead of default UTC)
+        .setZone("PST")
+        // create LoggingDataSource (wrapping the original dataSource)
+        .createFrom(innerDataSource);
+... 
 
 public class CustomLoggingListener implements LoggingListener {
     @Override

@@ -5,27 +5,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
 import java.util.Collections;
 import java.util.List;
 
+import static org.mockito.Mockito.mock;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 
-public class LoggingConnectionCreatorTest
+public class DbLoggingBuilderTest
 {
     private static final String EXPECTED_MISSING_PATTERN_MSG = "datetime formatter pattern is required.";
     private static final String EXPECTED_INVALID_PATTERN_SUBSTRING_MSG = "Invalid DateFormat pattern:.*";
     private static final String EXPECTED_MISSING_CONNECTION_MSG = "Connection cannot be null.";
 
-    private static final Logger logger = LoggerFactory.getLogger(LoggingConnectionCreatorTest.class);
+    private static final DataSource MOCK_DATA_SOURCE = mock(DataSource.class);
 
-    // todo - more tests still needed  dbtype, enable/disable...etc
+    private static final Logger logger = LoggerFactory.getLogger(DbLoggingBuilderTest.class);
+
 
     @Test
     public void testSimple() throws Exception
     {
-        LoggingConnectionCreator.builder().withLogger(logger).build();
+        DbLoggingBuilder.builder().setLogger(logger);
     }
 
     @Test
@@ -40,41 +44,38 @@ public class LoggingConnectionCreatorTest
             public void log(String sql) { }
         };
 
-        LoggingConnectionCreator loggingConnectionCreator =
-            LoggingConnectionCreator.builder()
-                .withLogListener(logger1, logger2)
-                .build();
+        DbLoggingBuilder dbLoggingBuilder =
+            new DbLoggingBuilder().setLoggingListeners(logger1, logger2);
 
-        assertNotNull(loggingConnectionCreator);
-        assertNotNull(loggingConnectionCreator.getLoggingListeners());
-        assertEquals(loggingConnectionCreator.getLoggingListeners().size(), 2, "mismatch expected log listener count");
+        assertNotNull(dbLoggingBuilder.loggingListeners);
+        assertEquals(dbLoggingBuilder.loggingListeners.size(), 2, "mismatch expected log listener count");
     }
 
 
     // *** ERROR CONDITION TESTS ***
     /////////////////////////////////
 
-    @Test(expectedExceptions = { IllegalArgumentException.class },
-        expectedExceptionsMessageRegExp = "Logging Listeners cannot be set to null or empty collection.")
+    @Test(expectedExceptions = { IllegalStateException.class },
+        expectedExceptionsMessageRegExp = "Must provide at least one logger or loggingListener")
     public void testNullListener() throws Exception
     {
         LoggingListener logListener = null;
-        LoggingConnectionCreator.builder().withLogListener(logListener).build();
+        DbLoggingBuilder.builder().setLoggingListeners(logListener).createFrom(MOCK_DATA_SOURCE);
     }
 
-    @Test(expectedExceptions = { IllegalArgumentException.class },
-        expectedExceptionsMessageRegExp = "Logging Listeners cannot be set to null or empty collection.")
+    @Test(expectedExceptions = { IllegalStateException.class },
+        expectedExceptionsMessageRegExp = "Must provide at least one logger or loggingListener")
     public void testNullListener2() throws Exception
     {
         LoggingListener logListener = null;
         List<LoggingListener> logListenerList = Collections.singletonList(logListener);
-        LoggingConnectionCreator.builder().withLogListener(logListenerList).build();
+        DbLoggingBuilder.builder().setLoggingListeners(logListener).createFrom(MOCK_DATA_SOURCE);
     }
 
     @Test(expectedExceptions = { IllegalArgumentException.class },
             expectedExceptionsMessageRegExp = EXPECTED_MISSING_CONNECTION_MSG)
     public void testMissingConnection() throws Exception {
-        LoggingConnectionCreator loggingConnectionCreator = LoggingConnectionCreator.builder().withLogger(logger).build();
-        loggingConnectionCreator.create(null);
+        Connection nullConnection = null;
+        DbLoggingBuilder.builder().setLogger(logger).createFrom(nullConnection);
     }
 }
