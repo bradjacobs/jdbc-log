@@ -46,18 +46,12 @@ public class ParamToStringConverter
     }
 
     public void setZoneId(ZoneId zoneId) {
-        if (zoneId == null) {
-            zoneId = DEFAULT_ZONE;
-        }
-        this.zoneId = zoneId;
+        this.zoneId = (zoneId != null ? zoneId : DEFAULT_ZONE);
         setDateTimeFormatters(zoneId);
     }
 
     public void setDatabaseType(DatabaseType databaseType) {
-        if (databaseType == null) {
-            databaseType = DatabaseType.UNKNOWN;
-        }
-        this.databaseType = databaseType;
+        this.databaseType = (databaseType != null ? databaseType : DatabaseType.UNKNOWN);
     }
 
     public void setRenderDatesAsEpochUtc(boolean renderDatesAsEpochUtc) {
@@ -88,7 +82,7 @@ public class ParamToStringConverter
             }
             return numberString;
         }
-        if (paramValue instanceof java.sql.Date) {
+        else if (paramValue instanceof java.sql.Date) {
             return makeDateString(dateFormatter, (Date)paramValue);
         }
         else if (paramValue instanceof java.sql.Time) {
@@ -122,4 +116,17 @@ public class ParamToStringConverter
 
         return dateString;
     }
+
+
+
+    // NOTE about java.sql.Array  (Not yet Implemented)
+    //
+    //     else if (paramValue instanceof java.sql.Array) {
+    //            java.sql.Array paramArray = (java.sql.Array)paramValue;
+    //            Object[] values = (Object[])paramArray.getArray()
+    //            ... convert the values to a string ...
+    //    }
+    // note the 'paramArray.getArray()' can throw a SqlException,
+    //   which would mean that converting the values to a string _might_ happen
+    //   in a different location.
 }
