@@ -84,10 +84,14 @@ public class CustomLoggingListener implements LoggingListener {
 # Additional Notes
 ## Known Issues
 1. The SQL statement is logged immediately **BEFORE** the SQL is actually executed (so it gets logged even if there was a SQL Exception)
-2. SQL param logging NOT supported when setting CallableStatements parameter by _Name_
-3. All dates are logged using the UTC timezone by default.
-4. Project still needs javadocs and Readme updates.
-5. Still making code tweaks sporadically.
+2. All dates are logged using the UTC timezone by default.
+3. Project still needs javadocs and Readme updates.
+4. Still making code tweaks sporadically.
+
+## NOT Implemented
+1. CallableStatement SQL param logging when setting parameter by _NAME_
+2. PreparedStatement `setArray` method
+
 ## Testing
 ### What WAS Tested
 1. Most 'happy path' cases,
