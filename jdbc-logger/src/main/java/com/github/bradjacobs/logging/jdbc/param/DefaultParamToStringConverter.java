@@ -1,6 +1,5 @@
 package com.github.bradjacobs.logging.jdbc.param;
 
-import com.github.bradjacobs.logging.jdbc.DatabaseType;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
@@ -35,45 +34,63 @@ public class DefaultParamToStringConverter implements ParamToStringConverter
     public String convertToString(Object paramValue)
     {
         if (paramValue == null) {
-            return "null";
+            return convertNull();
         }
         else if (paramValue instanceof String) {
-            String paramValueString = (String)paramValue;
-            if (paramValueString.contains("'")) {
-                paramValueString = StringUtils.replace(paramValueString, "'", "''");
-            }
-            return "'" + paramValueString + "'";
+            return convertString((String)paramValue);
         }
         else if (paramValue instanceof Boolean) {
-            return ((Boolean)paramValue) ? "1" : "0";
+            return convertBoolean((Boolean)paramValue);
         }
         else if (paramValue instanceof Number) {
-            String numberString = paramValue.toString();
-            if (numberString.contains("E")) {
-                // if the string value number contains 'E', then it's scientific notation,
-                //   and will regenerate with BigDecimal to make normal looking number.
-                numberString = BigDecimal.valueOf(((Number)paramValue).doubleValue()).toPlainString();
-            }
-            return numberString;
+            return convertNumber((Number)paramValue);
         }
         else if (paramValue instanceof java.sql.Date) {
-            return makeDateString(dateFormatter, (Date)paramValue);
+            return convertDate(dateFormatter, (Date)paramValue);
         }
         else if (paramValue instanceof java.sql.Time) {
-            return makeDateString(timeFormatter, (Date)paramValue);
+            return convertDate(timeFormatter, (Date)paramValue);
         }
         else if (paramValue instanceof java.util.Date) {
             // includes both java.sql.Timestamp and java.util.Date
-            return makeDateString(timestampFormatter, (Date)paramValue);
+            return convertDate(timestampFormatter, (Date)paramValue);
         }
         else {
-            return paramValue.toString();
+            return convertDefault(paramValue);
         }
     }
 
-    protected String makeDateString(DateTimeFormatter formatter, Date dateValue)
-    {
+    protected String convertNull() {
+        return "null";
+    }
+
+    protected String convertString(String stringValue) {
+        if (stringValue.contains("'")) {
+            stringValue = StringUtils.replace(stringValue, "'", "''");
+        }
+        return "'" + stringValue + "'";
+    }
+
+    protected String convertBoolean(Boolean booleanValue) {
+        return Boolean.TRUE.equals(booleanValue) ? "1" : "0";
+    }
+
+    protected String convertNumber(Number numberValue) {
+        String numberString = numberValue.toString();
+        if (numberString.contains("E")) {
+            // if the string value number contains 'E', then it is in scientific notation,
+            //   thus regenerate with BigDecimal to make normal looking number.
+            numberString = BigDecimal.valueOf((numberValue).doubleValue()).toPlainString();
+        }
+        return numberString;
+    }
+
+    protected String convertDate(DateTimeFormatter formatter, Date dateValue) {
         return "'" + formatter.format(Instant.ofEpochMilli(dateValue.getTime())) + "'";
+    }
+
+    protected String convertDefault(Object objectValue) {
+        return String.valueOf(objectValue);
     }
 
 

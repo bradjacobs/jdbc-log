@@ -21,9 +21,9 @@ public class OracleParamToStringConverter extends DefaultParamToStringConverter 
     }
 
     @Override
-    protected String makeDateString(DateTimeFormatter formatter, Date dateValue)
+    protected String convertDate(DateTimeFormatter formatter, Date dateValue)
     {
-        String dateString = super.makeDateString(formatter, dateValue);
+        String dateString = super.convertDate(formatter, dateValue);
 
         String oraclePrefix = ORACLE_TOTIMESTAMP_PREFIX;
         String oracleSuffix = ORACLE_TOTIMESTAMP_SUFFIX;
