@@ -8,7 +8,7 @@ This project was created for one reason: ***SQL Statement logs with silly Questi
 1 **JDBC-Logger (THIS PROJECT)**
 ```sql
 insert into employee (active, first_name, hire_date, last_name, level, notes, salary, id) 
-values (1, 'George', '2021-11-07 02:23:07', 'Washington', 9, null, 55123.43, 1)
+values (1, 'George', '2021-11-07 02:22:04', 'Washington', 9, null, 55123.43, 1)
 ```
 2 **Existing Hibernate logging (DEBUG)**
 ```sql
