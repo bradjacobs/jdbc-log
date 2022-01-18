@@ -466,7 +466,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     @Override
     @Deprecated
     public void setUnicodeStream(int parameterIndex, InputStream x, int length) throws SQLException {
-        setCurrentParameter(parameterIndex, UNICODE_STREAM_PLACEHOLDER);
+        setCurrentParameter(parameterIndex, (x != null ? UNICODE_STREAM_PLACEHOLDER : null));
         preparedStatement.setUnicodeStream(parameterIndex, x, length);
     }
 
