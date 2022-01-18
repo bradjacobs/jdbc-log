@@ -2,6 +2,8 @@ package com.github.bradjacobs.logging.jdbc;
 
 import com.github.bradjacobs.logging.jdbc.listeners.LoggingListener;
 import com.github.bradjacobs.logging.jdbc.listeners.Slf4jLoggingListener;
+import com.github.bradjacobs.logging.jdbc.param.DefaultParamToStringConverter;
+import com.github.bradjacobs.logging.jdbc.param.ParamStringConverterFactory;
 import com.github.bradjacobs.logging.jdbc.param.ParamToStringConverter;
 import com.github.bradjacobs.logging.jdbc.param.SqlTagFiller;
 
@@ -68,12 +70,11 @@ public class LoggingConnectionCreator
 
     public static class Builder
     {
-        private static final ZoneId DEFAULT_ZONE = ParamToStringConverter.DEFAULT_ZONE;
-
         private DatabaseType dbType = null;
+        private ZoneId zoneId = null;
         private final List<LoggingListener> loggingListeners = new ArrayList<>();
         private boolean clobReaderLogging = Boolean.FALSE;
-        private ParamToStringConverter paramToStringConverter = new ParamToStringConverter();
+        private ParamToStringConverter paramToStringConverter = null;
 
         /**
          * LoggingSqlConfig.Builder constructor
@@ -94,7 +95,6 @@ public class LoggingConnectionCreator
          */
         public Builder withDbTypeIdentifier(String dbTypeIdentifier) {
             this.dbType = DatabaseType.identifyDatabaseType(dbTypeIdentifier);
-            paramToStringConverter.setDatabaseType(dbType);
             return this;
         }
 
@@ -130,20 +130,13 @@ public class LoggingConnectionCreator
         public Builder withTimeZone(String timeZone) {
             return withTimeZone(ZoneId.of(timeZone));
         }
+
         /**
          * Set explicit timeZone for use when generating DateTime strings
          * @param zoneId the ZoneId
          */
         public Builder withTimeZone(ZoneId zoneId) {
-            paramToStringConverter.setZoneId(zoneId);
-            return this;
-        }
-
-        /**
-         * Enable all timestamp/date/time instances to rendered as numeric (unix/epoch time)
-         */
-        public Builder withChronoDefaultNumerics() {
-            this.paramToStringConverter.setRenderDatesAsEpochUtc(true);
+            this.zoneId = zoneId;
             return this;
         }
 
@@ -152,6 +145,8 @@ public class LoggingConnectionCreator
                 throw new IllegalStateException("Must have At least 1 loggingListener specified.");
             }
 
+            // todo - fix - this is interim solution
+            this.paramToStringConverter = ParamStringConverterFactory.getParamConverter(this.dbType, this.zoneId);
             return new LoggingConnectionCreator(this);
         }
     }
