@@ -18,6 +18,9 @@ import java.util.List;
  *
  * @see <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/format/DateTimeFormatter.html">DateTimeFormatter</a>
  */
+
+//  TODO -- this class will probably be removed after future refactors!!
+//
 public class LoggingConnectionCreator
 {
     private final boolean clobReaderLogging;
