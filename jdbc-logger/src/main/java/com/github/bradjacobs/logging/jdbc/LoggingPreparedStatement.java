@@ -480,7 +480,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
 
 
     /**
-     * For TEXT InputStream parameters, will attempt to long the "inner string value" IFF configured
+     * For TEXT InputStream parameters, will attempt to log the "inner string value" IFF configured
      * Otherwise will log parameter with a placeholder value.
      * @param index parameter index
      * @param inputStream inputStream
@@ -504,7 +504,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     }
 
     /**
-     * For Reader parameters, will attempt to long the "inner string value" IFF configured
+     * For Reader parameters, will attempt to log the "inner string value" IFF configured
      * Otherwise will log parameter with a placeholder value.
      * @param index parameter index
      * @param reader reader
