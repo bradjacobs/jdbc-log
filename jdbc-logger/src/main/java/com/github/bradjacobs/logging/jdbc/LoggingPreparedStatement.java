@@ -51,54 +51,6 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         this.sqlTracker.setParameter(index, value);
     }
 
-    /**
-     * For Reader parameters, will attempt to long the "inner string value" IFF configured
-     * Otherwise will log parameter with a placeholder value.
-     * @param index parameter index
-     * @param reader reader
-     * @return Reader
-     *   if clob logging enabled  = get back a 'new' Reader to be used instead of the passed in Reader
-     *   if clob logging disabled = get back the original passed in reader.
-     */
-    protected Reader setCurrentReaderParameter(int index, Reader reader) {
-        String strValue = null;
-        if (reader != null) {
-            if (clobReaderLoggingEnabled) {
-                strValue = extractString(reader);
-                reader = new StringReader(strValue);
-            }
-            else {
-                strValue = TEXT_CLOB_VALUE_PLACEHOLDER;
-            }
-        }
-        setCurrentParameter(index, strValue);
-        return reader;
-    }
-
-    /**
-     * For TEXT InputStream parameters, will attempt to long the "inner string value" IFF configured
-     * Otherwise will log parameter with a placeholder value.
-     * @param index parameter index
-     * @param inputStream inputStream
-     * @return InputStream
-     *   if clob logging enabled  = get back a 'new' InputStream to be used instead of the passed in InputStream
-     *   if clob logging disabled = get back the original passed in inputStream.
-     */
-    protected InputStream setCurrentStreamParameter(int index, InputStream inputStream) {
-        String strValue = null;
-        if (inputStream != null) {
-            if (clobReaderLoggingEnabled) {
-                strValue = extractString(inputStream);
-                inputStream = new ByteArrayInputStream(strValue.getBytes(StandardCharsets.UTF_8));
-            }
-            else {
-                strValue = TEXT_CLOB_VALUE_PLACEHOLDER;
-            }
-        }
-        setCurrentParameter(index, strValue);
-        return inputStream;
-    }
-
     protected void clearLogParameters() {
         sqlTracker.clearParameters();
     }
@@ -281,15 +233,8 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     /** @inheritDoc */
     @Override
     public void setClob(int parameterIndex, Clob x) throws SQLException {
-        // note: it's possible the driver might not even allow setting a 'null' here, but still check nonetheless.
-        if (x != null) {
-            Reader innerReader = setCurrentReaderParameter(parameterIndex, x.getCharacterStream());
-            preparedStatement.setClob(parameterIndex, innerReader);
-        }
-        else {
-            setCurrentParameter(parameterIndex, null);
-            preparedStatement.setClob(parameterIndex, x);
-        }
+        setCurrentParameter(parameterIndex, getClobString(x));
+        preparedStatement.setClob(parameterIndex, x);
     }
 
     /** @inheritDoc */
@@ -358,14 +303,8 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     /** @inheritDoc */
     @Override
     public void setNClob(int parameterIndex, NClob x) throws SQLException {
-        if (x != null) {
-            Reader innerReader = setCurrentReaderParameter(parameterIndex, x.getCharacterStream());
-            preparedStatement.setNClob(parameterIndex, innerReader);
-        }
-        else {
-            setCurrentParameter(parameterIndex, null);
-            preparedStatement.setNClob(parameterIndex, x);
-        }
+        setCurrentParameter(parameterIndex, getClobString(x));
+        preparedStatement.setNClob(parameterIndex, x);
     }
 
     /** @inheritDoc */
@@ -538,6 +477,81 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         preparedStatement.setURL(parameterIndex, x);
     }
 
+
+
+    /**
+     * For TEXT InputStream parameters, will attempt to long the "inner string value" IFF configured
+     * Otherwise will log parameter with a placeholder value.
+     * @param index parameter index
+     * @param inputStream inputStream
+     * @return InputStream
+     *   if clob logging enabled  = get back a 'new' InputStream to be used instead of the passed in InputStream
+     *   if clob logging disabled = get back the original passed in inputStream.
+     */
+    protected InputStream setCurrentStreamParameter(int index, InputStream inputStream) {
+        String strValue = null;
+        if (inputStream != null) {
+            if (clobReaderLoggingEnabled) {
+                strValue = extractString(inputStream);
+                inputStream = new ByteArrayInputStream(strValue.getBytes(StandardCharsets.UTF_8));
+            }
+            else {
+                strValue = TEXT_CLOB_VALUE_PLACEHOLDER;
+            }
+        }
+        setCurrentParameter(index, strValue);
+        return inputStream;
+    }
+
+    /**
+     * For Reader parameters, will attempt to long the "inner string value" IFF configured
+     * Otherwise will log parameter with a placeholder value.
+     * @param index parameter index
+     * @param reader reader
+     * @return Reader
+     *   if clob logging enabled  = get back a 'new' Reader to be used instead of the passed in Reader
+     *   if clob logging disabled = get back the original passed in reader.
+     */
+    protected Reader setCurrentReaderParameter(int index, Reader reader) {
+        String strValue = null;
+        if (reader != null) {
+            if (clobReaderLoggingEnabled) {
+                strValue = extractString(reader);
+                reader = new StringReader(strValue);
+            }
+            else {
+                strValue = TEXT_CLOB_VALUE_PLACEHOLDER;
+            }
+        }
+        setCurrentParameter(index, strValue);
+        return reader;
+    }
+
+    protected String getClobString(Clob clob) throws SQLException {
+        String clobString = null;
+        if (clob != null) {
+            if (clobReaderLoggingEnabled) {
+                long length = 0;
+                try {
+                    length = clob.length();
+                }
+                catch (SQLException e) {
+                    // if exception then throw a different error to show it occurred during the SQL logging process.
+                    throw new SQLException("Error attempting to get length of Clob for Logging: " + e.getMessage(), e);
+                }
+
+                // just truncate if clob is greater than MAX INT.
+                if (length > Integer.MAX_VALUE) {
+                    length = Integer.MAX_VALUE;
+                }
+                clobString = clob.getSubString(1, (int)length);
+            }
+            else {
+                clobString = TEXT_CLOB_VALUE_PLACEHOLDER;
+            }
+        }
+        return clobString;
+    }
 
     protected String extractString(Reader reader) {
         if (reader == null) {
