@@ -28,6 +28,10 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     private static final String BYTES_VALUE_PLACEHOLDER = "{_BYTES_}";
     private static final String TEXT_CLOB_VALUE_PLACEHOLDER = "{_CLOB_}";
 
+    // todo: use temp array placeholder until 'true' fix
+    //    i.e. this _could_ throw exception:  myArray.toString()
+    private static final String ARRAY_VALUE_PLACEHOLDER = "{_ARRAY_}";
+
     private final PreparedStatement preparedStatement;
     private final boolean clobReaderLoggingEnabled;
 
@@ -157,7 +161,8 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     /** @inheritDoc */
     @Override
     public void setArray(int parameterIndex, Array x) throws SQLException {
-        setCurrentParameter(parameterIndex, x);
+        // todo: temporary until true fix  (probably a low priority)
+        setCurrentParameter(parameterIndex, (x != null ? ARRAY_VALUE_PLACEHOLDER : null));
         preparedStatement.setArray(parameterIndex, x);
     }
 
