@@ -1,6 +1,6 @@
 # IMPORTANT DISCLAIMER
 This project was created as a _<u>personal database logging experiment</u>_.<br>
-There are mush better pre-existing solutions that can do the same (or similar)
+There are much better pre-existing solutions that can do the same (or similar)
 
 ## Useful Links to some better alternatives
 * <a href="https://p6spy.readthedocs.io/en/latest/index.html">P6SPY</a><br>
