@@ -1,8 +1,20 @@
-# JDBC-Logger
+# IMPORTANT DISCLAIMER
+This project was created as a _<u>personal database logging experiment</u>_.<br>
+There are mush better pre-existing solutions that can do the same (or similar)
+
+## Useful Links to some better alternatives
+* <a href="https://p6spy.readthedocs.io/en/latest/index.html">P6SPY</a><br>
+* <a href="https://github.com/gavlyukovskiy/spring-boot-data-source-decorator">Spring Boot Data Source Decorator</a><br>
+* <a href="https://github.com/ttddyy/datasource-proxy">DataSource Proxy</a> (and <a href="https://github.com/ttddyy/datasource-proxy-examples">examples</a>)<br>
+
+-----
+-----
+
+
+## JDBC-Logger
 JDBC-Logger is a alternative module for logging JDBC SQL statements in an application.  Will print out 'real-looking' SQL statements.
 
-## TLDR / Background
-This project was created for one reason: ***SQL Statement logs with silly Question Marks (?'s) drive me bonkers!.***
+Motivated by the fact that: ***SQL Statement logs with silly Question Marks (?'s) drive me bonkers!.***
 
 ## Output Comparisons
 1 **JDBC-Logger (THIS PROJECT)**
