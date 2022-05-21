@@ -84,9 +84,6 @@ public class DbLoggingBuilder
         if (targetConnection == null) {
             throw new IllegalArgumentException("Connection cannot be null.");
         }
-        else if (loggingListeners.isEmpty()) {
-            throw new IllegalStateException("Must provide at least one logger or loggingListener");
-        }
         return new LoggingConnection(targetConnection, this);
     }
 
