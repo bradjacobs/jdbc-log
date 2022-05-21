@@ -32,8 +32,7 @@ abstract public class AbstractPojoLoggingTest
         Connection innerConn = DriverManager.getConnection("jdbc:hsqldb:mem:sampleDB", "SA", "");
 
         DbLoggingBuilder dbLoggingBuilder =
-                DbLoggingBuilder.builder()
-                        .setLoggingListeners(captureLoggingListener, new SystemOutLogListener())
+                DbLoggingBuilder.builder(captureLoggingListener, new SystemOutLogListener())
                         .setClobParamLogging(clobLoggingEnabled);
 
         Connection dbcon = dbLoggingBuilder.createFrom(innerConn);

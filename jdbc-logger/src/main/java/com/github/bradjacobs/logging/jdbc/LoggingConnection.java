@@ -37,7 +37,7 @@ public class LoggingConnection implements Connection
     // will allow a normal constructor (avoid builder) if want a single logger with all defaults
     //   (reserve right change mind about this later!!)
     public LoggingConnection(Connection targetConnection, org.slf4j.Logger logger) {
-        this(targetConnection, new DbLoggingBuilder().setLogger(logger));
+        this(targetConnection, DbLoggingBuilder.builder(logger));
     }
 
     LoggingConnection(Connection targetConnection, DbLoggingBuilder builder) {

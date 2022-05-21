@@ -29,7 +29,7 @@ public class DbLoggingBuilderTest
     @Test
     public void testSimple() throws Exception
     {
-        DbLoggingBuilder.builder().setLogger(logger);
+        DbLoggingBuilder.builder(logger);
     }
 
     @Test
@@ -45,7 +45,7 @@ public class DbLoggingBuilderTest
         };
 
         DbLoggingBuilder dbLoggingBuilder =
-            new DbLoggingBuilder().setLoggingListeners(logger1, logger2);
+            DbLoggingBuilder.builder(logger1, logger2);
 
         assertNotNull(dbLoggingBuilder.loggingListeners);
         assertEquals(dbLoggingBuilder.loggingListeners.size(), 2, "mismatch expected log listener count");
@@ -55,27 +55,49 @@ public class DbLoggingBuilderTest
     // *** ERROR CONDITION TESTS ***
     /////////////////////////////////
 
-    @Test(expectedExceptions = { IllegalStateException.class },
+    @Test(expectedExceptions = { IllegalArgumentException.class },
+        expectedExceptionsMessageRegExp = "Must provide a non-null logger.")
+    public void testNullLogger() throws Exception
+    {
+        org.slf4j.Logger logger = null;
+        DbLoggingBuilder.builder(logger).createFrom(MOCK_DATA_SOURCE);
+    }
+
+    @Test(expectedExceptions = { IllegalArgumentException.class },
         expectedExceptionsMessageRegExp = "Must provide at least one logger or loggingListener")
     public void testNullListener() throws Exception
     {
         LoggingListener logListener = null;
-        DbLoggingBuilder.builder().setLoggingListeners(logListener).createFrom(MOCK_DATA_SOURCE);
+        DbLoggingBuilder.builder(logListener).createFrom(MOCK_DATA_SOURCE);
     }
 
-    @Test(expectedExceptions = { IllegalStateException.class },
-        expectedExceptionsMessageRegExp = "Must provide at least one logger or loggingListener")
-    public void testNullListener2() throws Exception
+    @Test(expectedExceptions = { IllegalArgumentException.class },
+            expectedExceptionsMessageRegExp = "Must provide at least one logger or loggingListener")
+    public void testNullListenerCollections() throws Exception
     {
-        LoggingListener logListener = null;
-        List<LoggingListener> logListenerList = Collections.singletonList(logListener);
-        DbLoggingBuilder.builder().setLoggingListeners(logListener).createFrom(MOCK_DATA_SOURCE);
+        List<LoggingListener> nullList = null;
+        DbLoggingBuilder.builder(nullList).createFrom(MOCK_DATA_SOURCE);
+    }
+
+    @Test(expectedExceptions = { IllegalArgumentException.class },
+            expectedExceptionsMessageRegExp = "Must provide at least one logger or loggingListener")
+    public void testEmptyListenerCollections() throws Exception
+    {
+        DbLoggingBuilder.builder(Collections.emptyList()).createFrom(MOCK_DATA_SOURCE);
+    }
+
+    @Test(expectedExceptions = { IllegalArgumentException.class },
+            expectedExceptionsMessageRegExp = "Must provide at least one logger or loggingListener")
+    public void testListWithAllNulls() throws Exception
+    {
+        List<LoggingListener> list = Collections.singletonList(null);
+        DbLoggingBuilder.builder(list).createFrom(MOCK_DATA_SOURCE);
     }
 
     @Test(expectedExceptions = { IllegalArgumentException.class },
             expectedExceptionsMessageRegExp = EXPECTED_MISSING_CONNECTION_MSG)
     public void testMissingConnection() throws Exception {
         Connection nullConnection = null;
-        DbLoggingBuilder.builder().setLogger(logger).createFrom(nullConnection);
+        DbLoggingBuilder.builder(logger).createFrom(nullConnection);
     }
 }

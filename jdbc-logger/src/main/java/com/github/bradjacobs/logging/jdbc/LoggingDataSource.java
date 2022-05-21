@@ -25,7 +25,7 @@ public class LoggingDataSource implements DataSource
      * @param logger logger
      */
     public LoggingDataSource(DataSource dataSource, org.slf4j.Logger logger) {
-        this(dataSource, new DbLoggingBuilder().setLogger(logger));
+        this(dataSource, DbLoggingBuilder.builder(logger));
     }
 
 

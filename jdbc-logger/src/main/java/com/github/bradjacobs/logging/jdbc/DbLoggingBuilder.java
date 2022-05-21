@@ -13,8 +13,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
+import java.util.stream.Stream;
 
 /**
  * Builder that can create a LoggingDataSource and/or LoggingConnection
@@ -23,16 +24,36 @@ import java.util.stream.Collectors;
 public class DbLoggingBuilder
 {
     protected ZoneId zoneId = ParamStringConverterFactory.DEFAULT_ZONE;
-    protected final List<LoggingListener> loggingListeners = new ArrayList<>();
+    protected final List<LoggingListener> loggingListeners;
     protected boolean clobParamLogging = false;
     protected DatabaseType dbType = null;
 
-    public static DbLoggingBuilder builder() {
-        return new DbLoggingBuilder();
+    public static DbLoggingBuilder builder(org.slf4j.Logger logger) {
+        return builder(new Slf4jLoggingListener(logger));
+    }
+    public static DbLoggingBuilder builder(LoggingListener ... loggingListeners) {
+        return builder(Arrays.asList(loggingListeners));
+    }
+    public static DbLoggingBuilder builder(Collection<LoggingListener> loggingListeners) {
+
+        // convert the collection to a list, checking if the input parameter is null
+        //    or if any of the elements contains a null.
+        //  (i'm sure there's a simplier way)
+        List<LoggingListener> logListenerList =
+            Optional.ofNullable(loggingListeners)
+                    .map(Collection::stream)
+                    .orElseGet(Stream::empty)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+        if (logListenerList.isEmpty()) {
+            throw new IllegalArgumentException("Must provide at least one logger or loggingListener");
+        }
+        return new DbLoggingBuilder(logListenerList);
     }
 
-    public DbLoggingBuilder()
-    {
+    private DbLoggingBuilder(List<LoggingListener> loggingListeners) {
+        this.loggingListeners = Collections.unmodifiableList(loggingListeners);
     }
 
     public DbLoggingBuilder setZone(String zone) {
@@ -41,26 +62,6 @@ public class DbLoggingBuilder
 
     public DbLoggingBuilder setZone(ZoneId zoneId) {
         this.zoneId = (zoneId != null ? zoneId : ParamStringConverterFactory.DEFAULT_ZONE);
-        return this;
-    }
-
-    public DbLoggingBuilder setLogger(org.slf4j.Logger logger) {
-        return setLoggingListeners(new Slf4jLoggingListener(logger));
-    }
-    public DbLoggingBuilder setLoggingListeners(LoggingListener loggingListener) {
-        return setLoggingListeners(Collections.singleton(loggingListener));
-    }
-    public DbLoggingBuilder setLoggingListeners(LoggingListener ... loggingListeners) {
-        if (loggingListeners != null ) {
-            return setLoggingListeners(Arrays.asList(loggingListeners));
-        }
-        return this;
-    }
-    public DbLoggingBuilder setLoggingListeners(Collection<LoggingListener> loggingListeners) {
-        if (loggingListeners != null && loggingListeners.size() > 0) {
-            // overly cautious...don't want any 'null' values in the collection!
-            this.loggingListeners.addAll( loggingListeners.stream().filter(Objects::nonNull).collect(Collectors.toList()) );
-        }
         return this;
     }
 
@@ -74,14 +75,12 @@ public class DbLoggingBuilder
         return this;
     }
 
-
     /**
      * Creates a LoggingConnection
      * @param targetConnection the original connection to be wrapped/decorated with LoggingConnection.
      * @return loggingConnection
      */
-    public LoggingConnection createFrom(Connection targetConnection)
-    {
+    public LoggingConnection createFrom(Connection targetConnection) {
         if (targetConnection == null) {
             throw new IllegalArgumentException("Connection cannot be null.");
         }
@@ -96,13 +95,9 @@ public class DbLoggingBuilder
      * @param targetDataSource the original dataSource to be wrapped/decorated with LoggingDataSource.
      * @return loggingDataSource
      */
-    public LoggingDataSource createFrom(DataSource targetDataSource)
-    {
+    public LoggingDataSource createFrom(DataSource targetDataSource) {
         if (targetDataSource == null) {
             throw new IllegalArgumentException("DataSource cannot be null.");
-        }
-        else if (loggingListeners.isEmpty()) {
-            throw new IllegalStateException("Must provide at least one logger or loggingListener");
         }
         return new LoggingDataSource(targetDataSource, this);
     }
