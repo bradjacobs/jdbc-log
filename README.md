@@ -8,8 +8,6 @@ There are much better pre-existing solutions that can do the same (or similar)
 * <a href="https://github.com/ttddyy/datasource-proxy">DataSource Proxy</a> (and <a href="https://github.com/ttddyy/datasource-proxy-examples">examples</a>)<br>
 
 -----
------
-
 
 ## JDBC-Logger
 JDBC-Logger is a alternative module for logging JDBC SQL statements in an application.  Will print out 'real-looking' SQL statements.
@@ -71,9 +69,8 @@ Connection loggingConn = new LoggingConnection(innerConn, __YOUR_LOGGER_HERE__)
 ```
 ## Example 4 - Custom Data Source Via Builder
 ```
-DbLoggingBuilder.builder()
-        // include 2 logging listeners
-        .setLoggingListeners(new Slf4jLoggingListener(logger), new CustomLoggingListener())
+// builder with 2 logging listeners```
+DbLoggingBuilder.builder(new Slf4jLoggingListener(logger), new CustomLoggingListener())
         // attempt to log 'actual' string value for any CLOB objects
         .setClobParamLogging(true)
         // date string based on PST timezone (instead of default UTC)
