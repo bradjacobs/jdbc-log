@@ -8,16 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class SqlStatementTracker
-{
+class SqlStatementTracker {
     private String sql;
     private final SqlTagFiller sqlTagFiller;
 
     private List<BatchItem> batchItems = null;
     private Map<Integer, Object> paramMap = null;
 
-    public SqlStatementTracker()
-    {
+    public SqlStatementTracker() {
         this("", null);
     }
 
@@ -26,8 +24,7 @@ class SqlStatementTracker
         this.sqlTagFiller = sqlTagFiller;
     }
 
-    public void setSql(String sql)
-    {
+    public void setSql(String sql) {
         this.sql = sql;
     }
 

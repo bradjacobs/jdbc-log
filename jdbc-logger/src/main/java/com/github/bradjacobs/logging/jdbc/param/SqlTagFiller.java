@@ -1,24 +1,23 @@
 package com.github.bradjacobs.logging.jdbc.param;
 
+import com.github.bradjacobs.logging.jdbc.DatabaseType;
 
+import java.time.ZoneId;
 import java.util.Map;
 
-public class SqlTagFiller
-{
+public class SqlTagFiller {
     private static final String DEFAULT_TAG = "?";
 
     private final String tag;
     private final ParamToStringConverter paramToStringConverter;
 
-    public SqlTagFiller(ParamToStringConverter paramToStringConverter)
-    {
-        this(DEFAULT_TAG, paramToStringConverter);
+    public SqlTagFiller(DatabaseType dbType, ZoneId zoneId) {
+        this(DEFAULT_TAG, dbType, zoneId);
     }
 
-    public SqlTagFiller(String tag, ParamToStringConverter paramToStringConverter)
-    {
+    public SqlTagFiller(String tag, DatabaseType dbType, ZoneId zoneId) {
         this.tag = tag;
-        this.paramToStringConverter = paramToStringConverter;
+        this.paramToStringConverter = ParamStringConverterFactory.getParamConverter(dbType, zoneId);
     }
 
     /**
@@ -31,8 +30,7 @@ public class SqlTagFiller
      * @param paramMap parameter values
      * @return the 'filled in' SQL string.
      */
-    public String replace(String source, Map<Integer, Object> paramMap)
-    {
+    public String replace(String source, Map<Integer, Object> paramMap) {
         if (source == null) {
             return null;
         }
@@ -48,8 +46,7 @@ public class SqlTagFiller
         StringBuilder sb = new StringBuilder(source.length());
         int tagNumber = 1;
 
-        while (tagIdx >= 0)
-        {
+        while (tagIdx >= 0) {
             sb.append(source, lastIdx, tagIdx);
 
             // distinguish b/w having a null value for a given key vs there's a missing entry in the map
@@ -66,7 +63,6 @@ public class SqlTagFiller
             tagNumber++;
         }
         sb.append(source.substring(lastIdx));
-
         return sb.toString();
     }
 }

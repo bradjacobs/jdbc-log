@@ -12,16 +12,30 @@ import java.io.UncheckedIOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.sql.*;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.Date;
+import java.sql.NClob;
+import java.sql.ParameterMetaData;
+import java.sql.PreparedStatement;
+import java.sql.Ref;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.RowId;
+import java.sql.SQLException;
+import java.sql.SQLType;
+import java.sql.SQLXML;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Calendar;
 
 /**
  * Logging Decorator around PreparedStatements
  */
-public class LoggingPreparedStatement extends LoggingStatement implements PreparedStatement
-{
+public class LoggingPreparedStatement extends LoggingStatement implements PreparedStatement {
     // "PLACEHOLDERS" for certain parameters,
-    //     b/c logging blobs and streams is typically not very useful.
+    //     because logging blobs and streams is typically not very useful.
     private static final String BINARY_STREAM_VALUE_PLACEHOLDER = "{_BINARYSTREAM_}";
     private static final String BLOB_VALUE_PLACEHOLDER = "{_BLOB_}";
     private static final String UNICODE_STREAM_PLACEHOLDER = "{_UNICODESTREAM_}";
@@ -35,8 +49,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     private final PreparedStatement preparedStatement;
     private final boolean clobParamLoggingEnabled;
 
-    public LoggingPreparedStatement(PreparedStatement preparedStatement, LoggingConnection loggingConnection, String sql)
-    {
+    public LoggingPreparedStatement(PreparedStatement preparedStatement, LoggingConnection loggingConnection, String sql) {
         super(preparedStatement, loggingConnection, sql);
         this.preparedStatement = preparedStatement;
         this.clobParamLoggingEnabled = loggingConnection.isClobParamLoggingEnabled();
@@ -54,7 +67,6 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     protected void clearLogParameters() {
         sqlTracker.clearParameters();
     }
-
 
     /** @inheritDoc */
     @Override
@@ -478,9 +490,7 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
     }
 
 
-
     // TODO - find a new home for items below
-
 
 
     /**
@@ -589,12 +599,8 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
 
     private void closeQuietly(Closeable closeable) {
         if (closeable != null) {
-            try {
-                closeable.close();
-            }
-            catch (IOException e) {
-               /* ignore */
-            }
+            try { closeable.close(); }
+            catch (IOException e) { /* ignore */ }
         }
     }
 }

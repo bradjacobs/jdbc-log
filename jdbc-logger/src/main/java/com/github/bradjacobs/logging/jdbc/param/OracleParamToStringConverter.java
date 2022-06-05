@@ -4,8 +4,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-public class OracleParamToStringConverter extends DefaultParamToStringConverter implements ParamToStringConverter
-{
+public class OracleParamToStringConverter extends DefaultParamToStringConverter implements ParamToStringConverter {
     // oracle-specific date string constants
     private static final String ORACLE_TOTIMESTAMP_PREFIX = "TO_TIMESTAMP(";
     private static final String ORACLE_TOTIMESTAMP_SUFFIX = ", 'YYYY-MM-DD HH24:MI:SS')";
@@ -21,8 +20,7 @@ public class OracleParamToStringConverter extends DefaultParamToStringConverter 
     }
 
     @Override
-    protected String convertDate(DateTimeFormatter formatter, Date dateValue)
-    {
+    protected String convertDate(DateTimeFormatter formatter, Date dateValue) {
         String dateString = super.convertDate(formatter, dateValue);
 
         String oraclePrefix = ORACLE_TOTIMESTAMP_PREFIX;

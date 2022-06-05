@@ -1,5 +1,6 @@
 package com.github.bradjacobs.logging.jdbc.param;
 
+import com.github.bradjacobs.logging.jdbc.DbLoggingBuilder;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
@@ -8,9 +9,8 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-public class DefaultParamToStringConverter implements ParamToStringConverter
-{
-    protected static final ZoneId DEFAULT_ZONE = ParamStringConverterFactory.DEFAULT_ZONE;
+public class DefaultParamToStringConverter implements ParamToStringConverter {
+    protected static final ZoneId DEFAULT_ZONE = DbLoggingBuilder.DEFAULT_ZONE;
     protected static final String DEFAULT_TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss";
     protected static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd";
     protected static final String DEFAULT_TIME_PATTERN = "HH:mm:ss";
@@ -21,7 +21,7 @@ public class DefaultParamToStringConverter implements ParamToStringConverter
     protected final ZoneId zoneId;
 
     public DefaultParamToStringConverter() {
-        this(ParamStringConverterFactory.DEFAULT_ZONE);
+        this(DEFAULT_ZONE);
     }
 
     public DefaultParamToStringConverter(ZoneId zoneId) {
@@ -31,8 +31,7 @@ public class DefaultParamToStringConverter implements ParamToStringConverter
         this.timeFormatter = DateTimeFormatter.ofPattern(DEFAULT_TIME_PATTERN).withZone(zoneId);
     }
 
-    public String convertToString(Object paramValue)
-    {
+    public String convertToString(Object paramValue) {
         if (paramValue == null) {
             return convertNull();
         }
@@ -92,7 +91,6 @@ public class DefaultParamToStringConverter implements ParamToStringConverter
     protected String convertDefault(Object objectValue) {
         return String.valueOf(objectValue);
     }
-
 
 
     // NOTE about java.sql.Array  (Not yet Implemented)

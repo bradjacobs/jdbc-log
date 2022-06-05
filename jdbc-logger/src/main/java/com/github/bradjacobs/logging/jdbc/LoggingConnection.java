@@ -1,8 +1,6 @@
 package com.github.bradjacobs.logging.jdbc;
 
 import com.github.bradjacobs.logging.jdbc.listeners.LoggingListener;
-import com.github.bradjacobs.logging.jdbc.param.ParamStringConverterFactory;
-import com.github.bradjacobs.logging.jdbc.param.ParamToStringConverter;
 import com.github.bradjacobs.logging.jdbc.param.SqlTagFiller;
 
 import java.sql.Array;
@@ -26,8 +24,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
-public class LoggingConnection implements Connection
-{
+public class LoggingConnection implements Connection {
     private final Connection targetConnection;
 
     private final boolean clobParamLoggingEnabled;
@@ -48,8 +45,7 @@ public class LoggingConnection implements Connection
         this.loggingListeners = Collections.unmodifiableList(builder.loggingListeners);
         this.clobParamLoggingEnabled = builder.clobParamLogging;
 
-        ParamToStringConverter paramToStringConverter = ParamStringConverterFactory.getParamConverter(builder.dbType, builder.zoneId);
-        this.sqlTagFiller = new SqlTagFiller(paramToStringConverter);
+        this.sqlTagFiller = new SqlTagFiller(builder.dbType, builder.zoneId);
     }
 
     public boolean isClobParamLoggingEnabled() {
@@ -75,7 +71,6 @@ public class LoggingConnection implements Connection
     private CallableStatement logWrap(CallableStatement callableStatement, String sql) {
         return new LoggingCallableStatement(callableStatement, this, sql);
     }
-
 
     /** @inheritDoc */
     @Override

@@ -1,11 +1,23 @@
 package com.github.bradjacobs.logging.jdbc;
 
-
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
-import java.sql.*;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.CallableStatement;
+import java.sql.Clob;
+import java.sql.Date;
+import java.sql.JDBCType;
+import java.sql.NClob;
+import java.sql.Ref;
+import java.sql.RowId;
+import java.sql.SQLException;
+import java.sql.SQLType;
+import java.sql.SQLXML;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Map;
 
@@ -16,29 +28,26 @@ import java.util.Map;
  *     Logging ONLY works when setting numeric parameter indexes
  *     i.e. Logging _NOT_ currently supported when setting parameter by name.
  */
-public class LoggingCallableStatement extends LoggingPreparedStatement implements CallableStatement
-{
+public class LoggingCallableStatement extends LoggingPreparedStatement implements CallableStatement {
     private final CallableStatement callableStatement;
 
-    public LoggingCallableStatement(CallableStatement callableStatement, LoggingConnection loggingConnection, String sql)
-    {
+    public LoggingCallableStatement(CallableStatement callableStatement, LoggingConnection loggingConnection, String sql) {
         super(callableStatement, loggingConnection, sql);
         this.callableStatement = callableStatement;
     }
-
 
     // todo: can easily convert below into cache (will do so iff demand requires it)
     private String generatePlaceholderName(int sqlType) {
         JDBCType jdbcType = JDBCType.valueOf(sqlType);
         return generatePlaceholderName(jdbcType.getName());
     }
+
     private String generatePlaceholderName(SQLType sqlType) {
         return generatePlaceholderName(sqlType.getName());
     }
     private String generatePlaceholderName(String typeName) {
         return"{_OUT_" + typeName + "_}";
     }
-
 
     /** @inheritDoc */
     @Override

@@ -12,8 +12,7 @@ import java.util.List;
 /**
  * Logging Decorator around Statements
  */
-public class LoggingStatement implements Statement
-{
+public class LoggingStatement implements Statement {
     private final Statement statement;
     private final List<LoggingListener> loggingListeners;
     private final LoggingConnection loggingConnection;
@@ -71,13 +70,11 @@ public class LoggingStatement implements Statement
     protected void log(String sql) {
         if (this.loggingListeners != null) {
             for (LoggingListener loggingListener : loggingListeners) {
-
                 // NOTE: TBD to try/catch this or not
                 loggingListener.log(sql);
             }
         }
     }
-
 
     /** @inheritDoc */
     @Override

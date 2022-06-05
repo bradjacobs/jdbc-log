@@ -2,12 +2,10 @@ package com.github.bradjacobs.logging.jdbc;
 
 import com.github.bradjacobs.logging.jdbc.listeners.LoggingListener;
 import com.github.bradjacobs.logging.jdbc.listeners.Slf4jLoggingListener;
-import com.github.bradjacobs.logging.jdbc.param.ParamStringConverterFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,9 +19,10 @@ import java.util.stream.Stream;
  * Builder that can create a LoggingDataSource and/or LoggingConnection
  */
 // TODO ---  NEED A BETTER CLASS NAME!!
-public class DbLoggingBuilder
-{
-    protected ZoneId zoneId = ParamStringConverterFactory.DEFAULT_ZONE;
+public class DbLoggingBuilder {
+    public static final ZoneId DEFAULT_ZONE = ZoneId.of("UTC");
+
+    protected ZoneId zoneId = DEFAULT_ZONE;
     protected final List<LoggingListener> loggingListeners;
     protected boolean clobParamLogging = false;
     protected DatabaseType dbType = null;
@@ -35,7 +34,6 @@ public class DbLoggingBuilder
         return builder(Arrays.asList(loggingListeners));
     }
     public static DbLoggingBuilder builder(Collection<LoggingListener> loggingListeners) {
-
         // convert the collection to a list, checking if the input parameter is null
         //    or if any of the elements contains a null.
         //  (i'm sure there's a simplier way)
@@ -61,7 +59,7 @@ public class DbLoggingBuilder
     }
 
     public DbLoggingBuilder setZone(ZoneId zoneId) {
-        this.zoneId = (zoneId != null ? zoneId : ParamStringConverterFactory.DEFAULT_ZONE);
+        this.zoneId = (zoneId != null ? zoneId : DEFAULT_ZONE);
         return this;
     }
 

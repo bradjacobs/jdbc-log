@@ -1,24 +1,24 @@
 package com.github.bradjacobs.logging.jdbc.param;
 
 import com.github.bradjacobs.logging.jdbc.DatabaseType;
+import com.github.bradjacobs.logging.jdbc.DbLoggingBuilder;
 
 import java.time.ZoneId;
 
-public class ParamStringConverterFactory
-{
-    public static final ZoneId DEFAULT_ZONE = ZoneId.of("UTC");
+class ParamStringConverterFactory {
+
+    private ParamStringConverterFactory() { }
 
     public static ParamToStringConverter getParamConverter(DatabaseType dbType) {
-        return getParamConverter(dbType, DEFAULT_ZONE);
+        return getParamConverter(dbType, null);
     }
 
-    public static ParamToStringConverter getParamConverter(DatabaseType dbType, ZoneId zoneId)
-    {
+    public static ParamToStringConverter getParamConverter(DatabaseType dbType, ZoneId zoneId) {
         if (dbType == null) {
             dbType = DatabaseType.UNKNOWN;
         }
         if (zoneId == null) {
-            zoneId = DEFAULT_ZONE;
+            zoneId = DbLoggingBuilder.DEFAULT_ZONE;
         }
 
         if (dbType == DatabaseType.ORACLE) {

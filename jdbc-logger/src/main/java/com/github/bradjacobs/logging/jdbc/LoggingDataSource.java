@@ -8,13 +8,11 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
-
 /**
  *
  * @see <a href="https://docs.spring.io/spring-boot/docs/1.5.14.RELEASE/reference/html/howto-data-access.html">Spring - Configure a Custom DataSource</a>
  */
-public class LoggingDataSource implements DataSource
-{
+public class LoggingDataSource implements DataSource {
     private final DataSource dataSource;
     private final DbLoggingBuilder dbLoggingBuilder;
     private boolean enabled = true;
@@ -27,7 +25,6 @@ public class LoggingDataSource implements DataSource
     public LoggingDataSource(DataSource dataSource, org.slf4j.Logger logger) {
         this(dataSource, DbLoggingBuilder.builder(logger));
     }
-
 
     /**
      * Constructor to use any customized loggingConnectionCreator.
@@ -125,7 +122,6 @@ public class LoggingDataSource implements DataSource
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return dataSource.isWrapperFor(iface);
     }
-
 
     private void validateParams(DataSource dataSource, DbLoggingBuilder dbLoggingBuilder)
             throws IllegalArgumentException

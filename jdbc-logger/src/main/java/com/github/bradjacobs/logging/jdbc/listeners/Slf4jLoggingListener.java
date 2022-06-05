@@ -6,20 +6,17 @@ import org.slf4j.event.Level;
 /**
  * Simple implementation of Logging Listener for SLF4J
  */
-public class Slf4jLoggingListener implements LoggingListener
-{
+public class Slf4jLoggingListener implements LoggingListener {
     private static final Level DEFAULT_LOG_LEVEL = Level.DEBUG;
 
     private final Logger logger;
     private final Level logLevel;
 
-    public Slf4jLoggingListener(Logger logger)
-    {
+    public Slf4jLoggingListener(Logger logger) {
         this(logger, DEFAULT_LOG_LEVEL);
     }
 
-    public Slf4jLoggingListener(Logger logger, Level logLevel)
-    {
+    public Slf4jLoggingListener(Logger logger, Level logLevel) {
         if (logger == null) {
             throw new IllegalArgumentException("Must provide a non-null logger.");
         }
@@ -29,9 +26,7 @@ public class Slf4jLoggingListener implements LoggingListener
 
     @Override
     public void log(String sql) {
-
-        switch (logLevel)
-        {
+        switch (logLevel) {
             case DEBUG:
                 if (logger.isDebugEnabled()) { logger.debug(sql); }
                 break;

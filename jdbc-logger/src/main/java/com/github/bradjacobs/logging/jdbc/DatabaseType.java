@@ -1,11 +1,9 @@
 package com.github.bradjacobs.logging.jdbc;
 
-
 /**
  * TODO: this class will (probably) get removed.
  */
-public enum DatabaseType
-{
+public enum DatabaseType {
     DB2,
     DERBY,
     H2,
@@ -27,8 +25,7 @@ public enum DatabaseType
      * @param dbName can be database product name, jdbc connection url, driver name, other, etc.
      * @return DatabaseType based on input parameter
      */
-    public static DatabaseType identifyDatabaseType(String dbName)
-    {
+    public static DatabaseType identifyDatabaseType(String dbName) {
         if (dbName == null) {
             return UNKNOWN;
         }
