@@ -8,8 +8,7 @@ import javax.sql.DataSource;
 
 import static org.mockito.Mockito.mock;
 
-public class LoggingDataSourceTest
-{
+public class LoggingDataSourceTest {
     private static final Logger logger = LoggerFactory.getLogger(LoggingDataSourceTest.class);
     private static final DataSource MOCK_DATA_SOURCE = mock(DataSource.class);
 
@@ -18,20 +17,17 @@ public class LoggingDataSourceTest
     private static final String MISSING_LOG_LISTENER_MSG = "Logging Listeners cannot be set to null or empty collection.";
     private static final String MISSING_BUILDER_MSG = "Must provide a dbLoggingBuilder";
 
-
     // exception handling unittests ....
 
     @Test(expectedExceptions = { IllegalArgumentException.class },
             expectedExceptionsMessageRegExp = MISSING_DATASOURCE_MSG)
     public void testMissingDataSource() throws Exception {
-
         LoggingDataSource loggingDataSource = new LoggingDataSource(null, logger);
     }
 
     @Test(expectedExceptions = { IllegalArgumentException.class },
             expectedExceptionsMessageRegExp = MISSING_LOGGER_MSG)
     public void testMissingLogger() throws Exception {
-
         Logger nullLogger = null;
         LoggingDataSource loggingDataSource = new LoggingDataSource(MOCK_DATA_SOURCE, nullLogger);
     }
@@ -39,7 +35,6 @@ public class LoggingDataSourceTest
     @Test(expectedExceptions = { IllegalArgumentException.class },
             expectedExceptionsMessageRegExp = MISSING_BUILDER_MSG)
     public void testMissingLoggingConnectionCreator() throws Exception {
-
         DbLoggingBuilder dbLoggingBuilder = null;
         LoggingDataSource loggingDataSource = new LoggingDataSource(MOCK_DATA_SOURCE, dbLoggingBuilder);
     }

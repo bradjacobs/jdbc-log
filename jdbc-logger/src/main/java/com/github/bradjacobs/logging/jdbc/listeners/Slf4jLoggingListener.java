@@ -26,6 +26,9 @@ public class Slf4jLoggingListener implements LoggingListener {
 
     @Override
     public void log(String sql) {
+
+        sql = "******* " + sql;
+
         switch (logLevel) {
             case DEBUG:
                 if (logger.isDebugEnabled()) { logger.debug(sql); }

@@ -14,8 +14,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 
-public class StoredProcLoggingTest extends AbstractPojoLoggingTest
-{
+public class StoredProcLoggingTest extends AbstractPojoLoggingTest {
     private PojoDAO dao = null;
     private CaptureLoggingListener captureLoggingListener = null;
 
@@ -24,7 +23,6 @@ public class StoredProcLoggingTest extends AbstractPojoLoggingTest
      */
     @BeforeMethod
     public void setup() throws Exception {
-
         captureLoggingListener = new CaptureLoggingListener();
         dao = initializePojoDao(captureLoggingListener, false);
     }
@@ -37,10 +35,8 @@ public class StoredProcLoggingTest extends AbstractPojoLoggingTest
         dao.close();
     }
 
-
     @Test
-    public void testCallStoredProc()  throws Exception
-    {
+    public void testCallStoredProc()  throws Exception {
         long timeValue = 1538014031000L;    // '2018-09-27'
 
         String pojo1StreamString = null;
@@ -79,8 +75,7 @@ public class StoredProcLoggingTest extends AbstractPojoLoggingTest
     }
 
     @Test
-    public void testCallStoredProcAsBatch()  throws Exception
-    {
+    public void testCallStoredProcAsBatch()  throws Exception {
         BloatedPojo inputPojo1 = createDummyPojo("Fredo");
         List<Integer> inputList = Arrays.asList(1,2,3);
         dao.callStoredProcedureBatch(inputList);

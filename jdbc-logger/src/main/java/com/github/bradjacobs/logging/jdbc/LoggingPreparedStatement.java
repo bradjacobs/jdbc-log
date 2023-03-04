@@ -545,20 +545,19 @@ public class LoggingPreparedStatement extends LoggingStatement implements Prepar
         String clobString = null;
         if (clob != null) {
             if (clobParamLoggingEnabled) {
-                long length = 0;
                 try {
-                    length = clob.length();
+                    long length = clob.length();
+
+                    // just truncate if clob is greater than MAX INT.
+                    if (length > Integer.MAX_VALUE) {
+                        length = Integer.MAX_VALUE;
+                    }
+                    clobString = clob.getSubString(1, (int)length);
                 }
                 catch (SQLException e) {
                     // if exception then throw a different error to show it occurred during the SQL logging process.
                     throw new SQLException("Error attempting to get length of Clob for Logging: " + e.getMessage(), e);
                 }
-
-                // just truncate if clob is greater than MAX INT.
-                if (length > Integer.MAX_VALUE) {
-                    length = Integer.MAX_VALUE;
-                }
-                clobString = clob.getSubString(1, (int)length);
             }
             else {
                 clobString = TEXT_CLOB_VALUE_PLACEHOLDER;

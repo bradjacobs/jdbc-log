@@ -15,17 +15,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class PojoDAO
-{
+public class PojoDAO {
     private static final String TABLE_NAME = "pojos";
-
     private static final Logger log = LoggerFactory.getLogger(PojoDAO.class);
 
     protected Connection conn;
 
-
     private static final String DROP_TABLE_SQL = "DROP TABLE " + TABLE_NAME + " IF EXISTS";
-
     private static final String CREATE_TABLE_SQL =
         "CREATE TABLE " + TABLE_NAME +
         " (id INT IDENTITY," +  // let the table auto-assign an id
@@ -50,7 +46,6 @@ public class PojoDAO
     private static final String STMT_SELECT_ALL_SQL = "SELECT * FROM " + TABLE_NAME;
     private static final String PREPARED_STMT_SELECT_BY_ID_SQL = STMT_SELECT_ALL_SQL + " WHERE id = ?";
 
-
     private static final String DROP_STORED_PROC_SQL = "DROP PROCEDURE EXT_SAMPLE_PROC IF EXISTS";
 
     // stored proc does nothing interesting, but has an IN and OUT parameter.
@@ -68,7 +63,6 @@ public class PojoDAO
         "      SET status_out = TRUE;\n" +
         " end if;\n" +
         " END";
-
 
     public String getSelectAllObjectsSQL() {
         return STMT_SELECT_ALL_SQL;
@@ -110,7 +104,6 @@ public class PojoDAO
     public boolean dropStoredProc() {
         return executeSql(DROP_STORED_PROC_SQL);
     }
-
 
     public boolean executeSql(String sql) {
         boolean success = false;
@@ -209,14 +202,12 @@ public class PojoDAO
         return true;
     }
 
-
     /**
      * Calls stored procedure
      * @param input  stored proc input value
      * @return return the "OUT value" from the stored procedure.
      */
-    public Boolean callStoredProcedure(Integer input)
-    {
+    public Boolean callStoredProcedure(Integer input) {
         if (conn != null) {
             CallableStatement callableStatement = null;
 
@@ -248,7 +239,6 @@ public class PojoDAO
 
             try {
                 callableStatement = conn.prepareCall("CALL EXT_SAMPLE_PROC(?,?)");
-
                 for (Integer intValue : inputList) {
                     callableStatement.setInt(1, intValue);
                     callableStatement.registerOutParameter(2, Types.BOOLEAN);
@@ -270,7 +260,6 @@ public class PojoDAO
             }
         }
     }
-
 
     /**
      * Get all the pojos stored in the database
@@ -333,8 +322,7 @@ public class PojoDAO
         }
     }
 
-    private List<BloatedPojo> convertToPojos(ResultSet rs) throws SQLException
-    {
+    private List<BloatedPojo> convertToPojos(ResultSet rs) throws SQLException {
         List<BloatedPojo> resultList = new ArrayList<>();
         while (rs.next()) {
             BloatedPojo pojo = new BloatedPojo();
@@ -351,15 +339,10 @@ public class PojoDAO
         return resultList;
     }
 
-
     private void closeQuietly(Statement stmt) {
         if (stmt != null) {
-            try {
-                stmt.close();
-            }
-            catch (SQLException e) {
-                /* ingore */
-            }
+            try { stmt.close(); }
+            catch (SQLException e) { /* ingore */ }
         }
     }
 }

@@ -14,8 +14,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 
-public class ClobStreamPojoLoggingTest extends AbstractPojoLoggingTest
-{
+public class ClobStreamPojoLoggingTest extends AbstractPojoLoggingTest {
     private PojoDAO dao = null;
     private CaptureLoggingListener captureLoggingListener = null;
 
@@ -24,7 +23,6 @@ public class ClobStreamPojoLoggingTest extends AbstractPojoLoggingTest
      */
     @BeforeMethod
     public void setup() throws Exception {
-
         captureLoggingListener = new CaptureLoggingListener();
         dao = initializePojoDao(captureLoggingListener, true);
     }
@@ -37,21 +35,17 @@ public class ClobStreamPojoLoggingTest extends AbstractPojoLoggingTest
         dao.close();
     }
 
-
     @Test
-    public void addRetrievePojosNoBatch() throws Exception
-    {
+    public void addRetrievePojosNoBatch() throws Exception {
         addRetrievePojos(false);
     }
 
     @Test
-    public void addRetrievePojosWithBatch() throws Exception
-    {
+    public void addRetrievePojosWithBatch() throws Exception {
         addRetrievePojos(true);
     }
 
-    private void addRetrievePojos(boolean useBatch) throws Exception
-    {
+    private void addRetrievePojos(boolean useBatch) throws Exception {
         long timeValue = 1538014031000L;    // '2018-09-27'
 
         String pojo1ClobString = "MY__TEST__CLOB_1";
@@ -91,9 +85,7 @@ public class ClobStreamPojoLoggingTest extends AbstractPojoLoggingTest
         assertTrue(sql2.contains(pojo2ClobString), "Logged SQL missing expected substring: " + pojo1ClobString);
         assertTrue(sql2.contains(pojo2StreamString), "Logged SQL missing expected substring: " + pojo2StreamString);
 
-
         List<BloatedPojo> pojos = dao.getAllPojos();
-
 
         // confirm the returned results are as expected
         //    (i.e. confirm the logger didn't mess something up)
@@ -105,5 +97,4 @@ public class ClobStreamPojoLoggingTest extends AbstractPojoLoggingTest
         assertPojoEqual(dao.getPojoById(retreivedPojo1.getId()), retreivedPojo1);
         assertPojoEqual(dao.getPojoById(retrievedPojo2.getId()), retrievedPojo2);
     }
-
 }

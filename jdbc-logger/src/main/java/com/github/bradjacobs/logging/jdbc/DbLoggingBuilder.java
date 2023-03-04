@@ -36,7 +36,7 @@ public class DbLoggingBuilder {
     public static DbLoggingBuilder builder(Collection<LoggingListener> loggingListeners) {
         // convert the collection to a list, checking if the input parameter is null
         //    or if any of the elements contains a null.
-        //  (i'm sure there's a simplier way)
+        //  (i'm sure there's a simpler way)
         List<LoggingListener> logListenerList =
             Optional.ofNullable(loggingListeners)
                     .map(Collection::stream)

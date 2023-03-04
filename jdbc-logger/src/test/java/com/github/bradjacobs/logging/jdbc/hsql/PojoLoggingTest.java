@@ -16,14 +16,11 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-
-public class PojoLoggingTest extends AbstractPojoLoggingTest
-{
+public class PojoLoggingTest extends AbstractPojoLoggingTest {
     private PojoDAO dao = null;
     private CaptureLoggingListener captureLoggingListener = null;
 
     private static final String CLOB_PARAM_PLACEHOLDER = "{_CLOB_}";
-
 
     /**
      * Gets called before every test method
@@ -41,7 +38,6 @@ public class PojoLoggingTest extends AbstractPojoLoggingTest
     public void tearDown() {
         dao.close();
     }
-
 
     @Test
     public void addRetrievePojosNoBatch() throws Exception {

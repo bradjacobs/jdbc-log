@@ -92,7 +92,6 @@ public class DefaultParamToStringConverter implements ParamToStringConverter {
         return String.valueOf(objectValue);
     }
 
-
     // NOTE about java.sql.Array  (Not yet Implemented)
     //
     //     else if (paramValue instanceof java.sql.Array) {

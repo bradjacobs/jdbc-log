@@ -25,10 +25,8 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 
 
-abstract public class AbstractPojoLoggingTest
-{
-    protected PojoDAO initializePojoDao(CaptureLoggingListener captureLoggingListener, boolean clobLoggingEnabled) throws Exception
-    {
+abstract public class AbstractPojoLoggingTest {
+    protected PojoDAO initializePojoDao(CaptureLoggingListener captureLoggingListener, boolean clobLoggingEnabled) throws Exception {
         Connection innerConn = DriverManager.getConnection("jdbc:hsqldb:mem:sampleDB", "SA", "");
 
         DbLoggingBuilder dbLoggingBuilder =
@@ -41,10 +39,8 @@ abstract public class AbstractPojoLoggingTest
         return pojoDao;
     }
 
-
     protected BloatedPojo createTestPojo(Integer id, String name, int intValue, double doubleValue,
-                                         Long sqlDate, Long sqlTimestamp, String clobString, String inputStreamString)
-    {
+                                         Long sqlDate, Long sqlTimestamp, String clobString, String inputStreamString) {
         BloatedPojo pojo = new BloatedPojo();
         if (id != null) {
             pojo.setId(id);
@@ -66,7 +62,6 @@ abstract public class AbstractPojoLoggingTest
         if (inputStreamString != null) {
             pojo.setStreamValue( createInputStreamValue(inputStreamString) );
         }
-
         return pojo;
     }
 
@@ -82,10 +77,7 @@ abstract public class AbstractPojoLoggingTest
                 null);
     }
 
-
-
-    protected void assertPojoEqual(BloatedPojo actualPojo, BloatedPojo expectedPojo)
-    {
+    protected void assertPojoEqual(BloatedPojo actualPojo, BloatedPojo expectedPojo) {
         if (expectedPojo == null) {
             assertNull(actualPojo);
             return;
@@ -100,7 +92,6 @@ abstract public class AbstractPojoLoggingTest
         assertEquals(actualPojo.getDoubleValue(), expectedPojo.getDoubleValue(), 0.0001d);
 
         assertEquals(String.valueOf(actualPojo.getSqlDateValue()), String.valueOf(expectedPojo.getSqlDateValue()));
-
         assertEquals(actualPojo.getSqlTimestampValue(), expectedPojo.getSqlTimestampValue());
 
         // note: converting to string will 'mess up' the underlying stream, but don't care in this case.
@@ -126,13 +117,11 @@ abstract public class AbstractPojoLoggingTest
         //}
     }
 
-    private InputStream createInputStreamValue(String value)
-    {
+    private InputStream createInputStreamValue(String value) {
         return new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8));
     }
 
-    private Clob createClobValue(String value)
-    {
+    private Clob createClobValue(String value) {
         try {
             return new JDBCClob(value);
         }
@@ -141,9 +130,7 @@ abstract public class AbstractPojoLoggingTest
         }
     }
 
-
-    protected String extractString(Clob clob)
-    {
+    protected String extractString(Clob clob) {
         if (clob == null) {
             return null;
         }
@@ -160,8 +147,7 @@ abstract public class AbstractPojoLoggingTest
         }
     }
 
-    protected String extractString(InputStream inputStream)
-    {
+    protected String extractString(InputStream inputStream) {
         if (inputStream == null) {
             return null;
         }
@@ -176,11 +162,8 @@ abstract public class AbstractPojoLoggingTest
         }
     }
 
-
-    private void closeQuietly(Closeable closeable)
-    {
-        if (closeable != null)
-        {
+    private void closeQuietly(Closeable closeable) {
+        if (closeable != null) {
             try {
                 closeable.close();
             }
