@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class PojoDAO {
-    private static final Logger log = LoggerFactory.getLogger(PojoDAO.class);
+    private static final Logger logger = LoggerFactory.getLogger(PojoDAO.class);
 
     private static final String TABLE_NAME = "pojos";
     private static final String[][] TABLE_COLUMN_DEFNS = {
@@ -37,11 +37,13 @@ public class PojoDAO {
     private static final String STMT_SELECT_ALL_SQL = generateSelectAllSql(TABLE_NAME);
     private static final String PREPARED_STMT_SELECT_BY_ID_SQL = generatePreparedSttmentSelectByIdSql(TABLE_NAME);
 
-    private static final String DROP_STORED_PROC_SQL = "DROP PROCEDURE EXT_SAMPLE_PROC IF EXISTS";
-
-    // stored proc does nothing interesting, but has an IN and OUT parameter.
+    private static final String STORED_PROC_NAME = "EXT_SAMPLE_PROC";
+    private static final String DROP_STORED_PROC_SQL =
+            String.format("DROP PROCEDURE %s IF EXISTS", STORED_PROC_NAME);
+    private static final String CALL_STORED_PROC = String.format("CALL %s(?,?)", STORED_PROC_NAME);
+    // stored proc does nothing of interest, but has an IN and OUT parameter.
     private static final String CREATE_STORED_PROC_SQL =
-        "CREATE PROCEDURE EXT_SAMPLE_PROC(IN id_in INT, OUT status_out BOOLEAN)\n" +
+        "CREATE PROCEDURE " + STORED_PROC_NAME + "(IN id_in INT, OUT status_out BOOLEAN)\n" +
         " MODIFIES SQL DATA\n" +
         " BEGIN ATOMIC\n" +
         "\n" +
@@ -82,33 +84,29 @@ public class PojoDAO {
         }
     }
 
-    public boolean createTable() {
-        return executeSql(CREATE_TABLE_SQL);
-    }
-    public boolean dropTable() {
-        return executeSql(DROP_TABLE_SQL);
+    public void createTable() {
+        executeSql(CREATE_TABLE_SQL);
     }
 
-    public boolean createStoredProc() {
-        return executeSql(CREATE_STORED_PROC_SQL);
-    }
-    public boolean dropStoredProc() {
-        return executeSql(DROP_STORED_PROC_SQL);
+    public void dropTable() {
+        executeSql(DROP_TABLE_SQL);
     }
 
-    public boolean executeSql(String sql) {
-        boolean success = false;
-        Statement stmt = null;
-        try {
-            stmt = conn.createStatement();
+    public void createStoredProc() {
+        executeSql(CREATE_STORED_PROC_SQL);
+    }
+
+    public void dropStoredProc() {
+        executeSql(DROP_STORED_PROC_SQL);
+    }
+
+    public void executeSql(String sql) {
+        try (Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
-            success = true;
-        } catch (SQLException e) {
-            throw new RuntimeException("Unable execute sql: " + e.getMessage(), e);
-        } finally {
-            closeQuietly(stmt);
         }
-        return success;
+        catch (SQLException e) {
+            throw new RuntimeException("Unable execute sql: " + e.getMessage(), e);
+        }
     }
 
     public void insertPojo(BloatedPojo pojo, boolean useBatching) throws SQLException {
@@ -145,9 +143,8 @@ public class PojoDAO {
         }
     }
 
-    private void initializeBloatedPojoPreparedStatement(PreparedStatement pstmt, BloatedPojo pojo)
-            throws SQLException
-    {
+    private void initializeBloatedPojoPreparedStatement(
+            PreparedStatement pstmt, BloatedPojo pojo) throws SQLException {
         int paramIndex = 1;
         pstmt.setString(paramIndex++, pojo.getName());
         pstmt.setInt(paramIndex++, pojo.getIntValue());
@@ -170,26 +167,18 @@ public class PojoDAO {
         }
     }
 
-    public boolean batchexecuteSqlStatements(List<String> sqlStatements) throws SQLException
-    {
+    public void batchexecuteSqlStatements(List<String> sqlStatements) throws SQLException {
         conn.setAutoCommit(false);
-        Statement statement = null;
-        try {
-            statement = conn.createStatement();
+        try (Statement statement = conn.createStatement()) {
             for (String sqlStatement : sqlStatements) {
                 statement.addBatch(sqlStatement);
             }
             statement.executeBatch();
             conn.commit();
         }
-        catch (SQLException e) {
-            throw new RuntimeException("Unable to insert batch into the table", e);
-        }
         finally {
             conn.setAutoCommit(true);
-            closeQuietly(statement);
         }
-        return true;
     }
 
     /**
@@ -199,24 +188,17 @@ public class PojoDAO {
      */
     public Boolean callStoredProcedure(Integer input) {
         if (conn != null) {
-            CallableStatement callableStatement = null;
-
-            try {
-                callableStatement = conn.prepareCall("CALL EXT_SAMPLE_PROC(?,?)");
+            try (CallableStatement callableStatement = conn.prepareCall(CALL_STORED_PROC)) {
                 callableStatement.setInt(1, input);
                 callableStatement.registerOutParameter(2, Types.BOOLEAN);
                 //callableStatement.registerOutParameter(2, JDBCType.BOOLEAN);
 
                 int executeUpdateResponse = callableStatement.executeUpdate();
-
                 //read the OUT parameter now
                 return callableStatement.getBoolean(2);
             }
             catch (SQLException e) {
                 throw new RuntimeException("Unable to call stored proc " + e.getMessage(), e);
-            }
-            finally {
-                closeQuietly(callableStatement);
             }
         }
         return null;
@@ -225,10 +207,10 @@ public class PojoDAO {
     public void callStoredProcedureBatch(List<Integer> inputList) throws SQLException {
         if (conn != null) {
             CallableStatement callableStatement = null;
-            conn.setAutoCommit(false);
+            conn.setAutoCommit(false);  // todo
 
             try {
-                callableStatement = conn.prepareCall("CALL EXT_SAMPLE_PROC(?,?)");
+                callableStatement = conn.prepareCall(CALL_STORED_PROC);
                 for (Integer intValue : inputList) {
                     callableStatement.setInt(1, intValue);
                     callableStatement.registerOutParameter(2, Types.BOOLEAN);
@@ -253,10 +235,10 @@ public class PojoDAO {
 
     /**
      * Get all the pojos stored in the database
-     * @return
+     * @return list of pojos
      */
     public List<BloatedPojo> getAllPojos() throws SQLException {
-        log.debug("getAllPojos()");
+        logger.debug("getAllPojos()");
         return executeQuery(STMT_SELECT_ALL_SQL);
     }
 
@@ -266,28 +248,27 @@ public class PojoDAO {
      * @return pojo (if found)
      */
     public BloatedPojo getPojoById(int id) throws SQLException {
-        log.debug("getPojoById({})", id);
-
+        logger.debug("getPojoById({})", id);
         PreparedStatement pstmt = conn.prepareStatement(PREPARED_STMT_SELECT_BY_ID_SQL);
         pstmt.setInt(1, id);
         List<BloatedPojo> resultList = executeQuery(pstmt);
 
         // expect there to only be 0 or 1 in this case
-        if (resultList.size() > 1) {
-            throw new InternalError("Invalid query response");
-        }
-        else if (resultList.size() == 1) {
-            return resultList.get(0);
-        }
-        else {
-            log.warn("No pojo found for id = {}", id);
-            return null;
+        switch (resultList.size()) {
+            case 0:
+                logger.warn("No pojo found for id = {}", id);
+                return null;
+            case 1:
+                return resultList.get(0);
+            default:
+                throw new InternalError("Invalid query response");
         }
     }
 
     private List<BloatedPojo> executeQuery(String sqlSelect) throws SQLException {
         return executeQuery(conn.createStatement(), sqlSelect);
     }
+
     private List<BloatedPojo> executeQuery(PreparedStatement pStmt) throws SQLException {
         return executeQuery(pStmt, null);
     }
@@ -378,6 +359,7 @@ public class PojoDAO {
     private static String generateSelectAllSql(String tableName) {
         return String.format("SELECT * FROM %s", tableName);
     }
+
     private static String generatePreparedSttmentSelectByIdSql(String tableName) {
         return String.format("SELECT * FROM %s WHERE id = ?", tableName);
     }
