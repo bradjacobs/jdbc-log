@@ -1,4 +1,3 @@
-
 package com.github.bradjacobs.logging.jdbc.hsql.objects;
 
 import org.slf4j.Logger;
@@ -16,35 +15,27 @@ import java.util.Collections;
 import java.util.List;
 
 public class PojoDAO {
-    private static final String TABLE_NAME = "pojos";
     private static final Logger log = LoggerFactory.getLogger(PojoDAO.class);
+
+    private static final String TABLE_NAME = "pojos";
+    private static final String[][] TABLE_COLUMN_DEFNS = {
+            {"id", "INT", "IDENTITY"},
+            {"name", "VARCHAR(30)"},
+            {"intValue", "INT"},
+            {"doubleValue", "DOUBLE"},
+            {"sqlDateValue", "date"},
+            {"sqlTimestampValue", "datetime"},
+            {"clobValue", "CLOB(1000)"},
+            {"streamValue", "VARCHAR(255)"},
+    };
 
     protected Connection conn;
 
-    private static final String DROP_TABLE_SQL = "DROP TABLE " + TABLE_NAME + " IF EXISTS";
-    private static final String CREATE_TABLE_SQL =
-        "CREATE TABLE " + TABLE_NAME +
-        " (id INT IDENTITY," +  // let the table auto-assign an id
-        " name VARCHAR(30)," +
-        " intValue INT," +
-        " doubleValue DOUBLE," +
-        " sqlDateValue date," +
-        " sqlTimestampValue datetime," +
-        " clobValue CLOB(1000)," +
-        " streamValue VARCHAR(255))";
-
-    private static final String PREPARED_STMT_INSERT_SQL =
-            "INSERT INTO "
-                    + TABLE_NAME
-                    + " (name, intValue, doubleValue, sqlDateValue, sqlTimestampValue, clobValue, streamValue)"
-                    + " VALUES (?, ?, ?, ?, ?, ?, ?)";
-//    private static final String PREPARED_STMT_INSERT_SQL =
-//            "INSERT INTO "
-//                    + TABLE_NAME
-//                    + " VALUES (null, ?, ?, ?, ?, ?, ?, ?)";
-
-    private static final String STMT_SELECT_ALL_SQL = "SELECT * FROM " + TABLE_NAME;
-    private static final String PREPARED_STMT_SELECT_BY_ID_SQL = STMT_SELECT_ALL_SQL + " WHERE id = ?";
+    private static final String DROP_TABLE_SQL = generateDropTableSql(TABLE_NAME);
+    private static final String CREATE_TABLE_SQL = generateCreateTableSql(TABLE_NAME, TABLE_COLUMN_DEFNS);
+    private static final String PREPARED_STMT_INSERT_SQL = generatePreparedStatementInsertIntoTableSql(TABLE_NAME, TABLE_COLUMN_DEFNS);
+    private static final String STMT_SELECT_ALL_SQL = generateSelectAllSql(TABLE_NAME);
+    private static final String PREPARED_STMT_SELECT_BY_ID_SQL = generatePreparedSttmentSelectByIdSql(TABLE_NAME);
 
     private static final String DROP_STORED_PROC_SQL = "DROP PROCEDURE EXT_SAMPLE_PROC IF EXISTS";
 
@@ -178,7 +169,6 @@ public class PojoDAO {
             pstmt.setNull(paramIndex++, Types.CLOB);
         }
     }
-
 
     public boolean batchexecuteSqlStatements(List<String> sqlStatements) throws SQLException
     {
@@ -344,6 +334,63 @@ public class PojoDAO {
             try { stmt.close(); }
             catch (SQLException e) { /* ingore */ }
         }
+    }
+
+    private static String generateDropTableSql(String tableName) {
+        return String.format("DROP TABLE %s IF EXISTS", tableName);
+    }
+
+    private static String generateCreateTableSql(String tableName, String[][] tableColumnDefns) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("CREATE TABLE ");
+        sb.append(tableName);
+        sb.append(" (");
+        // todo - probably a cooler way to do this
+        for (int i = 0; i < tableColumnDefns.length; i++) {
+            String[] columnDefns = tableColumnDefns[i];
+            if (i > 0) {
+                sb.append(", ");
+            }
+            String joinStr = String.join(" ", columnDefns);
+            sb.append(joinStr);
+        }
+        sb.append(")");
+        return sb.toString();
+    }
+
+    private static String generatePreparedStatementInsertIntoTableSql(String tableName, String[][] tableColumnDefns) {
+        List<String> columnNames = getInsertColumnNames(tableColumnDefns);
+        StringBuilder sb = new StringBuilder();
+        sb.append("INSERT INTO ");
+        sb.append(tableName);
+        sb.append(" (");
+        sb.append(String.join(", ", columnNames));
+        sb.append(") VALUES (");
+        // TODO - adjust language level so can use the 'repeat'
+        //        sb.append("?, ".repeat(columnNames.size()-1));
+        for (int i = 0; i < columnNames.size() -1; i++) {
+            sb.append("?, ");
+        }
+        sb.append("?)");
+        return sb.toString();
+    }
+
+    private static String generateSelectAllSql(String tableName) {
+        return String.format("SELECT * FROM %s", tableName);
+    }
+    private static String generatePreparedSttmentSelectByIdSql(String tableName) {
+        return String.format("SELECT * FROM %s WHERE id = ?", tableName);
+    }
+
+    private static List<String> getInsertColumnNames(String[][] tableColumnDefns) {
+        List<String> resultList = new ArrayList<>();
+        for (String[] tableColumnDefn : tableColumnDefns) {
+            if (tableColumnDefn[tableColumnDefn.length-1].equalsIgnoreCase("IDENTITY")) {
+                continue;
+            }
+            resultList.add(tableColumnDefn[0]);
+        }
+        return resultList;
     }
 }
 
