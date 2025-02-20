@@ -296,15 +296,16 @@ public class PojoDAO {
     private List<BloatedPojo> convertToPojos(ResultSet rs) throws SQLException {
         List<BloatedPojo> resultList = new ArrayList<>();
         while (rs.next()) {
-            BloatedPojo pojo = new BloatedPojo();
-            pojo.setId(rs.getInt("id"));
-            pojo.setName(rs.getString("name"));
-            pojo.setIntValue(rs.getInt("intValue"));
-            pojo.setDoubleValue(rs.getDouble("doubleValue"));
-            pojo.setSqlDateValue(rs.getDate("sqlDateValue"));
-            pojo.setSqlTimestampValue(rs.getTimestamp("sqlTimestampValue"));
-            pojo.setClobValue(rs.getClob("clobValue"));
-            pojo.setStreamValue(rs.getAsciiStream("streamValue"));
+            BloatedPojo pojo = BloatedPojo.builder()
+                    .id(rs.getInt("id"))
+                    .name(rs.getString("name"))
+                    .invValue(rs.getInt("intValue"))
+                    .doubleValue(rs.getDouble("doubleValue"))
+                    .sqlDateValue(rs.getDate("sqlDateValue"))
+                    .sqlTimestampValue(rs.getTimestamp("sqlTimestampValue"))
+                    .clob(rs.getClob("clobValue"))
+                    .inputStream(rs.getAsciiStream("streamValue"))
+                    .build();
             resultList.add(pojo);
         }
         return resultList;

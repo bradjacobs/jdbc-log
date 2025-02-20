@@ -53,13 +53,13 @@ public class ClobStreamPojoLoggingTest extends AbstractPojoLoggingTest {
         String pojo1StreamString = null;
         String pojo2StreamString = "test_stream_2";
 
-        BloatedPojo inputPojo1 = BloatedPojoBuilder.builder()
+        BloatedPojo inputPojo1 = BloatedPojo.builder()
                 .id(null).name("Rob").invValue(30).doubleValue(0d)
                 .sqlDate(timeValue).sqlTimestamp(timeValue)
                 .clobString(pojo1ClobString).inputStreamString(pojo1StreamString)
                 .build();
 
-        BloatedPojo inputPojo2 = BloatedPojoBuilder.builder()
+        BloatedPojo inputPojo2 = BloatedPojo.builder()
                 .id(null).name("Aphrodite").invValue(59).doubleValue(88.3d)
                 .sqlDate(timeValue).sqlTimestamp(timeValue)
                 .clobString(pojo2ClobString).inputStreamString(pojo2StreamString)
