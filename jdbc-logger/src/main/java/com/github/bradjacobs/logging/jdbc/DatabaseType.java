@@ -4,20 +4,8 @@ package com.github.bradjacobs.logging.jdbc;
  * TODO: this class will (probably) get removed.
  */
 public enum DatabaseType {
-    DB2,
-    DERBY,
-    H2,
-    HSQL,
-    INFORMIX,
-    MYSQL,
     ORACLE,
-    POSTGRES,
-    SQLITE,
-    SQLSERVER,
-    SYBASE,
-    // many many more ...
-
-    UNKNOWN;
+    DEFAULT;
 
 
     /**
@@ -27,21 +15,11 @@ public enum DatabaseType {
      */
     public static DatabaseType identifyDatabaseType(String dbName) {
         if (dbName == null) {
-            return UNKNOWN;
+            return DEFAULT;
         }
 
         dbName = dbName.toUpperCase();
-        if (dbName.contains("DB2")) { return DB2; }
-        else if (dbName.contains("DERBY")) { return DERBY; }
-        else if (dbName.contains("H2")) { return H2; }
-        else if (dbName.contains("HSQL")) { return HSQL; }
-        else if (dbName.contains("INFORMIX")) { return INFORMIX; }
-        else if (dbName.contains("MYSQL")) { return MYSQL; }
-        else if (dbName.contains("ORACLE")) { return ORACLE; }
-        else if (dbName.contains("POSTGRES")) { return POSTGRES; }
-        else if (dbName.contains("SQLITE")) { return SQLITE; }
-        else if (dbName.contains("SQLSERVER") || dbName.contains("SQL SERVER")) { return SQLSERVER; }
-        else if (dbName.contains("SYBASE")) { return SYBASE; }
-        else { return UNKNOWN; }
+        if (dbName.contains("ORACLE")) { return ORACLE; }
+        else { return DEFAULT; }
     }
 }

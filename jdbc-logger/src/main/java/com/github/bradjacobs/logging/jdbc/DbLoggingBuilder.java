@@ -69,7 +69,7 @@ public class DbLoggingBuilder {
     }
 
     public DbLoggingBuilder setDbType(DatabaseType dbType) {
-        this.dbType = (dbType != null ? dbType : DatabaseType.UNKNOWN);
+        this.dbType = (dbType != null ? dbType : DatabaseType.DEFAULT);
         return this;
     }
 

@@ -15,7 +15,7 @@ class ParamStringConverterFactory {
 
     public static ParamToStringConverter getParamConverter(DatabaseType dbType, ZoneId zoneId) {
         if (dbType == null) {
-            dbType = DatabaseType.UNKNOWN;
+            dbType = DatabaseType.DEFAULT;
         }
         if (zoneId == null) {
             zoneId = DbLoggingBuilder.DEFAULT_ZONE;
