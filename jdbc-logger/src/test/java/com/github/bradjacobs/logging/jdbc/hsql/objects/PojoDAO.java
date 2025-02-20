@@ -114,14 +114,12 @@ public class PojoDAO {
     }
 
     public void insertPojos(List<BloatedPojo> pojos, boolean useBatching) throws SQLException {
-        PreparedStatement pstmt = null;
-        try {
-            if (useBatching) {
-                conn.setAutoCommit(false);
-            }
-            pstmt = conn.prepareStatement(PREPARED_STMT_INSERT_SQL);
+        if (useBatching) {
+            conn.setAutoCommit(false);
+        }
+        try (PreparedStatement pstmt = conn.prepareStatement(PREPARED_STMT_INSERT_SQL)) {
             for (BloatedPojo pojo : pojos) {
-                initializeBloatedPojoPreparedStatement(pstmt, pojo);
+                populatePreparedStatement(pstmt, pojo);
                 if (useBatching) {
                     pstmt.addBatch();
                 }
@@ -134,16 +132,12 @@ public class PojoDAO {
                 conn.commit();
             }
         }
-        catch (SQLException e) {
-            throw new RuntimeException("Unable to insert batch into the table", e);
-        }
         finally {
             conn.setAutoCommit(true);
-            closeQuietly(pstmt);
         }
     }
 
-    private void initializeBloatedPojoPreparedStatement(
+    private void populatePreparedStatement(
             PreparedStatement pstmt, BloatedPojo pojo) throws SQLException {
         int paramIndex = 1;
         pstmt.setString(paramIndex++, pojo.getName());
@@ -239,7 +233,7 @@ public class PojoDAO {
      */
     public List<BloatedPojo> getAllPojos() throws SQLException {
         logger.debug("getAllPojos()");
-        return executeQuery(STMT_SELECT_ALL_SQL);
+        return executeStatementQuery(STMT_SELECT_ALL_SQL);
     }
 
     /**
@@ -249,9 +243,14 @@ public class PojoDAO {
      */
     public BloatedPojo getPojoById(int id) throws SQLException {
         logger.debug("getPojoById({})", id);
-        PreparedStatement pstmt = conn.prepareStatement(PREPARED_STMT_SELECT_BY_ID_SQL);
-        pstmt.setInt(1, id);
-        List<BloatedPojo> resultList = executeQuery(pstmt);
+        List<BloatedPojo> resultList;
+
+        try (PreparedStatement pstmt = conn.prepareStatement(PREPARED_STMT_SELECT_BY_ID_SQL)) {
+            pstmt.setInt(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                resultList = convertToPojos(rs);
+            }
+        }
 
         // expect there to only be 0 or 1 in this case
         switch (resultList.size()) {
@@ -265,31 +264,11 @@ public class PojoDAO {
         }
     }
 
-    private List<BloatedPojo> executeQuery(String sqlSelect) throws SQLException {
-        return executeQuery(conn.createStatement(), sqlSelect);
-    }
-
-    private List<BloatedPojo> executeQuery(PreparedStatement pStmt) throws SQLException {
-        return executeQuery(pStmt, null);
-    }
-
-    private List<BloatedPojo> executeQuery(Statement stmt, String sql) throws SQLException {
-        try {
-            ResultSet rs;
-            // kludgy, even for test code
-            if (stmt instanceof PreparedStatement) {
-                rs = ((PreparedStatement)stmt).executeQuery();
+    private List<BloatedPojo> executeStatementQuery(String sqlSelect) throws SQLException {
+        try (Statement statement = conn.createStatement()) {
+            try (ResultSet rs = statement.executeQuery(sqlSelect)) {
+                return convertToPojos(rs);
             }
-            else {
-                rs = stmt.executeQuery(sql);
-            }
-            List<BloatedPojo> resultList = convertToPojos(rs);
-            rs.close();
-            return resultList;
-        } catch (SQLException e) {
-            throw new RuntimeException("Unable execute query: " + e.getMessage(), e);
-        } finally {
-            closeQuietly(stmt);
         }
     }
 
