@@ -9,11 +9,8 @@ import org.apache.commons.io.IOUtils;
 import org.hsqldb.jdbc.JDBCClob;
 
 import java.io.ByteArrayInputStream;
-import java.io.Closeable;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Clob;
 import java.sql.Connection;
@@ -39,44 +36,70 @@ abstract public class AbstractPojoLoggingTest {
         return pojoDao;
     }
 
-    protected BloatedPojo createTestPojo(Integer id, String name, int intValue, double doubleValue,
-                                         Long sqlDate, Long sqlTimestamp, String clobString, String inputStreamString) {
-        BloatedPojo pojo = new BloatedPojo();
-        if (id != null) {
-            pojo.setId(id);
-        }
-        pojo.setName(name);
-        pojo.setIntValue(intValue);
-        pojo.setDoubleValue(doubleValue);
 
-        if (sqlDate != null) {
-            pojo.setSqlDateValue(new java.sql.Date(sqlDate));
-        }
-        if (sqlTimestamp != null) {
-            pojo.setSqlTimestampValue(new java.sql.Timestamp(sqlTimestamp));
+    protected static class BloatedPojoBuilder {
+        private Integer id = null;
+        private String name = null;
+        private int intValue = 0;
+        private double doubleValue = 0.0d;
+        private Long sqlDate = null;
+        private Long sqlTimestamp = null;
+        private String clobString = null;
+        private String inputStreamString = null;
+
+        private BloatedPojoBuilder() {}
+
+        public static BloatedPojoBuilder builder() {
+            return new BloatedPojoBuilder();
         }
 
-        if (clobString != null) {
-            pojo.setClobValue( createClobValue(clobString) );
+        public BloatedPojoBuilder id(Integer id) { this.id = id; return this; }
+        public BloatedPojoBuilder name(String name) { this.name = name; return this; }
+        public BloatedPojoBuilder invValue(int intValue) { this.intValue = intValue; return this; }
+        public BloatedPojoBuilder doubleValue(double doubleValue) { this.doubleValue = doubleValue; return this; }
+        public BloatedPojoBuilder sqlDate(Long sqlDate) { this.sqlDate = sqlDate; return this; }
+        public BloatedPojoBuilder sqlTimestamp(Long sqlTimestamp) { this.sqlTimestamp = sqlTimestamp; return this; }
+        public BloatedPojoBuilder clobString(String clobString) { this.clobString = clobString; return this; }
+        public BloatedPojoBuilder inputStreamString(String inputStreamString) { this.inputStreamString = inputStreamString; return this; }
+
+        public BloatedPojo build() {
+            BloatedPojo pojo = new BloatedPojo();
+            if (id != null) {
+                pojo.setId(id);
+            }
+            pojo.setName(name);
+            pojo.setIntValue(intValue);
+            pojo.setDoubleValue(doubleValue);
+            if (sqlDate != null) {
+                pojo.setSqlDateValue(new java.sql.Date(sqlDate));
+            }
+            if (sqlTimestamp != null) {
+                pojo.setSqlTimestampValue(new java.sql.Timestamp(sqlTimestamp));
+            }
+            if (clobString != null) {
+                pojo.setClobValue( createClobValue(clobString) );
+            }
+            if (inputStreamString != null) {
+                pojo.setStreamValue( createInputStreamValue(inputStreamString) );
+            }
+            return pojo;
         }
-        if (inputStreamString != null) {
-            pojo.setStreamValue( createInputStreamValue(inputStreamString) );
-        }
-        return pojo;
     }
 
     protected BloatedPojo createDummyPojo(String name) {
-        return createTestPojo(
-                null,
-                name,
-                30,
-                0d,
-                1538014031000L,
-                1538014031000L,
-                "MY__TEST__CLOB",
-                null);
+        return BloatedPojoBuilder.builder()
+                .id(null).name(name).invValue(30).doubleValue(0d)
+                .sqlDate(1538014031000L).sqlTimestamp(1538014031000L)
+                .clobString("MY__TEST__CLOB").inputStreamString(null)
+                .build();
     }
 
+    /**
+     * Special assert method to get information on exactly which field
+     *   within the pojo failed assertion.
+     * @param actualPojo
+     * @param expectedPojo
+     */
     protected void assertPojoEqual(BloatedPojo actualPojo, BloatedPojo expectedPojo) {
         if (expectedPojo == null) {
             assertNull(actualPojo);
@@ -105,23 +128,15 @@ abstract public class AbstractPojoLoggingTest {
             assertNull(expectedClob);
         }
 
-        //    NOTE: can't test this b/c after calling the dao b/c 'inputStream' can no longer be read for a value (expected)
-        //InputStream actualStreamValue = actualPojo.getStreamValue();
-        //InputStream expectedStreamValue = expectedPojo.getStreamValue();
-        //if (actualStreamValue != null) {
-        //    assertNotNull(expectedStreamValue);
-        //    assertEquals( extractString(actualStreamValue), extractString(expectedStreamValue) );
-        //}
-        //else {
-        //    assertNull(expectedStreamValue);
-        //}
+        // NOTE: can't check the pojo.streamValue() after calling the dao
+        //   b/c 'inputStream' can no longer be read for a value (expected)
     }
 
-    private InputStream createInputStreamValue(String value) {
+    private static InputStream createInputStreamValue(String value) {
         return new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8));
     }
 
-    private Clob createClobValue(String value) {
+    private static Clob createClobValue(String value) {
         try {
             return new JDBCClob(value);
         }
@@ -139,32 +154,6 @@ abstract public class AbstractPojoLoggingTest {
         }
         catch (Exception e) {
             throw new RuntimeException("Error attempting to get string value from reader for Logging: " + e.getMessage(), e);
-        }
-    }
-
-    protected String extractString(InputStream inputStream) {
-        if (inputStream == null) {
-            return null;
-        }
-        try {
-            return IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
-        }
-        catch (IOException e) {
-            throw new UncheckedIOException("Error attempting to get string value from inputStream for Logging: " + e.getMessage(), e);
-        }
-        finally {
-            closeQuietly(inputStream);
-        }
-    }
-
-    private void closeQuietly(Closeable closeable) {
-        if (closeable != null) {
-            try {
-                closeable.close();
-            }
-            catch (IOException e) {
-                /* ignore */
-            }
         }
     }
 }

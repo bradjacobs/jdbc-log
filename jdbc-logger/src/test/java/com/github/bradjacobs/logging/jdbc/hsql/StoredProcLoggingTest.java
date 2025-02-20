@@ -42,25 +42,17 @@ public class StoredProcLoggingTest extends AbstractPojoLoggingTest {
         String pojo1StreamString = null;
         String pojo2StreamString = "test_stream_2";
 
-        BloatedPojo inputPojo1 = createTestPojo(
-            null,
-            "Rob",
-            30,
-            0d,
-            timeValue,
-            timeValue,
-            "MY__TEST__CLOB",
-            pojo1StreamString);
+        BloatedPojo inputPojo1 = BloatedPojoBuilder.builder()
+                .id(null).name("Rob").invValue(30).doubleValue(0d)
+                .sqlDate(timeValue).sqlTimestamp(timeValue)
+                .clobString("MY__TEST__CLOB").inputStreamString(pojo1StreamString)
+                .build();
 
-        BloatedPojo inputPojo2 = createTestPojo(
-            null,
-            "Aphrodite",
-            59,
-            88.3d,
-            timeValue,
-            timeValue,
-            "MY__TEST__CLOB_2",
-            pojo2StreamString);
+        BloatedPojo inputPojo2 = BloatedPojoBuilder.builder()
+                .id(null).name("Aphrodite").invValue(59).doubleValue(88.3d)
+                .sqlDate(timeValue).sqlTimestamp(timeValue)
+                .clobString("MY__TEST__CLOB_2").inputStreamString(pojo2StreamString)
+                .build();
 
         dao.insertPojos(Arrays.asList(inputPojo1, inputPojo2), true);
         Object outParam = dao.callStoredProcedure(1);

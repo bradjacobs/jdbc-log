@@ -53,25 +53,17 @@ public class ClobStreamPojoLoggingTest extends AbstractPojoLoggingTest {
         String pojo1StreamString = null;
         String pojo2StreamString = "test_stream_2";
 
-        BloatedPojo inputPojo1 = createTestPojo(
-            null,
-            "Rob",
-            30,
-            0d,
-            timeValue,
-            timeValue,
-            pojo1ClobString,
-            pojo1StreamString);
+        BloatedPojo inputPojo1 = BloatedPojoBuilder.builder()
+                .id(null).name("Rob").invValue(30).doubleValue(0d)
+                .sqlDate(timeValue).sqlTimestamp(timeValue)
+                .clobString(pojo1ClobString).inputStreamString(pojo1StreamString)
+                .build();
 
-        BloatedPojo inputPojo2 = createTestPojo(
-            null,
-            "Aphrodite",
-            59,
-            88.3d,
-            timeValue,
-            timeValue,
-            pojo2ClobString,
-            pojo2StreamString);
+        BloatedPojo inputPojo2 = BloatedPojoBuilder.builder()
+                .id(null).name("Aphrodite").invValue(59).doubleValue(88.3d)
+                .sqlDate(timeValue).sqlTimestamp(timeValue)
+                .clobString(pojo2ClobString).inputStreamString(pojo2StreamString)
+                .build();
 
         dao.insertPojos(Arrays.asList(inputPojo1, inputPojo2), useBatch);
 
