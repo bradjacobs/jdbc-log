@@ -4,6 +4,7 @@ import com.github.bradjacobs.logging.jdbc.listeners.LoggingListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * ONLY FOR UNITTESTS!
@@ -25,15 +26,9 @@ public class CaptureLoggingListener implements LoggingListener {
     }
 
     public List<String> getSqlStatementStartingWith(String prefix) {
-        List<String> resultList = new ArrayList<>();
         String lowerPrefix = prefix.toLowerCase();
-
-        for (String sql : sqlStatementList) {
-            String lowerSql = sql.toLowerCase();
-            if (lowerSql.startsWith(lowerPrefix)) {
-                resultList.add(sql);
-            }
-        }
-        return resultList;
+        return sqlStatementList.stream()
+                .filter(s -> s.toLowerCase().startsWith(lowerPrefix))
+                .collect(Collectors.toList());
     }
 }
