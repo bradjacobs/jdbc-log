@@ -6,16 +6,11 @@ import com.github.bradjacobs.logging.jdbc.hsql.objects.CaptureLoggingListener;
 import com.github.bradjacobs.logging.jdbc.hsql.objects.PojoDAO;
 import com.github.bradjacobs.logging.jdbc.listeners.SystemOutLogListener;
 import org.apache.commons.io.IOUtils;
-import org.hsqldb.jdbc.JDBCClob;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.Reader;
-import java.nio.charset.StandardCharsets;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
