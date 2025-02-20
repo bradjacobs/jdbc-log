@@ -22,18 +22,14 @@ public class PojoLoggingTest extends AbstractPojoLoggingTest {
 
     private static final String CLOB_PARAM_PLACEHOLDER = "{_CLOB_}";
 
-    /**
-     * Gets called before every test method
-     */
+    // pre-test setup
     @BeforeMethod
     public void setup() throws Exception {
         captureLoggingListener = new CaptureLoggingListener();
         dao = initializePojoDao(captureLoggingListener, false);
     }
 
-    /**
-     * Gets called after every test method
-     */
+    // post-test teardown
     @AfterMethod
     public void tearDown() {
         dao.close();

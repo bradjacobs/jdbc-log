@@ -16,7 +16,6 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 
-
 abstract public class AbstractPojoLoggingTest {
     protected PojoDAO initializePojoDao(CaptureLoggingListener captureLoggingListener, boolean clobLoggingEnabled) throws Exception {
         Connection innerConn = DriverManager.getConnection("jdbc:hsqldb:mem:sampleDB", "SA", "");
@@ -76,7 +75,6 @@ abstract public class AbstractPojoLoggingTest {
         // NOTE: can't check the pojo.streamValue() after calling the dao
         //   b/c 'inputStream' can no longer be read for a value (expected)
     }
-
 
     protected String extractString(Clob clob) {
         if (clob == null) {

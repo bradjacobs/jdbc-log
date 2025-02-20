@@ -15,6 +15,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 public class DbLoggingBuilderTest {
+    // todo - figure out what these were for or remove them.
     private static final String EXPECTED_MISSING_PATTERN_MSG = "datetime formatter pattern is required.";
     private static final String EXPECTED_INVALID_PATTERN_SUBSTRING_MSG = "Invalid DateFormat pattern:.*";
     private static final String EXPECTED_MISSING_CONNECTION_MSG = "Connection cannot be null.";
@@ -29,17 +30,11 @@ public class DbLoggingBuilderTest {
 
     @Test
     public void testSetLoggingListeners() {
-        LoggingListener logger1 = new LoggingListener() {
-            @Override
-            public void log(String sql) { }
-        };
-        LoggingListener logger2 = new LoggingListener() {
-            @Override
-            public void log(String sql) { }
-        };
+        LoggingListener dummyLogger1 = sql -> { };
+        LoggingListener dummyLogger2 = sql -> { };
 
         DbLoggingBuilder dbLoggingBuilder =
-            DbLoggingBuilder.builder(logger1, logger2);
+            DbLoggingBuilder.builder(dummyLogger1, dummyLogger2);
 
         assertNotNull(dbLoggingBuilder.loggingListeners);
         assertEquals(dbLoggingBuilder.loggingListeners.size(), 2, "mismatch expected log listener count");

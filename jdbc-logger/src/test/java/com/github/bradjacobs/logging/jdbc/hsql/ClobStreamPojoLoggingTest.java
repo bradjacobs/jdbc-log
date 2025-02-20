@@ -18,18 +18,14 @@ public class ClobStreamPojoLoggingTest extends AbstractPojoLoggingTest {
     private PojoDAO dao = null;
     private CaptureLoggingListener captureLoggingListener = null;
 
-    /**
-     * Gets called before every test method
-     */
+    // pre-test setup
     @BeforeMethod
     public void setup() throws Exception {
         captureLoggingListener = new CaptureLoggingListener();
         dao = initializePojoDao(captureLoggingListener, true);
     }
 
-    /**
-     * Gets called after every test method
-     */
+    // post-test teardown
     @AfterMethod
     public void tearDown() {
         dao.close();

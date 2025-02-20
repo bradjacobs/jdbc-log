@@ -13,23 +13,18 @@ import java.util.List;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
-
 public class StoredProcLoggingTest extends AbstractPojoLoggingTest {
     private PojoDAO dao = null;
     private CaptureLoggingListener captureLoggingListener = null;
 
-    /**
-     * Gets called before every test method
-     */
+    // pre-test setup
     @BeforeMethod
     public void setup() throws Exception {
         captureLoggingListener = new CaptureLoggingListener();
         dao = initializePojoDao(captureLoggingListener, false);
     }
 
-    /**
-     * Gets called after every test method
-     */
+    // post-test teardown
     @AfterMethod
     public void tearDown() {
         dao.close();
@@ -38,7 +33,6 @@ public class StoredProcLoggingTest extends AbstractPojoLoggingTest {
     @Test
     public void testCallStoredProc()  throws Exception {
         long timeValue = 1538014031000L;    // '2018-09-27'
-
         String pojo1StreamString = null;
         String pojo2StreamString = "test_stream_2";
 
@@ -55,7 +49,7 @@ public class StoredProcLoggingTest extends AbstractPojoLoggingTest {
                 .build();
 
         dao.insertPojos(Arrays.asList(inputPojo1, inputPojo2), true);
-        Object outParam = dao.callStoredProcedure(1);
+        Boolean outParam = dao.callStoredProcedure(1);
 
         List<String> callSqlStatements = this.captureLoggingListener.getSqlStatementStartingWith("CALL");
         assertEquals(callSqlStatements.size(), 1, "mismatch count of 'CALL' sql statements");
