@@ -95,11 +95,11 @@ public class PojoLoggingTest extends AbstractPojoLoggingTest {
         // confirm the returned results are as expected
         //    (i.e. confirm the logger didn't mess something up)
         assertEquals( pojos.size(), 2, "Wrong number of pojos");
-        BloatedPojo retreivedPojo1 = pojos.get(0);
+        BloatedPojo retrievedPojo1 = pojos.get(0);
         BloatedPojo retrievedPojo2 = pojos.get(1);
-        assertPojoEqual(retreivedPojo1, inputPojo1);
+        assertPojoEqual(retrievedPojo1, inputPojo1);
         assertPojoEqual(retrievedPojo2, inputPojo2);
-        assertPojoEqual(dao.getPojoById(retreivedPojo1.getId()), retreivedPojo1);
+        assertPojoEqual(dao.getPojoById(retrievedPojo1.getId()), retrievedPojo1);
         assertPojoEqual(dao.getPojoById(retrievedPojo2.getId()), retrievedPojo2);
     }
 
@@ -117,7 +117,6 @@ public class PojoLoggingTest extends AbstractPojoLoggingTest {
 
     @Test
     public void testStatementQueryWithBatch() throws SQLException {
-
         BloatedPojo inputPojo1 = createDummyPojo("Bob");
         dao.insertPojo(inputPojo1, true);
 
@@ -137,7 +136,6 @@ public class PojoLoggingTest extends AbstractPojoLoggingTest {
 
     @Test
     public void testMultiplePreparedStatementBatches() throws SQLException {
-
         List<BloatedPojo> batchA = new ArrayList<>();
         List<BloatedPojo> batchB = new ArrayList<>();
         List<BloatedPojo> batchC = new ArrayList<>();

@@ -83,5 +83,7 @@ public class StoredProcLoggingTest extends AbstractPojoLoggingTest {
         List<String> callSqlStatements = this.captureLoggingListener.getSqlStatementStartingWith("CALL");
         assertEquals(callSqlStatements.size(), 3, "mismatch count of 'CALL' sql statements");
         assertEquals(callSqlStatements.get(0), "CALL EXT_SAMPLE_PROC(1,'{_OUT_BOOLEAN_}')");
+        assertEquals(callSqlStatements.get(1), "CALL EXT_SAMPLE_PROC(2,'{_OUT_BOOLEAN_}')");
+        assertEquals(callSqlStatements.get(2), "CALL EXT_SAMPLE_PROC(3,'{_OUT_BOOLEAN_}')");
     }
 }

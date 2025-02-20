@@ -12,7 +12,7 @@ public class OracleParamToStringConverterTest {
     // when call the factory with "Oracle",
     //   then get back defaults that handles the Oracle date/timestamps differently
     @Test
-    public void testOracleDefaults_Timestamp() throws Exception {
+    public void testOracleDefaults_Timestamp() {
         java.sql.Timestamp sqlTimestamp = new java.sql.Timestamp(TEST_DATE_LONG);
         ParamToStringConverter oracleDateConverter = new OracleParamToStringConverter();
 
@@ -23,7 +23,7 @@ public class OracleParamToStringConverterTest {
 
     // even though this is "Date" the inner part will show date and time
     @Test
-    public void testOracleDefaults_Date() throws Exception {
+    public void testOracleDefaults_Date() {
         java.sql.Date sqlDate = new java.sql.Date(TEST_DATE_LONG);
         ParamToStringConverter oracleDateConverter = new OracleParamToStringConverter();
 

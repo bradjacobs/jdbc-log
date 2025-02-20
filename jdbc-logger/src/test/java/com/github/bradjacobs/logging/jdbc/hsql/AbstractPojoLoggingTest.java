@@ -134,16 +134,11 @@ abstract public class AbstractPojoLoggingTest {
         if (clob == null) {
             return null;
         }
-        Reader reader = null;
-        try {
-            reader = clob.getCharacterStream();
+        try (Reader reader = clob.getCharacterStream()) {
             return IOUtils.toString(reader);
         }
         catch (Exception e) {
             throw new RuntimeException("Error attempting to get string value from reader for Logging: " + e.getMessage(), e);
-        }
-        finally {
-            closeQuietly(reader);
         }
     }
 

@@ -18,7 +18,7 @@ public class PojoDAO {
     private static final Logger logger = LoggerFactory.getLogger(PojoDAO.class);
 
     private static final String TABLE_NAME = "pojos";
-    private static final String[][] TABLE_COLUMN_DEFNS = {
+    private static final String[][] TABLE_COLUMN_DEFINITIONS = {
             {"id", "INT", "IDENTITY"},
             {"name", "VARCHAR(30)"},
             {"intValue", "INT"},
@@ -29,13 +29,13 @@ public class PojoDAO {
             {"streamValue", "VARCHAR(255)"},
     };
 
-    protected Connection conn;
+    protected final Connection conn;
 
     private static final String DROP_TABLE_SQL = generateDropTableSql(TABLE_NAME);
-    private static final String CREATE_TABLE_SQL = generateCreateTableSql(TABLE_NAME, TABLE_COLUMN_DEFNS);
-    private static final String PREPARED_STMT_INSERT_SQL = generatePreparedStatementInsertIntoTableSql(TABLE_NAME, TABLE_COLUMN_DEFNS);
+    private static final String CREATE_TABLE_SQL = generateCreateTableSql(TABLE_NAME, TABLE_COLUMN_DEFINITIONS);
+    private static final String PREPARED_STMT_INSERT_SQL = generatePreparedStatementInsertIntoTableSql(TABLE_NAME, TABLE_COLUMN_DEFINITIONS);
     private static final String STMT_SELECT_ALL_SQL = generateSelectAllSql(TABLE_NAME);
-    private static final String PREPARED_STMT_SELECT_BY_ID_SQL = generatePreparedSttmentSelectByIdSql(TABLE_NAME);
+    private static final String PREPARED_STMT_SELECT_BY_ID_SQL = generatePreparedStatementSelectByIdSql(TABLE_NAME);
 
     private static final String STORED_PROC_NAME = "EXT_SAMPLE_PROC";
     private static final String DROP_STORED_PROC_SQL =
@@ -275,7 +275,7 @@ public class PojoDAO {
 
     private List<BloatedPojo> executeQuery(Statement stmt, String sql) throws SQLException {
         try {
-            ResultSet rs = null;
+            ResultSet rs;
             // kludgy, even for test code
             if (stmt instanceof PreparedStatement) {
                 rs = ((PreparedStatement)stmt).executeQuery();
@@ -360,7 +360,7 @@ public class PojoDAO {
         return String.format("SELECT * FROM %s", tableName);
     }
 
-    private static String generatePreparedSttmentSelectByIdSql(String tableName) {
+    private static String generatePreparedStatementSelectByIdSql(String tableName) {
         return String.format("SELECT * FROM %s WHERE id = ?", tableName);
     }
 

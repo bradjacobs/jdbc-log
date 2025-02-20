@@ -11,10 +11,8 @@ public class BloatedPojo {
     private String name;
     private int intValue;
     private double doubleValue;
-
     private java.sql.Date sqlDateValue;
     private java.sql.Timestamp sqlTimestampValue;
-
     private Clob clobValue;
     private InputStream streamValue;
 
