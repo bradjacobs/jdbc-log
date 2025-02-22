@@ -82,7 +82,8 @@ public class DbLoggingBuilder {
         if (targetConnection == null) {
             throw new IllegalArgumentException("Connection cannot be null.");
         }
-        return new LoggingConnection(targetConnection, this);
+        throw new IllegalStateException("method no longer supporetd");
+//        return new LoggingConnection(targetConnection, this);
     }
 
     /**

@@ -88,6 +88,7 @@ public class DefaultParamToStringConverter implements ParamToStringConverter {
         return "'" + formatter.format(Instant.ofEpochMilli(dateValue.getTime())) + "'";
     }
 
+    // todo - this is 'probably' incorrect and needs quotes.
     protected String convertDefault(Object objectValue) {
         return String.valueOf(objectValue);
     }

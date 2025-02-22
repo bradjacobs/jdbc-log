@@ -52,7 +52,7 @@ public class PojoDAO {
         " SET status_out = FALSE;\n" +
         "\n" +
         "  select count(*) into temp_count from " + TABLE_NAME + " p where p.id = id_in;\n" +
-        "  if temp_count > 0  THEN\n" +
+        "  if temp_count > 0 THEN\n" +
         "      SET status_out = TRUE;\n" +
         " end if;\n" +
         " END";

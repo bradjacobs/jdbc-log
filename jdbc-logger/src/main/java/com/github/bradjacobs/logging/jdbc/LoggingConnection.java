@@ -31,20 +31,36 @@ public class LoggingConnection implements Connection {
     private final List<LoggingListener> loggingListeners;
     private final SqlTagFiller sqlTagFiller;
 
-    // will allow a normal constructor (avoid builder) if want a single logger with all defaults
-    //   (reserve right change mind about this later!!)
-    public LoggingConnection(Connection targetConnection, org.slf4j.Logger logger) {
-        this(targetConnection, DbLoggingBuilder.builder(logger));
+    public static Builder builder(Connection targetConnection) {
+        return new Builder(targetConnection);
     }
 
-    LoggingConnection(Connection targetConnection, DbLoggingBuilder builder) {
+    public static class Builder extends AbstractLoggingBuilder<Builder> {
+        private final Connection targetConnection;
+        private Builder(Connection targetConnection) {
+            this.targetConnection = targetConnection;
+        }
+
+        public LoggingConnection build() {
+            return new LoggingConnection(targetConnection, this);
+        }
+
+        @Override
+        protected Builder self() {
+            return this;
+        }
+    }
+
+    LoggingConnection(Connection targetConnection, Builder builder) {
         if (targetConnection == null) {
-            throw new IllegalArgumentException("Must provide a targetConnection");
+            throw new IllegalArgumentException("Must provide a target connection.");
+        }
+        if (builder.loggingListeners.isEmpty()) {
+            throw new IllegalArgumentException("Must provide at least one loggingListener.");
         }
         this.targetConnection = targetConnection;
         this.loggingListeners = Collections.unmodifiableList(builder.loggingListeners);
         this.clobParamLoggingEnabled = builder.clobParamLogging;
-
         this.sqlTagFiller = new SqlTagFiller(builder.dbType, builder.zoneId);
     }
 
