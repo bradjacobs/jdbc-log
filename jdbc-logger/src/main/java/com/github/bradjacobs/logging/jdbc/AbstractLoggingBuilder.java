@@ -3,20 +3,17 @@ package com.github.bradjacobs.logging.jdbc;
 import com.github.bradjacobs.logging.jdbc.listeners.LoggingListener;
 import com.github.bradjacobs.logging.jdbc.listeners.Slf4jLoggingListener;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.github.bradjacobs.logging.jdbc.DatabaseType.*;
+import static com.github.bradjacobs.logging.jdbc.DatabaseType.DEFAULT;
 
 /**
  * Builder that can create a LoggingDataSource and/or LoggingConnection
