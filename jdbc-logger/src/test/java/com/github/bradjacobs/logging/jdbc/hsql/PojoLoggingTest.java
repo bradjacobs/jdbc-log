@@ -3,18 +3,18 @@ package com.github.bradjacobs.logging.jdbc.hsql;
 import com.github.bradjacobs.logging.jdbc.hsql.objects.BloatedPojo;
 import com.github.bradjacobs.logging.jdbc.hsql.objects.CaptureLoggingListener;
 import com.github.bradjacobs.logging.jdbc.hsql.objects.PojoDAO;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PojoLoggingTest extends AbstractPojoLoggingTest {
     private PojoDAO dao = null;
@@ -23,14 +23,14 @@ public class PojoLoggingTest extends AbstractPojoLoggingTest {
     private static final String CLOB_PARAM_PLACEHOLDER = "{_CLOB_}";
 
     // pre-test setup
-    @BeforeMethod
+    @BeforeEach
     public void setup() throws Exception {
         captureLoggingListener = new CaptureLoggingListener();
         dao = initializePojoDao(captureLoggingListener, false);
     }
 
     // post-test teardown
-    @AfterMethod
+    @AfterEach
     public void tearDown() {
         dao.close();
     }
@@ -68,7 +68,7 @@ public class PojoLoggingTest extends AbstractPojoLoggingTest {
         dao.insertPojos(Arrays.asList(inputPojo1, inputPojo2), useBatch);
 
         List<String> insertSqlStatements = this.captureLoggingListener.getSqlStatementStartingWith("INSERT");
-        assertEquals(insertSqlStatements.size(), 2, "expected exactly 2 'INSERT' sql statements");
+        assertEquals(2, insertSqlStatements.size(), "expected exactly 2 'INSERT' sql statements");
 
         String sql1 = insertSqlStatements.get(0);
         String sql2 = insertSqlStatements.get(1);
@@ -97,10 +97,10 @@ public class PojoLoggingTest extends AbstractPojoLoggingTest {
         assertEquals(pojos.size(), 0, "wrong number of pojos");
 
         List<String> sqlStatements = captureLoggingListener.getSqlStatementStartingWith("SELECT");
-        assertEquals(sqlStatements.size(), 1);
+        assertEquals(1, sqlStatements.size());
 
         String sqlStatement = sqlStatements.get(0);
-        assertEquals(sqlStatement.toLowerCase(), "select * from pojos");
+        assertEquals("select * from pojos", sqlStatement.toLowerCase());
     }
 
     @Test
@@ -119,7 +119,7 @@ public class PojoLoggingTest extends AbstractPojoLoggingTest {
         List<String> sqlStatementResults = this.captureLoggingListener.getSqlStatements();
         List<String> lastThreeSqlStatements = sqlStatementResults.subList(sqlStatementResults.size() - 3, sqlStatementResults.size());
 
-        assertEquals(lastThreeSqlStatements, sqlStatements);
+        assertEquals(sqlStatements, lastThreeSqlStatements);
     }
 
     @Test
@@ -140,7 +140,7 @@ public class PojoLoggingTest extends AbstractPojoLoggingTest {
         List<BloatedPojo> queriedPojos = dao.getAllPojos();
 
         List<String> sqlStatementResults = this.captureLoggingListener.getSqlStatementStartingWith("INSERT");
-        assertEquals(sqlStatementResults.size(), 9);
-        assertEquals(queriedPojos.size(), 9);
+        assertEquals(9, sqlStatementResults.size());
+        assertEquals(9, queriedPojos.size());
     }
 }

@@ -1,8 +1,8 @@
 package com.github.bradjacobs.logging.jdbc.param;
 
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class OracleParamToStringConverterTest {
     private static final long TEST_DATE_LONG = 1538014031000L;
@@ -18,7 +18,7 @@ public class OracleParamToStringConverterTest {
 
         String expected = "TO_TIMESTAMP(" + EXPECTED_DATETIME_UTC + ", 'YYYY-MM-DD HH24:MI:SS')";
         String renderedString = oracleDateConverter.convertToString(sqlTimestamp);
-        assertEquals(renderedString, expected, "mismatch expected formatted date string");
+        assertEquals(expected, renderedString, "mismatch expected formatted date string");
     }
 
     // even though this is "Date" the inner part will show date and time
@@ -29,6 +29,6 @@ public class OracleParamToStringConverterTest {
 
         String expected = "TO_DATE(" + EXPECTED_DATE_UTC +", 'YYYY-MM-DD')";
         String renderedString = oracleDateConverter.convertToString(sqlDate);
-        assertEquals(renderedString, expected, "mismatch expected formatted date string");
+        assertEquals(expected, renderedString, "mismatch expected formatted date string");
     }
 }

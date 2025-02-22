@@ -1,11 +1,13 @@
 package com.github.bradjacobs.logging.jdbc;
 
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.Test;
 
 import javax.sql.DataSource;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 public class LoggingDataSourceTest {
@@ -19,17 +21,21 @@ public class LoggingDataSourceTest {
 
     // exception handling unittests ....
 
-    @Test(expectedExceptions = { IllegalArgumentException.class },
-            expectedExceptionsMessageRegExp = MISSING_DATASOURCE_MSG)
+    @Test
     public void testMissingDataSource() {
-        LoggingDataSource loggingDataSource = LoggingDataSource.builder(null)
-                .logger(logger)
-                .build();
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            LoggingDataSource loggingDataSource = LoggingDataSource.builder(null)
+                    .logger(logger)
+                    .build();
+        });
+        assertEquals(MISSING_DATASOURCE_MSG, exception.getMessage());
     }
 
-    @Test(expectedExceptions = { IllegalArgumentException.class },
-            expectedExceptionsMessageRegExp = MISSING_LOGGER_MSG)
+    @Test
     public void testMissingLogger() {
-        LoggingDataSource loggingDataSource = LoggingDataSource.builder(null).logger(null).build();
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            LoggingDataSource loggingDataSource = LoggingDataSource.builder(null).logger(null).build();
+        });
+        assertEquals(MISSING_LOGGER_MSG, exception.getMessage());
     }
 }

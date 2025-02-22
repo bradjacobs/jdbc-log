@@ -1,18 +1,18 @@
 package com.github.bradjacobs.logging.jdbc;
 
 import com.github.bradjacobs.logging.jdbc.listeners.LoggingListener;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.Test;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
 
 public class LoggingConnectionTest {
     // todo - figure out what these were for or remove them.
@@ -36,47 +36,59 @@ public class LoggingConnectionTest {
 
         LoggingConnection conn = LoggingConnection.builder(MOCK_CONNECTION)
                 .loggingListeners(dummyLogger1, dummyLogger2).build();
-        assertEquals(conn.getLoggingListeners().size(), 2, "mismatch expected log listener count");
+        assertEquals(2, conn.getLoggingListeners().size(),"mismatch expected log listener count");
     }
 
     // *** ERROR CONDITION TESTS ***
     /////////////////////////////////
 
-    @Test(expectedExceptions = { IllegalArgumentException.class },
-        expectedExceptionsMessageRegExp = "Must provide a non-null logger.")
+    @Test
     public void testNullLogger() {
-        LoggingConnection.builder(MOCK_CONNECTION).logger(null).build();
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            LoggingConnection.builder(MOCK_CONNECTION).logger(null).build();
+        });
+        assertEquals("Must provide a non-null logger.", exception.getMessage());
     }
 
-    @Test(expectedExceptions = { IllegalArgumentException.class },
-        expectedExceptionsMessageRegExp = "Must provide at least one logger or loggingListener")
+    @Test
     public void testNullListener() {
-        LoggingConnection.builder(MOCK_CONNECTION).loggingListener(null).build();
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            LoggingConnection.builder(MOCK_CONNECTION).loggingListener(null).build();
+        });
+        assertEquals("Must provide at least one logger or loggingListener", exception.getMessage());
     }
 
-    @Test(expectedExceptions = { IllegalArgumentException.class },
-            expectedExceptionsMessageRegExp = "Must provide at least one logger or loggingListener")
+    @Test
     public void testNullListenerCollections() {
-        List<LoggingListener> nullList = null;
-        LoggingConnection.builder(MOCK_CONNECTION).loggingListeners(nullList).build();
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            List<LoggingListener> nullList = null;
+            LoggingConnection.builder(MOCK_CONNECTION).loggingListeners(nullList).build();
+        });
+        assertEquals("Must provide at least one logger or loggingListener", exception.getMessage());
     }
 
-    @Test(expectedExceptions = { IllegalArgumentException.class },
-            expectedExceptionsMessageRegExp = "Must provide at least one logger or loggingListener")
+    @Test
     public void testEmptyListenerCollections() {
-        LoggingConnection.builder(MOCK_CONNECTION).loggingListeners(Collections.emptyList()).build();
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            LoggingConnection.builder(MOCK_CONNECTION).loggingListeners(Collections.emptyList()).build();
+        });
+        assertEquals("Must provide at least one logger or loggingListener", exception.getMessage());
     }
 
-    @Test(expectedExceptions = { IllegalArgumentException.class },
-            expectedExceptionsMessageRegExp = "Must provide at least one logger or loggingListener")
+    @Test
     public void testListWithAllNulls() {
-        List<LoggingListener> list = Collections.singletonList(null);
-        LoggingConnection.builder(MOCK_CONNECTION).loggingListeners(list).build();
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            List<LoggingListener> list = Collections.singletonList(null);
+            LoggingConnection.builder(MOCK_CONNECTION).loggingListeners(list).build();
+        });
+        assertEquals("Must provide at least one logger or loggingListener", exception.getMessage());
     }
 
-    @Test(expectedExceptions = { IllegalArgumentException.class },
-            expectedExceptionsMessageRegExp = EXPECTED_MISSING_CONNECTION_MSG)
+    @Test
     public void testMissingConnection() {
-        LoggingConnection.builder(null).logger(logger).build();
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            LoggingConnection.builder(null).logger(logger).build();
+        });
+        assertEquals(EXPECTED_MISSING_CONNECTION_MSG, exception.getMessage());
     }
 }

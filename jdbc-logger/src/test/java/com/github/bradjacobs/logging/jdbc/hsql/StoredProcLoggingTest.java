@@ -3,29 +3,30 @@ package com.github.bradjacobs.logging.jdbc.hsql;
 import com.github.bradjacobs.logging.jdbc.hsql.objects.BloatedPojo;
 import com.github.bradjacobs.logging.jdbc.hsql.objects.CaptureLoggingListener;
 import com.github.bradjacobs.logging.jdbc.hsql.objects.PojoDAO;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 
 public class StoredProcLoggingTest extends AbstractPojoLoggingTest {
     private PojoDAO dao = null;
     private CaptureLoggingListener captureLoggingListener = null;
 
     // pre-test setup
-    @BeforeMethod
+    @BeforeEach
     public void setup() throws Exception {
         captureLoggingListener = new CaptureLoggingListener();
         dao = initializePojoDao(captureLoggingListener, false);
     }
 
     // post-test teardown
-    @AfterMethod
+    @AfterEach
     public void tearDown() {
         dao.close();
     }
@@ -52,8 +53,8 @@ public class StoredProcLoggingTest extends AbstractPojoLoggingTest {
         Boolean outParam = dao.callStoredProcedure(1);
 
         List<String> callSqlStatements = this.captureLoggingListener.getSqlStatementStartingWith("CALL");
-        assertEquals(callSqlStatements.size(), 1, "mismatch count of 'CALL' sql statements");
-        assertEquals(callSqlStatements.get(0), "CALL EXT_SAMPLE_PROC(1,'{_OUT_BOOLEAN_}')");
+        assertEquals(1, callSqlStatements.size(), "mismatch count of 'CALL' sql statements");
+        assertEquals("CALL EXT_SAMPLE_PROC(1,'{_OUT_BOOLEAN_}')", callSqlStatements.get(0) );
 
         // confirm that the stored proc worked as expected.
         assertNotNull(outParam);
@@ -67,9 +68,9 @@ public class StoredProcLoggingTest extends AbstractPojoLoggingTest {
         dao.callStoredProcedureBatch(inputList);
 
         List<String> callSqlStatements = this.captureLoggingListener.getSqlStatementStartingWith("CALL");
-        assertEquals(callSqlStatements.size(), 3, "mismatch count of 'CALL' sql statements");
-        assertEquals(callSqlStatements.get(0), "CALL EXT_SAMPLE_PROC(1,'{_OUT_BOOLEAN_}')");
-        assertEquals(callSqlStatements.get(1), "CALL EXT_SAMPLE_PROC(2,'{_OUT_BOOLEAN_}')");
-        assertEquals(callSqlStatements.get(2), "CALL EXT_SAMPLE_PROC(3,'{_OUT_BOOLEAN_}')");
+        assertEquals(3, callSqlStatements.size(),"mismatch count of 'CALL' sql statements");
+        assertEquals("CALL EXT_SAMPLE_PROC(1,'{_OUT_BOOLEAN_}')", callSqlStatements.get(0));
+        assertEquals("CALL EXT_SAMPLE_PROC(2,'{_OUT_BOOLEAN_}')", callSqlStatements.get(1));
+        assertEquals("CALL EXT_SAMPLE_PROC(3,'{_OUT_BOOLEAN_}')", callSqlStatements.get(2));
     }
 }

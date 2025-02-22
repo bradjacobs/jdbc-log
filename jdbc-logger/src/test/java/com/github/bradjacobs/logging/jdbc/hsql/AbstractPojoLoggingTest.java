@@ -12,9 +12,9 @@ import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 abstract public class AbstractPojoLoggingTest {
     protected PojoDAO initializePojoDao(CaptureLoggingListener captureLoggingListener, boolean clobLoggingEnabled) throws Exception {
@@ -53,21 +53,21 @@ abstract public class AbstractPojoLoggingTest {
         assertNotNull(actualPojo);
 
         if (expectedPojo.getId() != 0) {
-            assertEquals(actualPojo.getId(), expectedPojo.getId());
+            assertEquals(expectedPojo.getId(), actualPojo.getId());
         }
-        assertEquals(actualPojo.getName(), expectedPojo.getName());
-        assertEquals(actualPojo.getIntValue(), expectedPojo.getIntValue());
-        assertEquals(actualPojo.getDoubleValue(), expectedPojo.getDoubleValue(), 0.0001d);
+        assertEquals(expectedPojo.getName(), actualPojo.getName());
+        assertEquals(expectedPojo.getIntValue(), actualPojo.getIntValue());
+        assertEquals( expectedPojo.getDoubleValue(), actualPojo.getDoubleValue(), 0.0001d);
 
-        assertEquals(String.valueOf(actualPojo.getSqlDateValue()), String.valueOf(expectedPojo.getSqlDateValue()));
-        assertEquals(actualPojo.getSqlTimestampValue(), expectedPojo.getSqlTimestampValue());
+        assertEquals(String.valueOf(expectedPojo.getSqlDateValue()), String.valueOf(actualPojo.getSqlDateValue()));
+        assertEquals(expectedPojo.getSqlTimestampValue(), actualPojo.getSqlTimestampValue());
 
         // note: converting to string will 'mess up' the underlying stream, but don't care in this case.
         Clob actualClob = actualPojo.getClobValue();
         Clob expectedClob = expectedPojo.getClobValue();
         if (actualClob != null) {
             assertNotNull(expectedClob);
-            assertEquals( extractString(actualClob), extractString(expectedClob) );
+            assertEquals(extractString(expectedClob), extractString(actualClob));
         }
         else {
             assertNull(expectedClob);

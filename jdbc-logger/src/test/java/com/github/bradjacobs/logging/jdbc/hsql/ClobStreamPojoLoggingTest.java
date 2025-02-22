@@ -3,30 +3,29 @@ package com.github.bradjacobs.logging.jdbc.hsql;
 import com.github.bradjacobs.logging.jdbc.hsql.objects.BloatedPojo;
 import com.github.bradjacobs.logging.jdbc.hsql.objects.CaptureLoggingListener;
 import com.github.bradjacobs.logging.jdbc.hsql.objects.PojoDAO;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ClobStreamPojoLoggingTest extends AbstractPojoLoggingTest {
     private PojoDAO dao = null;
     private CaptureLoggingListener captureLoggingListener = null;
 
     // pre-test setup
-    @BeforeMethod
+    @BeforeEach
     public void setup() throws Exception {
         captureLoggingListener = new CaptureLoggingListener();
         dao = initializePojoDao(captureLoggingListener, true);
     }
 
     // post-test teardown
-    @AfterMethod
+    @AfterEach
     public void tearDown() {
         dao.close();
     }
@@ -64,7 +63,7 @@ public class ClobStreamPojoLoggingTest extends AbstractPojoLoggingTest {
         dao.insertPojos(Arrays.asList(inputPojo1, inputPojo2), useBatch);
 
         List<String> insertSqlStatements = this.captureLoggingListener.getSqlStatementStartingWith("INSERT");
-        assertEquals(insertSqlStatements.size(), 2, "expected exactly 2 'INSERT' sql statements");
+        assertEquals(2, insertSqlStatements.size(), "expected exactly 2 'INSERT' sql statements");
 
         String sql1 = insertSqlStatements.get(0);
         String sql2 = insertSqlStatements.get(1);
@@ -77,7 +76,7 @@ public class ClobStreamPojoLoggingTest extends AbstractPojoLoggingTest {
 
         // confirm the returned results are as expected
         //    (i.e. confirm the logger didn't mess something up)
-        assertEquals( pojos.size(), 2, "Wrong number of pojos");
+        assertEquals(2, pojos.size(),"Wrong number of pojos");
         BloatedPojo retrievedPojo1 = pojos.get(0);
         BloatedPojo retrievedPojo2 = pojos.get(1);
         assertPojoEqual(retrievedPojo1, inputPojo1);

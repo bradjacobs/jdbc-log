@@ -49,8 +49,6 @@ public class LoggingDataSource implements DataSource {
         }
     }
 
-
-
     /**
      * Constructor to use any customized loggingConnectionCreator.
      * @param targetDataSource targetDataSource
@@ -150,8 +148,7 @@ public class LoggingDataSource implements DataSource {
     }
 
     private void validateParams(DataSource dataSource, LoggingConnection.Builder loggingConnectionBuilder)
-            throws IllegalArgumentException
-    {
+            throws IllegalArgumentException {
         if (dataSource == null) {
             throw new IllegalArgumentException("Must provide a dateSource");
         }
