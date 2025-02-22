@@ -77,31 +77,5 @@ abstract public class AbstractLoggingBuilder<T extends AbstractLoggingBuilder<T>
         return self();
     }
 
-//    abstract public T build();
-
     abstract protected T self();
-
-//    /**
-//     * Creates a LoggingConnection
-//     * @param targetConnection the original connection to be wrapped/decorated with LoggingConnection.
-//     * @return loggingConnection
-//     */
-//    public LoggingConnection createFrom(Connection targetConnection) {
-//        if (targetConnection == null) {
-//            throw new IllegalArgumentException("Connection cannot be null.");
-//        }
-//        return new LoggingConnection(targetConnection, this);
-//    }
-//
-//    /**
-//     * Creates a LoggingDataSource
-//     * @param targetDataSource the original dataSource to be wrapped/decorated with LoggingDataSource.
-//     * @return loggingDataSource
-//     */
-//    public LoggingDataSource createFrom(DataSource targetDataSource) {
-//        if (targetDataSource == null) {
-//            throw new IllegalArgumentException("DataSource cannot be null.");
-//        }
-//        return new LoggingDataSource(targetDataSource, this);
-//    }
 }
