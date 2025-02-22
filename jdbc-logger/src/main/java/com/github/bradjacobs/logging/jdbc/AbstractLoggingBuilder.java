@@ -35,7 +35,10 @@ abstract public class AbstractLoggingBuilder<T extends AbstractLoggingBuilder<T>
     public T logger(org.slf4j.Logger logger) {
         return loggingListener(new Slf4jLoggingListener(logger));
     }
-    public T loggingListener(LoggingListener ... loggingListeners) {
+    public T loggingListener(LoggingListener loggingListener) {
+        return loggingListeners(loggingListener);
+    }
+    public T loggingListeners(LoggingListener ... loggingListeners) {
         return loggingListeners(Arrays.asList(loggingListeners));
     }
     public T loggingListeners(Collection<LoggingListener> loggingListeners) {

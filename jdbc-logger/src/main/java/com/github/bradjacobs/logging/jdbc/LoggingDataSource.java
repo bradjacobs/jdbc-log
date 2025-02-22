@@ -13,41 +13,66 @@ import java.util.logging.Logger;
  * @see <a href="https://docs.spring.io/spring-boot/docs/1.5.14.RELEASE/reference/html/howto-data-access.html">Spring - Configure a Custom DataSource</a>
  */
 public class LoggingDataSource implements DataSource {
-    private final DataSource dataSource;
-    private final DbLoggingBuilder dbLoggingBuilder;
+    private final DataSource targetDataSource;
+    // hold onto a loggingConnectionBuilder because it will be used to make multiple logging connections.
+    private final LoggingConnection.Builder loggingConnectionBuilder;
     private boolean enabled = true;
 
-    /**
-     * Constructor (convenience), wraps datasource and will log SQL statements to logger (debug level)
-     * @param dataSource dataSource
-     * @param logger logger
-     */
-    public LoggingDataSource(DataSource dataSource, org.slf4j.Logger logger) {
-        this(dataSource, DbLoggingBuilder.builder(logger));
+    public static Builder builder(DataSource targetDataSource) {
+        return new Builder(targetDataSource);
     }
+
+    public static class Builder extends AbstractLoggingBuilder<Builder> {
+        private DataSource targetDataSource;
+        private Builder(DataSource targetDataSource) {
+            this.targetDataSource = targetDataSource;
+        }
+
+        public Builder targetDataSource(DataSource targetDataSource) {
+            this.targetDataSource = targetDataSource;
+            return this;
+        }
+
+        public LoggingDataSource build() {
+            LoggingConnection.Builder loggingConnectionBuilder =
+                    LoggingConnection.builder(null)
+                            .clobParamLogging(this.clobParamLogging)
+                            .zoneId(this.zoneId)
+                            .dbType(this.dbType)
+                            .loggingListeners(this.loggingListeners);
+            return new LoggingDataSource(targetDataSource, loggingConnectionBuilder);
+        }
+
+        @Override
+        protected Builder self() {
+            return this;
+        }
+    }
+
+
 
     /**
      * Constructor to use any customized loggingConnectionCreator.
-     * @param dataSource dateSource
-     * @param dbLoggingBuilder loggingConnectionCreator
+     * @param targetDataSource targetDataSource
+     * @param loggingConnectionBuilder loggingConnectionCreator
      */
-    public LoggingDataSource(DataSource dataSource, DbLoggingBuilder dbLoggingBuilder) {
-        validateParams(dataSource, dbLoggingBuilder);
-        this.dataSource = dataSource;
-        this.dbLoggingBuilder = dbLoggingBuilder;
+    public LoggingDataSource(DataSource targetDataSource, LoggingConnection.Builder loggingConnectionBuilder) {
+        validateParams(targetDataSource, loggingConnectionBuilder);
+        this.targetDataSource = targetDataSource;
+        this.loggingConnectionBuilder = loggingConnectionBuilder;
     }
 
     /** @inheritDoc */
     @Override
     public Connection getConnection() throws SQLException {
-        Connection innerConnection = dataSource.getConnection();
+        Connection innerConnection = targetDataSource.getConnection();
         return createConnection(innerConnection);
     }
 
     /** @inheritDoc */
     @Override
     public Connection getConnection(String username, String password) throws SQLException {
-        Connection innerConnection = dataSource.getConnection(username, password);
+        Connection innerConnection = targetDataSource.getConnection(username, password);
         return createConnection(innerConnection);
     }
 
@@ -61,7 +86,8 @@ public class LoggingDataSource implements DataSource {
         if (!enabled) {
             return innerConnection;
         }
-        return dbLoggingBuilder.createFrom(innerConnection);
+        loggingConnectionBuilder.targetConnection(innerConnection);
+        return loggingConnectionBuilder.build();
     }
 
     /**
@@ -84,53 +110,53 @@ public class LoggingDataSource implements DataSource {
     /** @inheritDoc */
     @Override
     public PrintWriter getLogWriter() throws SQLException {
-        return dataSource.getLogWriter();
+        return targetDataSource.getLogWriter();
     }
 
     /** @inheritDoc */
     @Override
     public void setLogWriter(PrintWriter out) throws SQLException {
-        dataSource.setLogWriter(out);
+        targetDataSource.setLogWriter(out);
     }
 
     /** @inheritDoc */
     @Override
     public void setLoginTimeout(int seconds) throws SQLException {
-        dataSource.setLoginTimeout(seconds);
+        targetDataSource.setLoginTimeout(seconds);
     }
 
     /** @inheritDoc */
     @Override
     public int getLoginTimeout() throws SQLException {
-        return dataSource.getLoginTimeout();
+        return targetDataSource.getLoginTimeout();
     }
 
     /** @inheritDoc */
     @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        return dataSource.getParentLogger();
+        return targetDataSource.getParentLogger();
     }
     
     /** @inheritDoc */
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
-        return dataSource.unwrap(iface);
+        return targetDataSource.unwrap(iface);
     }
 
     /** @inheritDoc */
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return dataSource.isWrapperFor(iface);
+        return targetDataSource.isWrapperFor(iface);
     }
 
-    private void validateParams(DataSource dataSource, DbLoggingBuilder dbLoggingBuilder)
+    private void validateParams(DataSource dataSource, LoggingConnection.Builder loggingConnectionBuilder)
             throws IllegalArgumentException
     {
         if (dataSource == null) {
             throw new IllegalArgumentException("Must provide a dateSource");
         }
-        if (dbLoggingBuilder == null) {
-            throw new IllegalArgumentException("Must provide a dbLoggingBuilder");
+        if (loggingConnectionBuilder.loggingListeners.isEmpty()) {
+            throw new IllegalArgumentException("Must provide at least one loggingListener.");
         }
     }
 }

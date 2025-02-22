@@ -1,6 +1,5 @@
 package com.github.bradjacobs.logging.jdbc.hsql;
 
-import com.github.bradjacobs.logging.jdbc.DbLoggingBuilder;
 import com.github.bradjacobs.logging.jdbc.LoggingConnection;
 import com.github.bradjacobs.logging.jdbc.hsql.objects.BloatedPojo;
 import com.github.bradjacobs.logging.jdbc.hsql.objects.CaptureLoggingListener;
@@ -23,7 +22,7 @@ abstract public class AbstractPojoLoggingTest {
 
         Connection dbcon = LoggingConnection
                 .builder(innerConn)
-                .loggingListener(captureLoggingListener, new SystemOutLogListener())
+                .loggingListeners(captureLoggingListener, new SystemOutLogListener())
                 .clobParamLogging(clobLoggingEnabled)
                 .build();
 

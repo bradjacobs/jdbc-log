@@ -36,9 +36,14 @@ public class LoggingConnection implements Connection {
     }
 
     public static class Builder extends AbstractLoggingBuilder<Builder> {
-        private final Connection targetConnection;
+        private Connection targetConnection;
         private Builder(Connection targetConnection) {
             this.targetConnection = targetConnection;
+        }
+
+        public Builder targetConnection(Connection targetConnection) {
+            this.targetConnection = targetConnection;
+            return this;
         }
 
         public LoggingConnection build() {

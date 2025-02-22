@@ -1,7 +1,6 @@
 package com.github.bradjacobs.logging.jdbc.param;
 
 import com.github.bradjacobs.logging.jdbc.DatabaseType;
-import com.github.bradjacobs.logging.jdbc.DbLoggingBuilder;
 
 import java.time.ZoneId;
 
@@ -15,7 +14,7 @@ class ParamStringConverterFactory {
 
     public static ParamToStringConverter getParamConverter(DatabaseType dbType, ZoneId zoneId) {
         dbType = (dbType != null ? dbType : DatabaseType.DEFAULT);
-        zoneId = (zoneId != null ? zoneId : DbLoggingBuilder.DEFAULT_ZONE);
+        zoneId = (zoneId != null ? zoneId : DefaultParamToStringConverter.DEFAULT_ZONE);
 
         if (dbType == DatabaseType.ORACLE) {
             return new OracleParamToStringConverter(zoneId);

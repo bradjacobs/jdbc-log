@@ -22,20 +22,14 @@ public class LoggingDataSourceTest {
     @Test(expectedExceptions = { IllegalArgumentException.class },
             expectedExceptionsMessageRegExp = MISSING_DATASOURCE_MSG)
     public void testMissingDataSource() {
-        LoggingDataSource loggingDataSource = new LoggingDataSource(null, logger);
+        LoggingDataSource loggingDataSource = LoggingDataSource.builder(null)
+                .logger(logger)
+                .build();
     }
 
     @Test(expectedExceptions = { IllegalArgumentException.class },
             expectedExceptionsMessageRegExp = MISSING_LOGGER_MSG)
     public void testMissingLogger() {
-        Logger nullLogger = null;
-        LoggingDataSource loggingDataSource = new LoggingDataSource(MOCK_DATA_SOURCE, nullLogger);
-    }
-
-    @Test(expectedExceptions = { IllegalArgumentException.class },
-            expectedExceptionsMessageRegExp = MISSING_BUILDER_MSG)
-    public void testMissingLoggingConnectionCreator() {
-        DbLoggingBuilder dbLoggingBuilder = null;
-        LoggingDataSource loggingDataSource = new LoggingDataSource(MOCK_DATA_SOURCE, dbLoggingBuilder);
+        LoggingDataSource loggingDataSource = LoggingDataSource.builder(null).logger(null).build();
     }
 }

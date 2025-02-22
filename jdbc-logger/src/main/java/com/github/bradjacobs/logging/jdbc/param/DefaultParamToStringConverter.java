@@ -1,6 +1,5 @@
 package com.github.bradjacobs.logging.jdbc.param;
 
-import com.github.bradjacobs.logging.jdbc.DbLoggingBuilder;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
@@ -10,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class DefaultParamToStringConverter implements ParamToStringConverter {
-    protected static final ZoneId DEFAULT_ZONE = DbLoggingBuilder.DEFAULT_ZONE;
+    public static final ZoneId DEFAULT_ZONE = ZoneId.of("UTC"); // todo - move to new home??
     protected static final String DEFAULT_TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss";
     protected static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd";
     protected static final String DEFAULT_TIME_PATTERN = "HH:mm:ss";
