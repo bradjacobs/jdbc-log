@@ -22,9 +22,7 @@
 		<java.version>1.8</java.version>
 	</properties>
 
-
 	<dependencies>
-
 		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -32,6 +30,17 @@
 			<version>1.7.32</version>
 		</dependency>
 
+<!--		<dependency>-->
+<!--			<groupId>com.github.gavlyukovskiy</groupId>-->
+<!--			<artifactId>datasource-proxy-spring-boot-starter</artifactId>-->
+<!--			<version>1.6.1</version>-->
+<!--		</dependency>-->
+
+<!--		<dependency>-->
+<!--			<groupId>p6spy</groupId>-->
+<!--			<artifactId>p6spy</artifactId>-->
+<!--			<version>3.9.1</version>-->
+<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -49,13 +58,11 @@
 			<scope>test</scope>
 		</dependency>
 
-
 		<dependency>
 			<groupId>com.github.bradjacobs.logging</groupId>
 			<artifactId>jdbc-logger</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-
 
 		<!-- for database -->
 		<dependency>
@@ -63,7 +70,6 @@
 			<artifactId>sqlite-jdbc</artifactId>
 			<version>3.16.1</version>
 		</dependency>
-
 
 	</dependencies>
 
