@@ -78,7 +78,7 @@ public class DefaultParamToStringConverter implements ParamToStringConverter {
         if (numberString.contains("E")) {
             // if the string value number contains 'E', then it is in scientific notation,
             //   thus regenerate with BigDecimal to make normal looking number.
-            numberString = BigDecimal.valueOf((numberValue).doubleValue()).toPlainString();
+            numberString = BigDecimal.valueOf((numberValue).doubleValue()).stripTrailingZeros().toPlainString();
         }
         return numberString;
     }
