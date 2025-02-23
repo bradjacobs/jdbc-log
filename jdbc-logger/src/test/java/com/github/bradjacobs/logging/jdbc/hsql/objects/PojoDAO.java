@@ -114,6 +114,7 @@ public class PojoDAO {
     }
 
     public void insertPojos(List<BloatedPojo> pojos, boolean useBatching) throws SQLException {
+        boolean origAutoCommit = conn.getAutoCommit();
         if (useBatching) {
             conn.setAutoCommit(false);
         }
@@ -133,7 +134,9 @@ public class PojoDAO {
             }
         }
         finally {
-            conn.setAutoCommit(true);
+            if (useBatching) {
+                conn.setAutoCommit(origAutoCommit);
+            }
         }
     }
 
@@ -162,6 +165,7 @@ public class PojoDAO {
     }
 
     public void batchexecuteSqlStatements(List<String> sqlStatements) throws SQLException {
+        boolean origAutoCommit = conn.getAutoCommit();
         conn.setAutoCommit(false);
         try (Statement statement = conn.createStatement()) {
             for (String sqlStatement : sqlStatements) {
@@ -171,7 +175,7 @@ public class PojoDAO {
             conn.commit();
         }
         finally {
-            conn.setAutoCommit(true);
+            conn.setAutoCommit(origAutoCommit);
         }
     }
 
@@ -200,29 +204,24 @@ public class PojoDAO {
 
     public void callStoredProcedureBatch(List<Integer> inputList) throws SQLException {
         if (conn != null) {
-            CallableStatement callableStatement = null;
-            conn.setAutoCommit(false);  // todo
-
-            try {
-                callableStatement = conn.prepareCall(CALL_STORED_PROC);
+            boolean origAutoCommit = conn.getAutoCommit();
+            conn.setAutoCommit(false);
+            try (CallableStatement callableStatement = conn.prepareCall(CALL_STORED_PROC)) {
                 for (Integer intValue : inputList) {
                     callableStatement.setInt(1, intValue);
                     callableStatement.registerOutParameter(2, Types.BOOLEAN);
                     callableStatement.addBatch();
                 }
-
                 int[] batchResponseValues = callableStatement.executeBatch();
+                conn.commit();  // tbd - not sure if this is accurate
                 for (int batchResponseValue : batchResponseValues) {
                     if (batchResponseValue != Statement.SUCCESS_NO_INFO) {
                         throw new RuntimeException("unexpected result code: " + batchResponseValue);
                     }
                 }
             }
-            catch (SQLException e) {
-                throw new RuntimeException("Unable to call stored proc " + e.getMessage(), e);
-            }
             finally {
-                closeQuietly(callableStatement);
+                conn.setAutoCommit(origAutoCommit);
             }
         }
     }
@@ -288,13 +287,6 @@ public class PojoDAO {
             resultList.add(pojo);
         }
         return resultList;
-    }
-
-    private void closeQuietly(Statement stmt) {
-        if (stmt != null) {
-            try { stmt.close(); }
-            catch (SQLException e) { /* ingore */ }
-        }
     }
 
     private static String generateDropTableSql(String tableName) {
