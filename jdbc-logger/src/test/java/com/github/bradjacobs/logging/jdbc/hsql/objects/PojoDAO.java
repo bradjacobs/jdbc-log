@@ -11,8 +11,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PojoDAO {
     private static final Logger logger = LoggerFactory.getLogger(PojoDAO.class);
@@ -298,15 +300,9 @@ public class PojoDAO {
         sb.append("CREATE TABLE ");
         sb.append(tableName);
         sb.append(" (");
-        // todo - probably a cooler way to do this
-        for (int i = 0; i < tableColumnDefns.length; i++) {
-            String[] columnDefns = tableColumnDefns[i];
-            if (i > 0) {
-                sb.append(", ");
-            }
-            String joinStr = String.join(" ", columnDefns);
-            sb.append(joinStr);
-        }
+        sb.append(Arrays.stream(tableColumnDefns)
+                .map(f -> String.join(" ", f))
+                .collect(Collectors.joining(", ")));
         sb.append(")");
         return sb.toString();
     }
